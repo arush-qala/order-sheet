@@ -313,33 +313,40 @@ let productData = [];
 async function fetchProductData() {
   const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNVrRrsiEXVml8Ecuq7kmaEh9JY1G0_X5-PGtvoXvHo37yGGGFuT9aysBUHf0LKzel73hRUWq3IWys/pub?output=csv";
   const res = await fetch(url);
+  if (!res.ok) {
+    alert("Could not load product database. Please check your connection.");
+    return;
+  }
   const csv = await res.text();
   productData = csvToProductData(csv);
+  
+  // Optional: call setup steps (e.g., enable add product, initialize first card)
+  if (document.getElementById('brandSelect').value) {
+    createProductCard();
+  }
 }
 
-// Converts CSV to productData[] as per your schema
 function csvToProductData(csv) {
   const lines = csv.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.trim());
   return lines.slice(1).map(row => {
+    // Simple CSV split, SAFE for non-quoted CSV.
     const cols = row.split(',').map(c => c.trim());
     let obj = {};
     headers.forEach((h, i) => obj[h] = cols[i]);
-    // Optionally, convert fields to correct types (number arrays etc.)
-    if (obj.availableSizes) {
-      obj.availableSizes = obj.availableSizes.split('|').map(s => s.trim());
-    }
+    // Coerce correct types
     obj.landingPrice = Number(obj.landingPrice);
     obj.recommendedRetailPrice = Number(obj.recommendedRetailPrice);
+    obj.availableSizes = obj.availableSizes
+      ? obj.availableSizes.split('|').map(s => s.trim()) // Use "|" as separator in your sheet for sizes
+      : [];
+    obj.imageUrl = obj.imageURL; // fixes inconsistent casing between code/Google Sheet
     return obj;
   });
 }
 
-// Load data, then initialize the app
-fetchProductData().then(() => {
-  // Optional: trigger any initial UI update/run setup here
-  // Now all product lookup/autocomplete will use this updated data
-});
+fetchProductData();
+
 
 
 /*
