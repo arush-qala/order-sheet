@@ -185,6 +185,7 @@ function createProductCard() {
   const styleField = document.createElement('input');
   styleField.type = 'text';
   styleField.placeholder = 'Search style by SKU or name';
+  styleField.style.width = '320px';
   styleWrap.appendChild(styleField);
 
   // Print Autocomplete
@@ -196,6 +197,7 @@ function createProductCard() {
   const printField = document.createElement('input');
   printField.type = 'text';
   printField.placeholder = 'Optional print – SKU or name';
+  printField.style.width = '320px';
   printWrap.appendChild(printField);
 
   // Product info
