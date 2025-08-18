@@ -12,9 +12,7 @@
             <h1>Order Sheet</h1>
             <p class="subtitle">Brand Assembly LA - Oct</p>
         </header>
-
         <form id="orderForm" class="order-form">
-            <!-- Order Information Section -->
             <section class="card">
                 <div class="card__header">
                     <h2>Order Information</h2>
@@ -26,122 +24,60 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Buyer Information Section -->
             <section class="card">
                 <div class="card__header">
                     <h2>Buyer Information</h2>
                 </div>
-                <div class="card__body">
-                    <div class="buyer-grid">
-                        <div class="form-group">
-                            <label for="buyerStoreName" class="form-label">Buyer/Store Name *</label>
-                            <input type="text" id="buyerStoreName" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email" class="form-label">Email Address *</label>
-                            <input type="email" id="email" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone" class="form-label">Phone Number *</label>
-                            <input type="tel" id="phone" class="form-control" required>
-                        </div>
+                <div class="card__body buyer-grid">
+                    <div class="form-group">
+                        <label for="buyerStoreName" class="form-label">Buyer/Store Name *</label>
+                        <input type="text" id="buyerStoreName" class="form-control" required>
                     </div>
-                    
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address *</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Phone Number *</label>
+                        <input type="tel" id="phone" class="form-control" required>
+                    </div>
                     <div class="form-group">
                         <label for="shippingAddress" class="form-label">Shipping Address *</label>
-                        <textarea id="shippingAddress" class="form-control" rows="3" required></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="orderComments" class="form-label">Order & Delivery Comments</label>
-                        <textarea id="orderComments" class="form-control" rows="3" placeholder="Any special instructions for order or delivery..."></textarea>
+                        <input type="text" id="shippingAddress" class="form-control" required>
                     </div>
                 </div>
             </section>
-
-            <!-- Brand Selection Section -->
-            <section class="card">
-                <div class="card__header">
-                    <h2>Brand Selection</h2>
-                </div>
-                <div class="card__body">
-                    <div class="form-group">
-                        <label for="mainBrandSelect" class="form-label">Select Brand for This Order *</label>
-                        <select id="mainBrandSelect" class="form-control" required>
-                            <option value="">Select Brand</option>
-                        </select>
-                        <p class="brand-note"><strong>Note:</strong> All products in this order sheet will be from the selected brand</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Products Section -->
             <section class="card">
                 <div class="card__header">
                     <h2>Product Selection</h2>
                 </div>
                 <div class="card__body">
-                    <div id="productsContainer">
-                        <!-- Products will be dynamically added here -->
+                    <p class="brand-note">All products in this order sheet will be from the selected brand</p>
+                    <div class="form-group">
+                        <label for="mainBrandSelect" class="form-label">Brand *</label>
+                        <select id="mainBrandSelect" class="form-control" required>
+                            <option value="">-- Select Brand --</option>
+                        </select>
                     </div>
-                    
-                    <button type="button" id="addProductBtn" class="btn btn--primary">
-                        Add Product
-                    </button>
+                    <div id="productsContainer"></div>
+                    <button id="addProductBtn" class="btn btn--primary" type="button">Add Another Product</button>
                 </div>
             </section>
-
-            <!-- Order Summary -->
-            <section class="card order-summary">
+            <section class="card" id="orderSummarySection">
                 <div class="card__header">
                     <h2>Order Summary</h2>
                 </div>
                 <div class="card__body">
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <span class="label">Total Quantity:</span>
-                            <span id="totalQuantity" class="value">0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="label">Total Amount:</span>
-                            <span id="totalAmount" class="value">$0.00</span>
-                        </div>
+                    <div id="orderSummary"></div>
+                    <div class="form-group">
+                        <label for="comments" class="form-label">Order & Delivery Comments</label>
+                        <textarea id="comments" class="form-control"></textarea>
                     </div>
+                    <button type="submit" class="btn btn--primary">Submit & Download PDF</button>
                 </div>
             </section>
-
-            <!-- Submit Button -->
-            <div class="submit-section">
-                <button type="submit" id="submitBtn" class="btn btn--primary btn--lg btn--full-width">
-                    Submit Order Sheet
-                </button>
-            </div>
         </form>
     </div>
-
-    <!-- Order Confirmation Modal -->
-    <div id="confirmationModal" class="modal hidden">
-        <div class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Order Sheet Generated</h2>
-                </div>
-                <div class="modal-body">
-                    <div id="confirmationContent">
-                        <!-- Content will be dynamically generated -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="closeModal" class="btn btn--secondary">Close</button>
-                    <button type="button" id="downloadPDF" class="btn btn--primary">Download PDF</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="app.js"></script>
 </body>
 </html>
