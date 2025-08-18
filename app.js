@@ -166,112 +166,300 @@ function autoCompleteBox(input, brand, cb) {
 
 
 function createProductCard() {
-  const brand = dom('brandSelect').value; if (!brand) return alert('Select a brand first.');
-  const card = document.createElement('div'); card.className = 'product-card';
+  const brand = dom('brandSelect').value;
+  if (!brand) return alert('Select a brand first.');
+
+  const card = document.createElement('div');
+  card.className = 'product-card';
+
   const removeBtn = document.createElement('button');
-  removeBtn.innerHTML = '&times;'; removeBtn.className='remove-card'; removeBtn.type='button';
-  removeBtn.setAttribute('aria-label','Remove product'); card.appendChild(removeBtn);
+  removeBtn.innerHTML = '&times;';
+  removeBtn.className = 'remove-card';
+  removeBtn.type = 'button';
+  removeBtn.setAttribute('aria-label', 'Remove product');
+  card.appendChild(removeBtn);
 
   // Three columns
-  const row = document.createElement('div'); row.className = 'card-threecol'; card.appendChild(row);
-  // 1. Style
-  const styleCol = document.createElement('div'); styleCol.className = 'productcol stylecol'; row.appendChild(styleCol);
-  const styleField = document.createElement('input'); styleField.type='text'; styleField.placeholder='Search style by SKU or name'; styleField.style.width='100%'; styleField.style.marginBottom='8px'; styleCol.appendChild(styleField);
-  const styleImg = document.createElement('img'); styleImg.alt = 'Style Image'; styleImg.style.display='none'; styleCol.appendChild(styleImg);
-  const styleImgLabel = document.createElement('div'); styleImgLabel.className = 'img-label'; styleImgLabel.textContent = 'Style'; styleCol.appendChild(styleImgLabel);
-  // 2. Print
-  const printCol = document.createElement('div'); printCol.className = 'productcol printcol'; row.appendChild(printCol);
-  const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print'; printField.style.width='100%'; printField.style.marginBottom='8px'; printCol.appendChild(printField);
-  const printImg = document.createElement('img'); printImg.alt = 'Print Image'; printImg.style.display='none'; printCol.appendChild(printImg);
-  const printImgLabel = document.createElement('div'); printImgLabel.className = 'img-label'; printImgLabel.textContent = 'Custom Print'; printCol.appendChild(printImgLabel);
-  // 3. Details
-  const detailsCol = document.createElement('div'); detailsCol.className = 'productcol infocol'; row.appendChild(detailsCol);
-  const prodName = document.createElement('div'); prodName.className='prod-name'; detailsCol.appendChild(prodName);
-  const sizesSpan = document.createElement('div'); sizesSpan.className = 'available-sizes'; sizesSpan.style.display = 'none'; detailsCol.appendChild(sizesSpan);
-  const link = document.createElement('a'); link.textContent='View Product Details'; link.target='_blank'; link.style.display='inline-block'; link.style.marginBottom='8px'; detailsCol.appendChild(link);
-  const priceRow = document.createElement('div'); priceRow.style.display='flex'; priceRow.style.alignItems='center'; detailsCol.appendChild(priceRow);
-  const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
-  const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
+  const row = document.createElement('div');
+  row.className = 'card-threecol';
+  card.appendChild(row);
 
-  // SIZES + QTY ROW
-  const sizesQtyRow = document.createElement('div');
-  sizesQtyRow.className = 'sizes-qty-row';
+  // === 1. Style ===
+  const styleCol = document.createElement('div');
+  styleCol.className = 'productcol stylecol';
+  row.appendChild(styleCol);
 
-  // Sizes block
-  const sizesBlock = document.createElement('div');
-  sizesBlock.className = 'sizes-block';
-  const sizesFieldLabel = document.createElement('label');
-  sizesFieldLabel.textContent = 'Selected Sizes';
-  sizesBlock.appendChild(sizesFieldLabel);
-  const sizeInput = document.createElement('input');
-  sizeInput.placeholder = 'e.g. 2 XS, 2 S, 1 M';
-  sizesBlock.appendChild(sizeInput);
-  // Quantity block
-  const qtyBlock = document.createElement('div');
-  qtyBlock.className = 'qty-block';
-  const qtyLabel = document.createElement('label');
-  qtyLabel.textContent = 'Quantity';
-  qtyBlock.appendChild(qtyLabel);
-  const qtyInput = document.createElement('input');
-  qtyInput.type = 'number';
-  qtyInput.placeholder = 'Quantity';
-  qtyInput.min = '1';
-  qtyBlock.appendChild(qtyInput);
-  sizesQtyRow.appendChild(sizesBlock);
-  sizesQtyRow.appendChild(qtyBlock);
-  detailsCol.appendChild(sizesQtyRow);
+  const styleField = document.createElement('input');
+  styleField.type = 'text';
+  styleField.placeholder = 'Search style by SKU or name';
+  styleField.style.width = '100%';
+  styleField.style.marginBottom = '8px';
+  styleCol.appendChild(styleField);
+
+  const styleImg = document.createElement('img');
+  styleImg.alt = 'Style Image';
+  styleImg.style.display = 'none';
+  styleCol.appendChild(styleImg);
+
+  const styleImgLabel = document.createElement('div');
+  styleImgLabel.className = 'img-label';
+  styleImgLabel.textContent = 'Style';
+  styleCol.appendChild(styleImgLabel);
+
+  // === 2. Print ===
+  const printCol = document.createElement('div');
+  printCol.className = 'productcol printcol';
+  row.appendChild(printCol);
+
+  const printField = document.createElement('input');
+  printField.type = 'text';
+  printField.placeholder = 'Optional custom print';
+  printField.style.width = '100%';
+  printField.style.marginBottom = '8px';
+  printCol.appendChild(printField);
+
+  const printImg = document.createElement('img');
+  printImg.alt = 'Print Image';
+  printImg.style.display = 'none';
+  printCol.appendChild(printImg);
+
+  const printImgLabel = document.createElement('div');
+  printImgLabel.className = 'img-label';
+  printImgLabel.textContent = 'Custom Print';
+  printCol.appendChild(printImgLabel);
+
+  // === 3. Details ===
+  const detailsCol = document.createElement('div');
+  detailsCol.className = 'productcol infocol';
+  row.appendChild(detailsCol);
+
+  const prodName = document.createElement('div');
+  prodName.className = 'prod-name';
+  detailsCol.appendChild(prodName);
+
+  const sizesSpan = document.createElement('div');
+  sizesSpan.className = 'available-sizes';
+  sizesSpan.style.display = 'none';
+  detailsCol.appendChild(sizesSpan);
+
+  const link = document.createElement('a');
+  link.textContent = 'View Product Details';
+  link.target = '_blank';
+  link.style.display = 'inline-block';
+  link.style.marginBottom = '8px';
+  detailsCol.appendChild(link);
+
+  const priceRow = document.createElement('div');
+  priceRow.style.display = 'flex';
+  priceRow.style.alignItems = 'center';
+  detailsCol.appendChild(priceRow);
+
+  const landingBox = document.createElement('div');
+  landingBox.className = 'price-box';
+  priceRow.appendChild(landingBox);
+
+  const retailBox = document.createElement('div');
+  retailBox.className = 'price-box';
+  priceRow.appendChild(retailBox);
+
+  // ==== New Dynamic SIZES + QTY ROW LOGIC ====
+  const sizesList = document.createElement('div');
+  sizesList.className = 'sizes-list';
+
+  let sizeQtyArray = []; // [{size: 'S', quantity: 2}, ...]
+  let availableSizesArr = [];
+
+  function renderSizeQtyRows() {
+    sizesList.innerHTML = ""; // Clear before re-render
+
+    sizeQtyArray.forEach((item, idx) => {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'sizes-qty-row';
+
+      // Size dropdown
+      const sizeSel = document.createElement('select');
+      availableSizesArr.forEach(size => {
+        const opt = document.createElement('option');
+        opt.value = size;
+        opt.textContent = size;
+        sizeSel.appendChild(opt);
+      });
+      sizeSel.value = item.size || availableSizesArr[0] || '';
+      sizeSel.onchange = function() {
+        item.size = this.value;
+        updateAvailableSizeOptions();
+      };
+
+      // Qty
+      const qtyInput = document.createElement('input');
+      qtyInput.type = 'number';
+      qtyInput.placeholder = 'Qty';
+      qtyInput.min = '0';
+      qtyInput.value = item.quantity;
+      qtyInput.style.width = '65px';
+      qtyInput.addEventListener('input', function() {
+        item.quantity = Number(this.value) || 0;
+        updateTotalAndSubtotal();
+      });
+
+      // Remove size line button
+      const remBtn = document.createElement('button');
+      remBtn.type = 'button';
+      remBtn.textContent = '×';
+      remBtn.className = 'remove-size-btn';
+      remBtn.title = 'Remove size';
+      remBtn.onclick = () => {
+        sizeQtyArray.splice(idx, 1);
+        renderSizeQtyRows();
+        updateTotalAndSubtotal();
+      };
+
+      rowDiv.appendChild(sizeSel);
+      rowDiv.appendChild(qtyInput);
+      if (sizeQtyArray.length > 1) rowDiv.appendChild(remBtn);
+
+      sizesList.appendChild(rowDiv);
+    });
+  }
+
+  // Add size line button
+  const addSizeBtn = document.createElement('button');
+  addSizeBtn.type = 'button';
+  addSizeBtn.textContent = '+ Size';
+  addSizeBtn.className = 'add-size-btn';
+  addSizeBtn.onclick = function(e) {
+    e.preventDefault();
+    // Find first available (unselected) size, or add duplicate if user wants
+    const sizeUsed = sizeQtyArray.map(line => line.size);
+    const nextAvailable = availableSizesArr.find(size => !sizeUsed.includes(size)) || availableSizesArr[0];
+    sizeQtyArray.push({ size: nextAvailable, quantity: 0 });
+    renderSizeQtyRows();
+  };
+
+  // Total QTY display
+  const qtyTotalWrap = document.createElement('div');
+  const qtyTotalLabel = document.createElement('span');
+  qtyTotalLabel.textContent = 'Total Qty: ';
+  const qtyTotalSpan = document.createElement('span');
+  qtyTotalSpan.className = 'current-qty-total';
+  qtyTotalSpan.textContent = '0';
+  qtyTotalWrap.appendChild(qtyTotalLabel);
+  qtyTotalWrap.appendChild(qtyTotalSpan);
 
   // UNIT PRICE
   const unitPriceLabel = document.createElement('label');
   unitPriceLabel.textContent = 'Unit Price ($)';
   detailsCol.appendChild(unitPriceLabel);
+
   const unitPriceInput = document.createElement('input');
   unitPriceInput.type = 'number';
   unitPriceInput.placeholder = 'Unit Price $';
   unitPriceInput.min = '0';
   detailsCol.appendChild(unitPriceInput);
 
-  // CUSTOMIZATION NOTES
+  // SIZES TITLE + DYNAMIC LIST + ADD BUTTON
+  const sizesTitle = document.createElement('label');
+  sizesTitle.textContent = 'Select Size(s) & Qty:';
+  detailsCol.appendChild(sizesTitle);
+  detailsCol.appendChild(sizesList);
+  detailsCol.appendChild(addSizeBtn);
+  detailsCol.appendChild(qtyTotalWrap);
+
+  // Customize notes
   const noteLabel = document.createElement('label');
   noteLabel.textContent = 'Customization Notes';
   detailsCol.appendChild(noteLabel);
-  const noteArea = document.createElement('textarea');
-  noteArea.rows=2; noteArea.placeholder='Customization notes'; noteArea.style.width = '100%';
-  detailsCol.appendChild(noteArea);
-  const subtotalDisp = document.createElement('div'); subtotalDisp.className='subtotal-disp'; detailsCol.appendChild(subtotalDisp);
 
+  const noteArea = document.createElement('textarea');
+  noteArea.rows = 2;
+  noteArea.placeholder = 'Customization notes';
+  noteArea.style.width = '100%';
+  detailsCol.appendChild(noteArea);
+
+  const subtotalDisp = document.createElement('div');
+  subtotalDisp.className = 'subtotal-disp';
+  detailsCol.appendChild(subtotalDisp);
+
+  // Core order line item
   const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
 
-  function updateSubtotal() {
-    const qty = Number(qtyInput.value || 0), unit = Number(unitPriceInput.value || 0), subtotal = qty * unit;
-    lineItem.quantity = qty; lineItem.unitPrice = unit; lineItem.subtotal = subtotal;
-    subtotalDisp.textContent = (qty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
+  // --- Helper Functions
+  function updateTotalAndSubtotal() {
+    // Remove lines with no size or negative/zero qty
+    sizeQtyArray = sizeQtyArray.filter(line => line.size && Number(line.quantity) > 0);
+
+    const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) || 0), 0);
+    qtyTotalSpan.textContent = totalQty;
+    lineItem.quantity = totalQty;
+
+    // Save as string summary to .sizes field for export/PDF
+    lineItem.sizes = sizeQtyArray.filter(e => e.quantity).map(e => `${e.quantity} ${e.size}`).join(', ');
+
+    const unit = Number(unitPriceInput.value || 0);
+    lineItem.unitPrice = unit;
+    const subtotal = totalQty * unit;
+    lineItem.subtotal = subtotal;
+    subtotalDisp.textContent = (totalQty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
     state.recalculateTotals();
   }
 
-  qtyInput.addEventListener('input', updateSubtotal);
-  unitPriceInput.addEventListener('input', updateSubtotal);
-  sizeInput.addEventListener('input', () => lineItem.sizes = sizeInput.value);
+  // When style is selected, set sizes and reset sizes-qty UI
+  function onStyleChange(prod) {
+    availableSizesArr = (prod.availableSizes && prod.availableSizes.length) ? prod.availableSizes : [];
+    // Start with one row by default
+    sizeQtyArray = [{size: availableSizesArr[0] || "", quantity: 0}];
+    renderSizeQtyRows();
+    updateTotalAndSubtotal();
+  }
+
+  function updateAvailableSizeOptions() {
+    // Ensures that changing one row to use a used size is allowed if you want (e.g., two size "S" if needed)
+    // Optionally, you could prevent duplicates by making used sizes disabled in other dropdowns
+    // No additional logic needed for now
+    updateTotalAndSubtotal();
+  }
+
+  // Unit price and customization notes listeners
+  unitPriceInput.addEventListener('input', updateTotalAndSubtotal);
   noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
 
+  // Autocomplete and data population
   autoCompleteBox(styleField, brand, prod => {
     styleField.value = `${prod.skuId} – ${prod.productName}`;
-    styleImg.src = prod.imageUrl; styleImg.style.display = ''; styleImgLabel.classList.add('active');
-    prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
-    landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
-    unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
-    lineItem.unitPrice = prod.landingPrice; lineItem.styleImgUrl = prod.imageUrl;
+    styleImg.src = prod.imageUrl;
+    styleImg.style.display = '';
+    styleImgLabel.classList.add('active');
+    prodName.textContent = prod.productName;
+    link.style.display = 'inline-block';
+    link.href = prod.productLink;
+    landingBox.textContent = `Landing $${prod.landingPrice}`;
+    retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
+    unitPriceInput.value = prod.landingPrice;
+    lineItem.styleSku = prod.skuId;
+    lineItem.productName = prod.productName;
+    lineItem.unitPrice = prod.landingPrice;
+    lineItem.styleImgUrl = prod.imageUrl;
     sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join(' · ') : '';
     sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
-    updateSubtotal();
-  });
-  autoCompleteBox(printField, brand, prod => {
-    printField.value = `${prod.skuId} – ${prod.productName}`; printImg.src = prod.imageUrl; printImg.style.display = ''; printImgLabel.classList.add('active');
-    lineItem.printSku = prod.skuId; lineItem.printImgUrl = prod.imageUrl;
+    onStyleChange(prod);
   });
 
-  removeBtn.addEventListener('click', () => { card.remove(); state.removeItem(state.items.indexOf(lineItem)); });
-  dom('productCards').appendChild(card); state.addItem(lineItem);
+  autoCompleteBox(printField, brand, prod => {
+    printField.value = `${prod.skuId} – ${prod.productName}`;
+    printImg.src = prod.imageUrl;
+    printImg.style.display = '';
+    printImgLabel.classList.add('active');
+    lineItem.printSku = prod.skuId;
+    lineItem.printImgUrl = prod.imageUrl;
+  });
+
+  removeBtn.addEventListener('click', () => {
+    card.remove();
+    state.removeItem(state.items.indexOf(lineItem));
+  });
+
+  dom('productCards').appendChild(card);
+  state.addItem(lineItem);
 }
 
 async function toDataUrl(url) {
