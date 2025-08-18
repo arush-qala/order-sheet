@@ -124,10 +124,11 @@ function autoCompleteBox(input, brand, cb) {
 function createProductCard() {
   const brand = dom('brandSelect').value;
   if (!brand) return alert('Select a brand first.');
+
   const card = document.createElement('div');
   card.className = 'product-card';
 
-  // Remove X
+  // Remove Button: subtle "×" with large area
   const removeBtn = document.createElement('button');
   removeBtn.innerHTML = '&times;';
   removeBtn.className = 'remove-card';
@@ -135,118 +136,112 @@ function createProductCard() {
   removeBtn.setAttribute('aria-label','Remove product');
   card.appendChild(removeBtn);
 
-  // SECTION 1: Style search + image
-  const styleBox = document.createElement('div');
-  styleBox.className = 'product-section style-section';
-  card.appendChild(styleBox);
+  // NEW: Three-column card layout
+  const row = document.createElement('div');
+  row.className = 'card-threecol';
+  card.appendChild(row);
 
-  const styleWrap = document.createElement('div');
-  styleWrap.style.position = 'relative';
-  styleBox.appendChild(styleWrap);
+  // ----- SECTION 1: STYLE SEARCH & IMAGE -----
+  const styleCol = document.createElement('div');
+  styleCol.className = 'productcol stylecol';
+  row.appendChild(styleCol);
 
   const styleField = document.createElement('input');
   styleField.type = 'text';
   styleField.placeholder = 'Search style by SKU or name';
-  styleField.style.width = '320px';
-  styleWrap.appendChild(styleField);
+  styleField.style.width = '100%';
+  styleField.style.marginBottom = '8px';
+  styleCol.appendChild(styleField);
 
   const styleImg = document.createElement('img');
-  styleImg.className = 'product-img';
   styleImg.alt = 'Style Image';
   styleImg.style.display = 'none';
-  styleBox.appendChild(styleImg);
+  styleCol.appendChild(styleImg);
 
-  // SECTION 2: Print search + image
-  const printBox = document.createElement('div');
-  printBox.className = 'product-section print-section';
-  card.appendChild(printBox);
-
-  const printWrap = document.createElement('div');
-  printWrap.style.position = 'relative';
-  printBox.appendChild(printWrap);
+  // ----- SECTION 2: PRINT SEARCH & IMAGE -----
+  const printCol = document.createElement('div');
+  printCol.className = 'productcol printcol';
+  row.appendChild(printCol);
 
   const printField = document.createElement('input');
   printField.type = 'text';
   printField.placeholder = 'Optional custom print – SKU or name';
-  printField.style.width = '320px';
-  printWrap.appendChild(printField);
+  printField.style.width = '100%';
+  printField.style.marginBottom = '8px';
+  printCol.appendChild(printField);
 
   const printImg = document.createElement('img');
-  printImg.className = 'product-img';
   printImg.alt = 'Print Image';
   printImg.style.display = 'none';
-  printBox.appendChild(printImg);
+  printCol.appendChild(printImg);
 
-  // SECTION 3: Details/info/inputs
-  const details = document.createElement('div');
-  details.className = 'product-section info-section';
-  card.appendChild(details);
+  // ----- SECTION 3: INFO, PRICING, FIELDS -----
+  const detailsCol = document.createElement('div');
+  detailsCol.className = 'productcol infocol';
+  row.appendChild(detailsCol);
 
-  // Product name
+  // Info header
   const prodName = document.createElement('div');
   prodName.className = 'prod-name';
-  details.appendChild(prodName);
+  detailsCol.appendChild(prodName);
 
-  // Available Sizes
   const sizesSpan = document.createElement('div');
   sizesSpan.className = 'available-sizes';
   sizesSpan.style.display = 'none';
-  details.appendChild(sizesSpan);
+  detailsCol.appendChild(sizesSpan);
 
-  // Link
   const link = document.createElement('a');
   link.textContent = 'View Product Details';
   link.target = '_blank';
-  link.style.display = 'block';
-  link.style.margin = '4px 0 8px';
-  details.appendChild(link);
+  link.style.display = 'inline-block';
+  link.style.marginBottom = '8px';
+  detailsCol.appendChild(link);
 
-  // Price boxes
-  const priceWrap = document.createElement('div');
-  priceWrap.style.display = 'flex';
-  priceWrap.style.alignItems = 'center';
-  details.appendChild(priceWrap);
+  const priceRow = document.createElement('div');
+  priceRow.style.display = 'flex';
+  priceRow.style.alignItems = 'center';
+  detailsCol.appendChild(priceRow);
 
   const landingBox = document.createElement('div');
   landingBox.className = 'price-box';
-  priceWrap.appendChild(landingBox);
+  priceRow.appendChild(landingBox);
 
   const retailBox = document.createElement('div');
   retailBox.className = 'price-box';
-  priceWrap.appendChild(retailBox);
+  priceRow.appendChild(retailBox);
 
-  // Inputs: sizes, qty, unit price, notes
   const sizeInput = document.createElement('input');
   sizeInput.placeholder = 'Selected sizes (e.g. 2 XS, 2 S, 1 M)';
   sizeInput.style.width = '100%';
-  sizeInput.style.marginTop = '8px';
-  details.appendChild(sizeInput);
+  sizeInput.style.marginTop = '10px';
+  detailsCol.appendChild(sizeInput);
 
   const qtyInput = document.createElement('input');
   qtyInput.type = 'number';
   qtyInput.placeholder = 'Quantity';
   qtyInput.style.marginTop = '8px';
   qtyInput.min = '1';
-  details.appendChild(qtyInput);
+  qtyInput.style.width = '100%';
+  detailsCol.appendChild(qtyInput);
 
   const unitPriceInput = document.createElement('input');
   unitPriceInput.type = 'number';
   unitPriceInput.placeholder = 'Unit Price $';
   unitPriceInput.style.marginTop = '8px';
   unitPriceInput.min = '0';
-  details.appendChild(unitPriceInput);
+  unitPriceInput.style.width = '100%';
+  detailsCol.appendChild(unitPriceInput);
 
   const noteArea = document.createElement('textarea');
   noteArea.rows = 2;
   noteArea.placeholder = 'Customization notes';
   noteArea.style.marginTop = '8px';
   noteArea.style.width = '100%';
-  details.appendChild(noteArea);
+  detailsCol.appendChild(noteArea);
 
   const subtotalDisp = document.createElement('div');
   subtotalDisp.className = 'subtotal-disp';
-  subtotalDisp.style.marginTop = '14px';
-  details.appendChild(subtotalDisp);
+  detailsCol.appendChild(subtotalDisp);
 
   // Data binding object
   const lineItem = {
@@ -269,7 +264,7 @@ function createProductCard() {
     lineItem.quantity = qty;
     lineItem.unitPrice = unit;
     lineItem.subtotal = subtotal;
-    subtotalDisp.textContent = (qty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : 'Subtotal $0.00';
+    subtotalDisp.textContent = (qty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
     state.recalculateTotals();
   }
   qtyInput.addEventListener('input', updateSubtotal);
@@ -292,7 +287,6 @@ function createProductCard() {
     lineItem.productName = prod.productName;
     lineItem.unitPrice = prod.landingPrice;
     lineItem.styleImgUrl = prod.imageUrl;
-    styleImg.style.display = '';
     sizesSpan.textContent = prod.availableSizes.length 
       ? 'Available Sizes: ' + prod.availableSizes.join(' · ')
       : '';
@@ -317,7 +311,9 @@ function createProductCard() {
   state.addItem(lineItem);
 }
 
-// ---- Helper: Load remote image as base64 dataURL -----
+// PDF, image helpers and addProductBtn/listeners as before...
+// (no change—use your previous code for PDF generation, toDataUrl, etc.)
+
 async function toDataUrl(url) {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
@@ -339,7 +335,6 @@ async function toDataUrl(url) {
   });
 }
 
-// ---- Generate PDF with images -----
 dom('orderForm').addEventListener('submit', async e => {
   e.preventDefault();
   state.header = {
@@ -368,16 +363,26 @@ dom('orderForm').addEventListener('submit', async e => {
   for (let idx = 0; idx < state.items.length; ++idx) {
     let it = state.items[idx];
     let styleData = null, printData = null;
-    try { styleData = it.styleImgUrl ? await toDataUrl(it.styleImgUrl) : null; }catch{}
-    try { printData = it.printImgUrl ? await toDataUrl(it.printImgUrl) : null; }catch{}
+    try {
+      styleData = it.styleImgUrl ? await toDataUrl(it.styleImgUrl) : null;
+    }catch{}
+    try {
+      printData = it.printImgUrl ? await toDataUrl(it.printImgUrl) : null;
+    }catch{}
     doc.setFont(undefined, "bold");
     doc.text(`Item ${idx + 1} – ${it.productName}`, 10, y); y += 6;
     doc.setFont(undefined, "normal");
     doc.text(`Style SKU: ${it.styleSku || ""}  Print SKU: ${it.printSku || ""}`, 14, y); y += 6;
     doc.text(`Sizes: ${it.sizes || ""}  Qty: ${it.quantity || ""}  Unit: $${it.unitPrice||""}  Subtotal: $${it.subtotal || ""}`, 14, y); y += 6;
     doc.text(`Notes: ${it.notes || ""}`, 14, y); y += 6;
-    if (styleData) { doc.text("Style", 15, y); doc.addImage(styleData, "JPEG", 10, y+2, 14, 14); }
-    if (printData) { doc.text("Print", 40, y); doc.addImage(printData, "JPEG", 36, y+2, 14, 14); }
+    if (styleData) {
+      doc.text("Style", 15, y);
+      doc.addImage(styleData, "JPEG", 10, y+2, 14, 14);
+    }
+    if (printData) {
+      doc.text("Print", 40, y);
+      doc.addImage(printData, "JPEG", 36, y+2, 14, 14);
+    }
     if(styleData || printData) y += 18;
     else y += 4;
     if (y > 265) { doc.addPage(); y = 10; }
@@ -393,4 +398,5 @@ dom('brandSelect').addEventListener('change', function () {
     createProductCard();
   }
 });
+
 dom('addProductBtn').addEventListener('click', createProductCard);
