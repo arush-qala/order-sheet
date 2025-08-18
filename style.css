@@ -154,8 +154,8 @@ textarea {
   min-width: 128px;
 }
 .thumbnail-wrap img {
-  max-width: 120px;
-  max-height: 120px;
+ /* max-width: 120px;
+  max-height: 120px; */
   width: auto;
   height: auto;
   object-fit: contain;
