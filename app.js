@@ -195,7 +195,7 @@ function createProductCard() {
 
   const printField = document.createElement('input');
   printField.type = 'text';
-  printField.placeholder = 'Optional print – SKU or name';
+  printField.placeholder = 'Optional custom print – SKU or name';
   printField.style.width = '320px';
   printWrap.appendChild(printField);
 
