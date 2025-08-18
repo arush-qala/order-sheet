@@ -413,9 +413,13 @@ dom('orderForm').addEventListener('submit', async e => {
   console.log({ header: state.header, items: state.items });
 });
 
-dom('addProductBtn').addEventListener('click', createProductCard);
-
+// CHANGED: Auto-create first product when brand selected.
 dom('brandSelect').addEventListener('change', function () {
   dom('productCards').innerHTML = '';
   state.reset();
+  if (this.value) {
+    createProductCard();
+  }
 });
+
+dom('addProductBtn').addEventListener('click', createProductCard);
