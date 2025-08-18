@@ -19,6 +19,11 @@ async function loadProductsFromSheet() {
   });
 }
 
+loadProductsFromSheet().then(() => {
+  // After products loaded, initialize your app (e.g., enable controls, etc)
+});
+
+
 const dom = id => document.getElementById(id);
 
 class OrderSheetState {
