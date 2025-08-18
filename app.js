@@ -114,7 +114,7 @@ function createProductCard() {
   const styleImgLabel = document.createElement('div'); styleImgLabel.className = 'img-label'; styleImgLabel.textContent = 'Style'; styleCol.appendChild(styleImgLabel);
   // 2. Print
   const printCol = document.createElement('div'); printCol.className = 'productcol printcol'; row.appendChild(printCol);
-  const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print – SKU or name'; printField.style.width='100%'; printField.style.marginBottom='8px'; printCol.appendChild(printField);
+  const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print'; printField.style.width='100%'; printField.style.marginBottom='8px'; printCol.appendChild(printField);
   const printImg = document.createElement('img'); printImg.alt = 'Print Image'; printImg.style.display='none'; printCol.appendChild(printImg);
   const printImgLabel = document.createElement('div'); printImgLabel.className = 'img-label'; printImgLabel.textContent = 'Custom Print'; printCol.appendChild(printImgLabel);
   // 3. Details
