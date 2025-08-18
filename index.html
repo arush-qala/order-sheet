@@ -17,35 +17,38 @@
 
     <form id="orderForm" class="order-form" autocomplete="off">
       <!-- Order & Buyer Information -->
-      <section class="section">
-        <h3>Order &amp; Buyer Information</h3>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="orderNumber">Order Number *</label>
-            <input type="text" id="orderNumber" name="orderNumber" required>
-          </div>
-          <div class="form-group">
-            <label for="buyerName">Buyer/Store Name *</label>
-            <input type="text" id="buyerName" name="buyerName" required>
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address *</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone Number *</label>
-            <input type="tel" id="phone" name="phone" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="shippingAddress">Shipping Address *</label>
-          <textarea id="shippingAddress" name="shippingAddress" rows="3" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="orderComments">Order &amp; Delivery Comments</label>
-          <textarea id="orderComments" name="orderComments" rows="2"></textarea>
-        </div>
-      </section>
+<section class="section">
+  <h3>Order &amp; Buyer Information</h3>
+  <div class="form-flex-row">
+    <div class="form-group">
+      <label for="orderNumber">Order Number *</label>
+      <input type="text" id="orderNumber" class="form-small" name="orderNumber" required autocomplete="off">
+    </div>
+  </div>
+  <div class="form-flex-row">
+    <div class="form-group">
+      <label for="buyerName">Buyer/Store Name *</label>
+      <input type="text" id="buyerName" name="buyerName" required autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label for="email">Email Address *</label>
+      <input type="email" id="email" name="email" required autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone Number *</label>
+      <input type="tel" id="phone" name="phone" required autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label for="shippingAddress">Shipping Address *</label>
+      <textarea id="shippingAddress" name="shippingAddress" rows="2" required autocomplete="off" style="min-width:180px;min-height:42px"></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="orderComments">Order &amp; Delivery Comments</label>
+    <textarea id="orderComments" name="orderComments" rows="2"></textarea>
+  </div>
+</section>
+
 
       <!-- Brand Selection -->
       <section class="section">
