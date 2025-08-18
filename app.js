@@ -110,26 +110,37 @@ function createProductCard() {
   const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
   const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
 
-  // LABEL AND FIELDS: selected sizes
-  const sizesFieldLabel = document.createElement('label');
-  sizesFieldLabel.textContent = 'Selected Sizes';
-  sizesFieldLabel.style.marginTop = '10px'; sizesFieldLabel.htmlFor = '';
-  detailsCol.appendChild(sizesFieldLabel);
-  const sizeInput = document.createElement('input');
-  sizeInput.placeholder = 'e.g. 2 XS, 2 S, 1 M';
-  sizeInput.style.width='100%';
-  detailsCol.appendChild(sizeInput);
+  const sizesQtyRow = document.createElement('div');
+sizesQtyRow.className = 'sizes-qty-row';
 
-  // LABEL AND FIELDS: quantity
-  const qtyLabel = document.createElement('label');
-  qtyLabel.textContent = 'Quantity'; qtyLabel.style.marginTop = '8px';
-  detailsCol.appendChild(qtyLabel);
-  const qtyInput = document.createElement('input');
-  qtyInput.type = 'number';
-  qtyInput.placeholder = 'Quantity';
-  qtyInput.min = '1';
-  qtyInput.style.width='100%';
-  detailsCol.appendChild(qtyInput);
+// Sizes block
+const sizesBlock = document.createElement('div');
+sizesBlock.className = 'sizes-block';
+const sizesFieldLabel = document.createElement('label');
+sizesFieldLabel.textContent = 'Selected Sizes';
+sizesFieldLabel.htmlFor = '';
+sizesBlock.appendChild(sizesFieldLabel);
+const sizeInput = document.createElement('input');
+sizeInput.placeholder = 'e.g. 2 XS, 2 S, 1 M';
+sizesBlock.appendChild(sizeInput);
+
+// Quantity block
+const qtyBlock = document.createElement('div');
+qtyBlock.className = 'qty-block';
+const qtyLabel = document.createElement('label');
+qtyLabel.textContent = 'Quantity';
+qtyBlock.appendChild(qtyLabel);
+const qtyInput = document.createElement('input');
+qtyInput.type = 'number';
+qtyInput.placeholder = 'Quantity';
+qtyInput.min = '1';
+qtyBlock.appendChild(qtyInput);
+
+// Add blocks to row container
+sizesQtyRow.appendChild(sizesBlock);
+sizesQtyRow.appendChild(qtyBlock);
+detailsCol.appendChild(sizesQtyRow);
+
 
   // LABEL AND FIELDS: unit price
   const unitPriceLabel = document.createElement('label');
