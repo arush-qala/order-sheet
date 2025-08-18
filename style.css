@@ -133,13 +133,19 @@ textarea {
   outline: none;
   transition: background 0.15s, color 0.15s;
   z-index: 2;
-  /* makes hitbox subtle but large */
   padding: 0;
 }
-
 .remove-card:hover,
 .remove-card:focus {
   background: #ececec;
   color: #111;
 }
 
+.card-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.thumbnail-wrap {
+  display: flex;
+  flex-direction: column
