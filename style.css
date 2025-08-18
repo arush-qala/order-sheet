@@ -104,6 +104,7 @@ textarea {
 }
 .btn-secondary:hover { background: #e6e6e2; }
 
+/* Product Cards */
 .product-card {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -114,73 +115,12 @@ textarea {
 
 .remove-card {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   border: none;
-  background: transparent;
-  font-size: 1.4rem;
-  cursor: pointer;
-}
-
-.card-flex {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.thumbnail-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-right: var(--spacing-4);
-}
-
-.thumbnail-wrap img {
-  width: 120px;
-  height: auto;
-  object-fit: cover;
-  border-radius: var(--radius);
-  border: 1px solid var(--color-border);
-}
-.caption {
-  margin-top: var(--spacing-1);
-  font-size: 0.75rem;
-  text-align: center;
-}
-
-.price-box {
-  padding: var(--spacing-2) var(--spacing-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  font-weight: 600;
-  margin-right: var(--spacing-2);
-  background: #fafaf7;
-}
-
-.summary-grid {
-  display: flex;
-  gap: var(--spacing-4);
-  align-items: baseline;
-}
-.summary-label { font-size: 0.9rem; }
-.summary-value { font-size: 1.1rem; font-weight: 600; margin-left: var(--spacing-1); }
-
-.autocomplete-list {
-  position: absolute;
-  background: #fff;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 8px rgba(70,70,70,0.06);
-  z-index: 9999;
-  max-height: 220px;
-  overflow-y: auto;
-  font-size: 1rem;
-  width: 100%;
-  margin-top: 2px;
-}
-
-.autocomplete-item {
-  padding: 8px 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  border-bottom: 1px solid #f3f3ef;
-  background: #
+  background: #fc5353;
+  color: #fff;
+  padding: 6px 18px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  font-weight: 500;
