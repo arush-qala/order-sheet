@@ -16,22 +16,26 @@ body {
   background: var(--color-background);
   color: var(--color-accent);
 }
+
 .container {
   max-width: 1080px;
   margin: 0 auto;
   padding: var(--spacing-4);
 }
+
 .header h1 {
   margin: 0;
   font-size: 2.2rem;
   font-weight: 600;
 }
+
 .header h2 {
   margin: 4px 0 24px;
   font-size: 1.1rem;
   font-weight: 400;
   letter-spacing: 0.02em;
 }
+
 .section {
   border-top: 1px solid var(--color-border);
   padding-top: var(--spacing-4);
@@ -42,32 +46,41 @@ body {
   font-size: 1.2rem;
   font-weight: 500;
 }
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--spacing-3);
 }
+
 .form-group {
   display: flex;
   flex-direction: column;
   margin-bottom: var(--spacing-3);
 }
+
 label {
   margin-bottom: var(--spacing-1);
   font-size: 0.86rem;
 }
+
 input, textarea, select {
   padding: var(--spacing-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   font: inherit;
 }
-textarea { resize: vertical; }
+
+textarea {
+  resize: vertical;
+}
+
 .info-note {
   font-size: 0.8rem;
   color: #555;
   margin-top: var(--spacing-2);
 }
+
 .btn-primary, .btn-secondary {
   cursor: pointer;
   padding: var(--spacing-2) var(--spacing-3);
@@ -76,19 +89,28 @@ textarea { resize: vertical; }
   font-size: 0.9rem;
   transition: background 0.2s;
 }
-.btn-primary { background: #000; color: #fff; }
+
+.btn-primary {
+  background: #000;
+  color: #fff;
+}
 .btn-primary:hover { background: #222; }
-.btn-secondary { background: #f0f0ee; color: #000; margin-top: var(--spacing-3); }
+
+.btn-secondary {
+  background: #f0f0ee;
+  color: #000;
+  margin-top: var(--spacing-3);
+}
 .btn-secondary:hover { background: #e6e6e2; }
+
 .product-card {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: var(--spacing-3);
   margin-bottom: var(--spacing-3);
   position: relative;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(120,120,120,0.03);
 }
+
 .remove-card {
   position: absolute;
   top: 8px;
@@ -112,43 +134,63 @@ textarea { resize: vertical; }
   padding: 0;
 }
 .remove-card:hover,
-.remove-card:focus { background: #ececec; color: #111; }
-/* --- NEW Product Card Sections --- */
-.product-section {
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f3f3f1;
+.remove-card:focus {
+  background: #ececec;
+  color: #111;
 }
-.product-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.style-section, .print-section { text-align: center; }
-.info-section { margin-top: 12px; }
-.product-img {
-  display: block;
-  margin: 10px auto 0 auto;
-  max-width: 130px;
-  max-height: 130px;
+
+/* Three-section product card layout */
+.card-threecol {
+  display: flex;
+  gap: 18px;
+}
+.productcol {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.stylecol, .printcol {
+  align-items: center;
+  max-width: 170px;
+}
+
+.stylecol img, .printcol img {
+  max-width: 120px;
+  max-height: 120px;
+  min-height: 52px;
+  min-width: 52px;
   width: auto;
   height: auto;
+  margin-top: 2px;
   object-fit: contain;
-  border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  border: 1px solid var(--color-border);
   background: #fafaf7;
+  display: block;
 }
+
+.infocol {
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
 .prod-name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: #131313;
+  font-weight: 700; font-size: 1.07rem; margin-bottom: 2px;
 }
 .available-sizes {
-  font-size: 0.94rem;
+  font-size: 0.99rem;
   font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   color: #3f3f37;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.9;
-  margin-bottom: 4px;
+  opacity: 0.82;
+  margin-bottom: 2px;
 }
 .price-box {
   padding: var(--spacing-2) var(--spacing-3);
@@ -159,15 +201,17 @@ textarea { resize: vertical; }
   background: #fafaf7;
 }
 .subtotal-disp {
-  font-size: 1.08rem;
-  font-weight: 800;
-  color: #131313;
-  margin-top: 10px;
-  margin-bottom: 0;
-  letter-spacing: 0.02em;
-  text-align: right;
+  font-size: 1.09rem;
+  font-weight: bold;
+  color: #211;
+  margin-top: 12px;
+  margin-bottom: 6px;
 }
-.summary-section { margin-top: var(--spacing-4); }
+
+/* Summary and other layout unchanged from previous: */
+.summary-section {
+  margin-top: var(--spacing-4);
+}
 .summary-grid {
   display: flex;
   gap: var(--spacing-4);
@@ -201,6 +245,7 @@ textarea { resize: vertical; }
   color: #171717;
   letter-spacing: 0.01em;
 }
+
 .autocomplete-list {
   position: absolute;
   background: #fff;
@@ -214,6 +259,7 @@ textarea { resize: vertical; }
   width: 100%;
   margin-top: 2px;
 }
+
 .autocomplete-item {
   padding: 8px 10px;
   cursor: pointer;
@@ -221,10 +267,22 @@ textarea { resize: vertical; }
   border-bottom: 1px solid #f3f3ef;
   background: #fff;
 }
+
 .autocomplete-item:last-child { border-bottom: none; }
+
 .autocomplete-item.active,
-.autocomplete-item:hover { background: #f8ecd4 !important; color: #000; }
+.autocomplete-item:hover {
+  background: #f8ecd4 !important;
+  color: #000;
+}
+
+@media (max-width: 1050px) {
+  .card-threecol { flex-direction: column; gap: 16px; }
+  .stylecol, .printcol, .infocol { max-width: unset; }
+}
+
 @media (max-width: 820px) {
+  .card-flex { flex-direction: column; }
   .summary-grid { flex-direction: column; gap: var(--spacing-3); }
   .summary-card { min-width: unset; width: 100%; }
 }
