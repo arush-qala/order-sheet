@@ -16,46 +16,29 @@ const productData = [
 const dom = id => document.getElementById(id);
 
 class OrderSheetState {
-  constructor() {
-    this.header = {};
-    this.items = [];
-    this.totalQty = 0;
-    this.totalAmount = 0;
-  }
-  addItem(item) {
-    this.items.push(item);
-    this.recalculateTotals();
-  }
-  removeItem(idx) {
-    this.items.splice(idx, 1);
-    this.recalculateTotals();
-  }
+  constructor() { this.header = {}; this.items = []; this.totalQty = 0; this.totalAmount = 0; }
+  addItem(item) { this.items.push(item); this.recalculateTotals(); }
+  removeItem(idx) { this.items.splice(idx, 1); this.recalculateTotals(); }
   recalculateTotals() {
     this.totalQty = this.items.reduce((sum, i) => sum + Number(i.quantity || 0), 0);
     this.totalAmount = this.items.reduce((sum, i) => sum + Number(i.subtotal || 0), 0);
     dom('totalQuantity').textContent = this.totalQty;
     dom('totalAmount').textContent = `$${this.totalAmount.toFixed(2)}`;
   }
-  reset() {
-    this.items = [];
-    this.recalculateTotals();
-  }
+  reset() { this.items = []; this.recalculateTotals(); }
 }
 const state = new OrderSheetState();
 
 function autoCompleteBox(input, brand, cb) {
-  let items = [];
-  let index = -1;
-  let list = null;
+  let items = [], index = -1, list = null;
   input.setAttribute('autocomplete', 'off');
   input.addEventListener('input', function () {
     closeList();
     const search = this.value.trim().toLowerCase();
     if (!search) return;
-    items = productData
-      .filter(p => p.brandName === brand &&
-        (p.productName.toLowerCase().includes(search) || p.skuId.toLowerCase().includes(search)))
-      .slice(0, 8);
+    items = productData.filter(p =>
+      p.brandName === brand && (p.productName.toLowerCase().includes(search) || p.skuId.toLowerCase().includes(search))
+    ).slice(0, 8);
     if (!items.length) return;
     list = document.createElement('div');
     list.className = 'autocomplete-list';
@@ -70,261 +53,99 @@ function autoCompleteBox(input, brand, cb) {
       const div = document.createElement('div');
       div.className = 'autocomplete-item';
       div.innerHTML = `<strong>${item.skuId}</strong> – ${item.productName}`;
-      div.addEventListener('mousedown', e => {
-        e.preventDefault();
-        select(idx);
-      });
+      div.addEventListener('mousedown', e => { e.preventDefault(); select(idx); });
       list.appendChild(div);
     });
-    document.body.appendChild(list);
-    index = -1;
+    document.body.appendChild(list); index = -1;
   });
   input.addEventListener('keydown', function (e) {
     if (!list) return;
     const len = list.childElementCount;
-    if (e.key === 'ArrowDown') {
-      index = (index + 1 + len) % len;
-      highlight();
-      e.preventDefault();
-    }
-    if (e.key === 'ArrowUp') {
-      index = (index - 1 + len) % len;
-      highlight();
-      e.preventDefault();
-    }
-    if (e.key === 'Enter') {
-      if (index > -1) {
-        select(index);
-        e.preventDefault();
-      }
-    }
-    if (e.key === 'Escape') {
-      closeList();
-    }
+    if (e.key === 'ArrowDown') { index = (index + 1 + len) % len; highlight(); e.preventDefault(); }
+    if (e.key === 'ArrowUp')   { index = (index - 1 + len) % len; highlight(); e.preventDefault(); }
+    if (e.key === 'Enter')     { if (index > -1) { select(index); e.preventDefault(); } }
+    if (e.key === 'Escape')    { closeList(); }
   });
-  input.addEventListener('blur', function() {
-    setTimeout(closeList, 100);
-  });
+  input.addEventListener('blur', function(){ setTimeout(closeList, 100); });
   function highlight() {
-    Array.from(list.children).forEach((item, idx) => {
-      item.classList.toggle('active', idx === index);
-    });
+    Array.from(list.children).forEach((item, idx) => item.classList.toggle('active', idx === index));
   }
-  function select(idx) {
-    if (typeof cb === 'function')
-      cb(items[idx]);
-    closeList();
-  }
-  function closeList() {
-    if (list) { document.body.removeChild(list); list = null; }
-    items = []; index = -1;
-  }
+  function select(idx) { if (typeof cb === 'function') cb(items[idx]); closeList(); }
+  function closeList() { if (list) { document.body.removeChild(list); list = null; } items = []; index = -1; }
 }
 
 function createProductCard() {
-  const brand = dom('brandSelect').value;
-  if (!brand) return alert('Select a brand first.');
-
-  const card = document.createElement('div');
-  card.className = 'product-card';
-
-  // Remove Button: subtle "×" with large area
+  const brand = dom('brandSelect').value; if (!brand) return alert('Select a brand first.');
+  const card = document.createElement('div'); card.className = 'product-card';
   const removeBtn = document.createElement('button');
-  removeBtn.innerHTML = '&times;';
-  removeBtn.className = 'remove-card';
-  removeBtn.type = 'button';
-  removeBtn.setAttribute('aria-label','Remove product');
-  card.appendChild(removeBtn);
+  removeBtn.innerHTML = '&times;'; removeBtn.className='remove-card'; removeBtn.type='button';
+  removeBtn.setAttribute('aria-label','Remove product'); card.appendChild(removeBtn);
 
-  // NEW: Three-column card layout
-  const row = document.createElement('div');
-  row.className = 'card-threecol';
-  card.appendChild(row);
+  // Main flex row
+  const row = document.createElement('div'); row.className = 'card-threecol'; card.appendChild(row);
 
-  // ----- SECTION 1: STYLE SEARCH & IMAGE -----
-  const styleCol = document.createElement('div');
-  styleCol.className = 'productcol stylecol';
-  row.appendChild(styleCol);
+  // 1. Style search+image
+  const styleCol = document.createElement('div'); styleCol.className = 'productcol stylecol'; row.appendChild(styleCol);
+  const styleField = document.createElement('input'); styleField.type='text'; styleField.placeholder='Search style by SKU or name'; styleCol.appendChild(styleField);
+  const styleImg = document.createElement('img'); styleImg.alt = 'Style Image'; styleImg.style.display = 'none'; styleCol.appendChild(styleImg);
 
-  const styleField = document.createElement('input');
-  styleField.type = 'text';
-  styleField.placeholder = 'Search style by SKU or name';
-  styleField.style.width = '100%';
-  styleField.style.marginBottom = '8px';
-  styleCol.appendChild(styleField);
+  // 2. Print search+image
+  const printCol = document.createElement('div'); printCol.className = 'productcol printcol'; row.appendChild(printCol);
+  const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print – SKU or name'; printCol.appendChild(printField);
+  const printImg = document.createElement('img'); printImg.alt = 'Print Image'; printImg.style.display = 'none'; printCol.appendChild(printImg);
 
-  const styleImg = document.createElement('img');
-  styleImg.alt = 'Style Image';
-  styleImg.style.display = 'none';
-  styleCol.appendChild(styleImg);
+  // 3. Info/price/fields
+  const detailsCol = document.createElement('div'); detailsCol.className = 'productcol infocol'; row.appendChild(detailsCol);
+  const prodName = document.createElement('div'); prodName.className='prod-name'; detailsCol.appendChild(prodName);
+  const sizesSpan = document.createElement('div'); sizesSpan.className = 'available-sizes'; sizesSpan.style.display = 'none'; detailsCol.appendChild(sizesSpan);
+  const link = document.createElement('a'); link.textContent='View Product Details'; link.target='_blank'; link.style.display='inline-block'; link.style.marginBottom='8px'; detailsCol.appendChild(link);
+  const priceRow = document.createElement('div'); priceRow.style.display='flex'; priceRow.style.alignItems='center'; detailsCol.appendChild(priceRow);
+  const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
+  const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
+  const sizeInput = document.createElement('input'); sizeInput.placeholder='Selected sizes (e.g. 2 XS, 2 S, 1 M)'; sizeInput.style.width='100%'; sizeInput.style.marginTop='10px'; detailsCol.appendChild(sizeInput);
+  const qtyInput = document.createElement('input'); qtyInput.type='number'; qtyInput.placeholder='Quantity'; qtyInput.style.marginTop='8px'; qtyInput.min='1'; qtyInput.style.width='100%'; detailsCol.appendChild(qtyInput);
+  const unitPriceInput = document.createElement('input'); unitPriceInput.type='number'; unitPriceInput.placeholder='Unit Price $'; unitPriceInput.style.marginTop='8px'; unitPriceInput.min='0'; unitPriceInput.style.width='100%'; detailsCol.appendChild(unitPriceInput);
+  const noteArea = document.createElement('textarea'); noteArea.rows=2; noteArea.placeholder='Customization notes'; noteArea.style.marginTop='8px'; noteArea.style.width = '100%'; detailsCol.appendChild(noteArea);
+  const subtotalDisp = document.createElement('div'); subtotalDisp.className='subtotal-disp'; detailsCol.appendChild(subtotalDisp);
 
-  // ----- SECTION 2: PRINT SEARCH & IMAGE -----
-  const printCol = document.createElement('div');
-  printCol.className = 'productcol printcol';
-  row.appendChild(printCol);
-
-  const printField = document.createElement('input');
-  printField.type = 'text';
-  printField.placeholder = 'Optional custom print – SKU or name';
-  printField.style.width = '100%';
-  printField.style.marginBottom = '8px';
-  printCol.appendChild(printField);
-
-  const printImg = document.createElement('img');
-  printImg.alt = 'Print Image';
-  printImg.style.display = 'none';
-  printCol.appendChild(printImg);
-
-  // ----- SECTION 3: INFO, PRICING, FIELDS -----
-  const detailsCol = document.createElement('div');
-  detailsCol.className = 'productcol infocol';
-  row.appendChild(detailsCol);
-
-  // Info header
-  const prodName = document.createElement('div');
-  prodName.className = 'prod-name';
-  detailsCol.appendChild(prodName);
-
-  const sizesSpan = document.createElement('div');
-  sizesSpan.className = 'available-sizes';
-  sizesSpan.style.display = 'none';
-  detailsCol.appendChild(sizesSpan);
-
-  const link = document.createElement('a');
-  link.textContent = 'View Product Details';
-  link.target = '_blank';
-  link.style.display = 'inline-block';
-  link.style.marginBottom = '8px';
-  detailsCol.appendChild(link);
-
-  const priceRow = document.createElement('div');
-  priceRow.style.display = 'flex';
-  priceRow.style.alignItems = 'center';
-  detailsCol.appendChild(priceRow);
-
-  const landingBox = document.createElement('div');
-  landingBox.className = 'price-box';
-  priceRow.appendChild(landingBox);
-
-  const retailBox = document.createElement('div');
-  retailBox.className = 'price-box';
-  priceRow.appendChild(retailBox);
-
-  const sizeInput = document.createElement('input');
-  sizeInput.placeholder = 'Selected sizes (e.g. 2 XS, 2 S, 1 M)';
-  sizeInput.style.width = '100%';
-  sizeInput.style.marginTop = '10px';
-  detailsCol.appendChild(sizeInput);
-
-  const qtyInput = document.createElement('input');
-  qtyInput.type = 'number';
-  qtyInput.placeholder = 'Quantity';
-  qtyInput.style.marginTop = '8px';
-  qtyInput.min = '1';
-  qtyInput.style.width = '100%';
-  detailsCol.appendChild(qtyInput);
-
-  const unitPriceInput = document.createElement('input');
-  unitPriceInput.type = 'number';
-  unitPriceInput.placeholder = 'Unit Price $';
-  unitPriceInput.style.marginTop = '8px';
-  unitPriceInput.min = '0';
-  unitPriceInput.style.width = '100%';
-  detailsCol.appendChild(unitPriceInput);
-
-  const noteArea = document.createElement('textarea');
-  noteArea.rows = 2;
-  noteArea.placeholder = 'Customization notes';
-  noteArea.style.marginTop = '8px';
-  noteArea.style.width = '100%';
-  detailsCol.appendChild(noteArea);
-
-  const subtotalDisp = document.createElement('div');
-  subtotalDisp.className = 'subtotal-disp';
-  detailsCol.appendChild(subtotalDisp);
-
-  // Data binding object
-  const lineItem = {
-    styleSku: '',
-    printSku: '',
-    productName: '',
-    sizes: '',
-    quantity: 0,
-    unitPrice: 0,
-    subtotal: 0,
-    notes: '',
-    styleImgUrl: '',
-    printImgUrl: ''
-  };
-
+  // Bindings
+  const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
   function updateSubtotal() {
-    const qty = Number(qtyInput.value || 0);
-    const unit = Number(unitPriceInput.value || 0);
-    const subtotal = qty * unit;
-    lineItem.quantity = qty;
-    lineItem.unitPrice = unit;
-    lineItem.subtotal = subtotal;
+    const qty = Number(qtyInput.value || 0), unit = Number(unitPriceInput.value || 0), subtotal = qty * unit;
+    lineItem.quantity = qty; lineItem.unitPrice = unit; lineItem.subtotal = subtotal;
     subtotalDisp.textContent = (qty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
     state.recalculateTotals();
   }
-  qtyInput.addEventListener('input', updateSubtotal);
-  unitPriceInput.addEventListener('input', updateSubtotal);
-
-  sizeInput.addEventListener('input', () => lineItem.sizes = sizeInput.value);
-  noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
+  qtyInput.addEventListener('input', updateSubtotal); unitPriceInput.addEventListener('input', updateSubtotal);
+  sizeInput.addEventListener('input', () => lineItem.sizes = sizeInput.value); noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
 
   autoCompleteBox(styleField, brand, prod => {
     styleField.value = `${prod.skuId} – ${prod.productName}`;
-    styleImg.src = prod.imageUrl;
-    styleImg.style.display = '';
-    prodName.textContent = prod.productName;
-    link.style.display = 'inline-block';
-    link.href = prod.productLink;
-    landingBox.textContent = `Landing $${prod.landingPrice}`;
-    retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
-    unitPriceInput.value = prod.landingPrice;
-    lineItem.styleSku = prod.skuId;
-    lineItem.productName = prod.productName;
-    lineItem.unitPrice = prod.landingPrice;
-    lineItem.styleImgUrl = prod.imageUrl;
-    sizesSpan.textContent = prod.availableSizes.length 
-      ? 'Available Sizes: ' + prod.availableSizes.join(' · ')
-      : '';
+    styleImg.src = prod.imageUrl; styleImg.style.display = '';
+    prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
+    landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
+    unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
+    lineItem.unitPrice = prod.landingPrice; lineItem.styleImgUrl = prod.imageUrl;
+    sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join(' · ') : '';
     sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
     updateSubtotal();
   });
+  autoCompleteBox(printField, brand, prod => { printField.value = `${prod.skuId} – ${prod.productName}`; printImg.src = prod.imageUrl; printImg.style.display = ''; lineItem.printSku = prod.skuId; lineItem.printImgUrl = prod.imageUrl; });
 
-  autoCompleteBox(printField, brand, prod => {
-    printField.value = `${prod.skuId} – ${prod.productName}`;
-    printImg.src = prod.imageUrl;
-    printImg.style.display = '';
-    lineItem.printSku = prod.skuId;
-    lineItem.printImgUrl = prod.imageUrl;
-  });
-
-  removeBtn.addEventListener('click', () => {
-    card.remove();
-    state.removeItem(state.items.indexOf(lineItem));
-  });
-
-  dom('productCards').appendChild(card);
-  state.addItem(lineItem);
+  removeBtn.addEventListener('click', () => { card.remove(); state.removeItem(state.items.indexOf(lineItem)); });
+  dom('productCards').appendChild(card); state.addItem(lineItem);
 }
 
-// PDF, image helpers and addProductBtn/listeners as before...
-// (no change—use your previous code for PDF generation, toDataUrl, etc.)
-
+// PDF generation, toDataUrl, addProductBtn/listeners as before—the same as previous
 async function toDataUrl(url) {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
     img.crossOrigin = "Anonymous";
     img.onload = function () {
       const canvas = document.createElement('canvas');
-      canvas.width = 40;
-      canvas.height = 40;
+      canvas.width = 40; canvas.height = 40;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
       const ratio = Math.min(canvas.width/this.width, canvas.height/this.height, 1.0);
       const w = this.width * ratio, h = this.height * ratio;
       ctx.drawImage(this, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
@@ -349,43 +170,24 @@ dom('orderForm').addEventListener('submit', async e => {
     totalAmount: state.totalAmount
   };
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let y = 10;
-  doc.setFontSize(14);
-  doc.text('Order Sheet – Brand Assembly LA', 10, y);
-  y += 8;
+  const doc = new jsPDF(); let y = 10;
+  doc.setFontSize(14); doc.text('Order Sheet – Brand Assembly LA', 10, y); y += 8;
   doc.setFontSize(10);
-  Object.entries(state.header).forEach(([k, v]) => {
-    doc.text(`${k}: ${v}`, 10, y); y += 6;
-  });
-  y += 3;
-
+  Object.entries(state.header).forEach(([k, v]) => { doc.text(`${k}: ${v}`, 10, y); y += 6; }); y += 3;
   for (let idx = 0; idx < state.items.length; ++idx) {
     let it = state.items[idx];
     let styleData = null, printData = null;
-    try {
-      styleData = it.styleImgUrl ? await toDataUrl(it.styleImgUrl) : null;
-    }catch{}
-    try {
-      printData = it.printImgUrl ? await toDataUrl(it.printImgUrl) : null;
-    }catch{}
+    try { styleData = it.styleImgUrl ? await toDataUrl(it.styleImgUrl) : null; }catch{}
+    try { printData = it.printImgUrl ? await toDataUrl(it.printImgUrl) : null; }catch{}
     doc.setFont(undefined, "bold");
     doc.text(`Item ${idx + 1} – ${it.productName}`, 10, y); y += 6;
     doc.setFont(undefined, "normal");
     doc.text(`Style SKU: ${it.styleSku || ""}  Print SKU: ${it.printSku || ""}`, 14, y); y += 6;
     doc.text(`Sizes: ${it.sizes || ""}  Qty: ${it.quantity || ""}  Unit: $${it.unitPrice||""}  Subtotal: $${it.subtotal || ""}`, 14, y); y += 6;
     doc.text(`Notes: ${it.notes || ""}`, 14, y); y += 6;
-    if (styleData) {
-      doc.text("Style", 15, y);
-      doc.addImage(styleData, "JPEG", 10, y+2, 14, 14);
-    }
-    if (printData) {
-      doc.text("Print", 40, y);
-      doc.addImage(printData, "JPEG", 36, y+2, 14, 14);
-    }
-    if(styleData || printData) y += 18;
-    else y += 4;
-    if (y > 265) { doc.addPage(); y = 10; }
+    if(styleData) { doc.text("Style", 15, y); doc.addImage(styleData, "JPEG", 10, y+2, 14, 14); }
+    if(printData) { doc.text("Print", 40, y); doc.addImage(printData, "JPEG", 36, y+2, 14, 14); }
+    if(styleData||printData) y += 18; else y += 4; if (y > 265) { doc.addPage(); y = 10; }
   }
   doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
   console.log({ header: state.header, items: state.items });
@@ -394,9 +196,6 @@ dom('orderForm').addEventListener('submit', async e => {
 dom('brandSelect').addEventListener('change', function () {
   dom('productCards').innerHTML = '';
   state.reset();
-  if (this.value) {
-    createProductCard();
-  }
+  if (this.value) { createProductCard(); }
 });
-
 dom('addProductBtn').addEventListener('click', createProductCard);
