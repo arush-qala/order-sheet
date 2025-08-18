@@ -1,6 +1,3 @@
-/* ---------------------------------------------------
-   Catalogue Data
---------------------------------------------------- */
 const productData = [
   { skuId:"DO01", brandName:"Doodlage", productName:"Noor Scarf Tube Dress", imageUrl:"https://doodlage.in/cdn/shop/files/DL25-DR-015-01_2b628836-d07a-4e96-85c1-b5c9aeb6bece.jpg?v=1750658908&width=1000", productLink:"https://doodlage.in/products/dl25-dr-015-mudpie-maker-dress", landingPrice:100, recommendedRetailPrice:250, availableSizes:["XXS","M","XL","L"] },
   { skuId:"DO02", brandName:"Doodlage", productName:"Noor Draped Toga Maxi Dress", imageUrl:"https://doodlage.in/cdn/shop/files/FullSizeRender_b181d93f-ae20-43b4-a9ae-b178da08d1cc.jpg?v=1750658882&width=800", productLink:"https://doodlage.in/products/dl25-dr-014-kiteberry-dress", landingPrice:200, recommendedRetailPrice:500, availableSizes:["XXS","M","XL"] },
@@ -16,15 +13,8 @@ const productData = [
   { skuId:"RI03", brandName:"The Raw India", productName:"Jacket 2", imageUrl:"https://rasti.in/cdn/shop/files/blue-meadow-vest-01.jpg?v=1739684714&width=1100", productLink:"https://rasti.in/products/knit-citrus-skirt", landingPrice:167, recommendedRetailPrice:418, availableSizes:["XXS","M","XL","XS"] }
 ];
 
-/* ---------------------------------------------------
-   DOM Helpers
---------------------------------------------------- */
 const dom = id => document.getElementById(id);
-const create = tag => document.createElement(tag);
 
-/* ---------------------------------------------------
-   State Container
---------------------------------------------------- */
 class OrderSheetState {
   constructor() {
     this.header = {};
@@ -53,125 +43,169 @@ class OrderSheetState {
 }
 const state = new OrderSheetState();
 
-/* ---------------------------------------------------
-   Autocomplete
---------------------------------------------------- */
-function buildAutocomplete(inputEl, brandFilter, onSelect) {
-  let listEl;
-  inputEl.addEventListener('input', () => {
-    const query = inputEl.value.trim().toLowerCase();
-    if (listEl) listEl.remove();
-    if (!query) return;
+function autoCompleteBox(input, brand, cb) {
+  let items = [];
+  let index = -1;
+  let list = null;
 
-    listEl = create('div');
-    listEl.className = 'auto-list';
-    listEl.style.position = 'absolute';
-    listEl.style.background = '#fff';
-    listEl.style.border = '1px solid #e0e0dc';
-    listEl.style.zIndex = '10';
-    document.body.appendChild(listEl);
+  input.setAttribute('autocomplete', 'off');
+  input.addEventListener('input', function () {
+    closeList();
+    const search = this.value.trim().toLowerCase();
+    if (!search) return;
 
-    const rect = inputEl.getBoundingClientRect();
-    listEl.style.left = `${rect.left + window.scrollX}px`;
-    listEl.style.top = `${rect.bottom + window.scrollY}px`;
-    listEl.style.width = `${rect.width}px`;
+    items = productData
+      .filter(p => p.brandName === brand &&
+        (p.productName.toLowerCase().includes(search) || p.skuId.toLowerCase().includes(search)))
+      .slice(0, 8); // show max 8
 
-    const matches = productData.filter(p =>
-      p.brandName === brandFilter &&
-      (p.productName.toLowerCase().includes(query) || p.skuId.toLowerCase().includes(query))
-    );
+    if (!items.length) return;
 
-    matches.forEach(m => {
-      const item = create('div');
-      item.textContent = `${m.skuId} – ${m.productName}`;
-      item.style.padding = '6px 10px';
-      item.style.cursor = 'pointer';
-      item.addEventListener('mousedown', e => e.preventDefault());
-      item.addEventListener('click', () => {
-        onSelect(m);
-        listEl.remove();
-        listEl = null;
+    list = document.createElement('div');
+    list.className = 'autocomplete-list';
+    list.style.position = 'absolute';
+
+    // Position the autocomplete list
+    const rect = input.getBoundingClientRect();
+    const scrollTop  = (window.pageYOffset || document.documentElement.scrollTop);
+    const scrollLeft = (window.pageXOffset || document.documentElement.scrollLeft);
+    list.style.left  = `${rect.left + scrollLeft}px`;
+    list.style.top   = `${rect.bottom + scrollTop}px`;
+    list.style.width = `${rect.width}px`;
+
+    items.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      div.innerHTML = `<strong>${item.skuId}</strong> – ${item.productName}`;
+      div.addEventListener('mousedown', e => {
+        e.preventDefault();
+        select(idx);
       });
-      listEl.appendChild(item);
+      list.appendChild(div);
     });
+    document.body.appendChild(list);
+
+    index = -1;
   });
 
-  document.addEventListener('click', e => {
-    if (listEl && !listEl.contains(e.target) && e.target !== inputEl) {
-      listEl.remove();
-      listEl = null;
+  input.addEventListener('keydown', function (e) {
+    if (!list) return;
+    const len = list.childElementCount;
+    if (e.key === 'ArrowDown') {
+      index = (index + 1 + len) % len;
+      highlight();
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowUp') {
+      index = (index - 1 + len) % len;
+      highlight();
+      e.preventDefault();
+    }
+    if (e.key === 'Enter') {
+      if (index > -1) {
+        select(index);
+        e.preventDefault();
+      }
+    }
+    if (e.key === 'Escape') {
+      closeList();
     }
   });
+
+  input.addEventListener('blur', function() {
+    setTimeout(closeList, 100);
+  });
+
+  function highlight() {
+    Array.from(list.children).forEach((item, idx) => {
+      item.classList.toggle('active', idx === index);
+    });
+  }
+  function select(idx) {
+    if (typeof cb === 'function')
+      cb(items[idx]);
+    closeList();
+  }
+  function closeList() {
+    if (list) { document.body.removeChild(list); list = null; }
+    items = []; index = -1;
+  }
 }
 
-/* ---------------------------------------------------
-   Product Card Factory
---------------------------------------------------- */
 function createProductCard() {
   const brand = dom('brandSelect').value;
-  if (!brand) {
-    alert('Select a brand first.');
-    return;
-  }
+  if (!brand) return alert('Select a brand first.');
 
-  const card = create('div');
+  const card = document.createElement('div');
   card.className = 'product-card';
 
-  const removeBtn = create('button');
+  const removeBtn = document.createElement('button');
   removeBtn.textContent = '×';
   removeBtn.className = 'remove-card';
   card.appendChild(removeBtn);
 
-  const flex = create('div');
+  const flex = document.createElement('div');
   flex.className = 'card-flex';
   card.appendChild(flex);
 
-  const thumbWrap = create('div');
+  const thumbWrap = document.createElement('div');
   thumbWrap.className = 'thumbnail-wrap';
   flex.appendChild(thumbWrap);
 
-  const styleImg = create('img');
+  const styleImg = document.createElement('img');
   styleImg.alt = 'Style Image';
+  styleImg.style.display = 'none';
   thumbWrap.appendChild(styleImg);
 
-  const styleCaption = create('span');
+  const styleCaption = document.createElement('span');
   styleCaption.textContent = 'Style';
   styleCaption.className = 'caption';
   thumbWrap.appendChild(styleCaption);
 
-  const printImg = create('img');
+  const printImg = document.createElement('img');
   printImg.alt = 'Print Image';
   printImg.style.display = 'none';
   thumbWrap.appendChild(printImg);
 
-  const printCaption = create('span');
+  const printCaption = document.createElement('span');
   printCaption.textContent = 'Print';
   printCaption.className = 'caption';
   printCaption.style.display = 'none';
   thumbWrap.appendChild(printCaption);
 
-  const details = create('div');
+  const details = document.createElement('div');
   details.style.flex = '1';
   flex.appendChild(details);
 
   // Style Autocomplete
-  const styleField = create('input');
+  const styleWrap = document.createElement('div');
+  styleWrap.style.position = 'relative';
+  details.appendChild(styleWrap);
+
+  const styleField = document.createElement('input');
+  styleField.type = 'text';
   styleField.placeholder = 'Search style by SKU or name';
-  details.appendChild(styleField);
+  styleWrap.appendChild(styleField);
 
   // Print Autocomplete
-  const printField = create('input');
-  printField.placeholder = 'Optional print – SKU or name';
-  details.appendChild(printField);
+  const printWrap = document.createElement('div');
+  printWrap.style.position = 'relative';
+  printWrap.style.marginTop = '8px';
+  details.appendChild(printWrap);
 
-  // Product name display
-  const prodName = create('div');
+  const printField = document.createElement('input');
+  printField.type = 'text';
+  printField.placeholder = 'Optional print – SKU or name';
+  printWrap.appendChild(printField);
+
+  // Product info
+  const prodName = document.createElement('div');
   prodName.style.fontWeight = '600';
   prodName.style.marginTop = '8px';
   details.appendChild(prodName);
 
   // Link
-  const link = create('a');
+  const link = document.createElement('a');
   link.textContent = 'View Product Details';
   link.target = '_blank';
   link.style.display = 'block';
@@ -179,51 +213,53 @@ function createProductCard() {
   details.appendChild(link);
 
   // Price boxes
-  const priceWrap = create('div');
+  const priceWrap = document.createElement('div');
   priceWrap.style.display = 'flex';
   priceWrap.style.alignItems = 'center';
   details.appendChild(priceWrap);
 
-  const landingBox = create('div');
+  const landingBox = document.createElement('div');
   landingBox.className = 'price-box';
   priceWrap.appendChild(landingBox);
 
-  const retailBox = create('div');
+  const retailBox = document.createElement('div');
   retailBox.className = 'price-box';
   priceWrap.appendChild(retailBox);
 
   // Size, qty, unit price, subtotal
-  const sizeInput = create('input');
+  const sizeInput = document.createElement('input');
   sizeInput.placeholder = 'Selected sizes (e.g. 2 XS, 2 S, 1 M)';
   sizeInput.style.width = '100%';
   sizeInput.style.marginTop = '8px';
   details.appendChild(sizeInput);
 
-  const qtyInput = create('input');
+  const qtyInput = document.createElement('input');
   qtyInput.type = 'number';
   qtyInput.placeholder = 'Quantity';
   qtyInput.style.marginTop = '8px';
+  qtyInput.min = '1';
   details.appendChild(qtyInput);
 
-  const unitPriceInput = create('input');
+  const unitPriceInput = document.createElement('input');
   unitPriceInput.type = 'number';
   unitPriceInput.placeholder = 'Unit Price $';
   unitPriceInput.style.marginTop = '8px';
+  unitPriceInput.min = '0';
   details.appendChild(unitPriceInput);
 
-  const subtotalDisp = create('div');
+  const subtotalDisp = document.createElement('div');
   subtotalDisp.style.fontWeight = '600';
   subtotalDisp.style.marginTop = '8px';
   details.appendChild(subtotalDisp);
 
-  const noteArea = create('textarea');
+  const noteArea = document.createElement('textarea');
   noteArea.rows = 2;
   noteArea.placeholder = 'Customization notes';
   noteArea.style.marginTop = '8px';
   noteArea.style.width = '100%';
   details.appendChild(noteArea);
 
-  /* ---------- Data Bindings ---------- */
+  // Data binding object
   const lineItem = {
     styleSku: '',
     printSku: '',
@@ -242,19 +278,21 @@ function createProductCard() {
     lineItem.quantity = qty;
     lineItem.unitPrice = unit;
     lineItem.subtotal = subtotal;
-    subtotalDisp.textContent = `Subtotal $${subtotal.toFixed(2)}`;
+    subtotalDisp.textContent = (qty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
     state.recalculateTotals();
   }
-
   qtyInput.addEventListener('input', updateSubtotal);
   unitPriceInput.addEventListener('input', updateSubtotal);
 
   sizeInput.addEventListener('input', () => lineItem.sizes = sizeInput.value);
   noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
 
-  buildAutocomplete(styleField, brand, prod => {
+  autoCompleteBox(styleField, brand, prod => {
+    styleField.value = `${prod.skuId} – ${prod.productName}`;
     styleImg.src = prod.imageUrl;
+    styleImg.style.display = '';
     prodName.textContent = prod.productName;
+    link.style.display = 'inline-block';
     link.href = prod.productLink;
     landingBox.textContent = `Landing $${prod.landingPrice}`;
     retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
@@ -262,17 +300,18 @@ function createProductCard() {
     lineItem.styleSku = prod.skuId;
     lineItem.productName = prod.productName;
     lineItem.unitPrice = prod.landingPrice;
+    styleImg.style.display = '';
     updateSubtotal();
   });
 
-  buildAutocomplete(printField, brand, prod => {
+  autoCompleteBox(printField, brand, prod => {
+    printField.value = `${prod.skuId} – ${prod.productName}`;
     printImg.src = prod.imageUrl;
     printImg.style.display = '';
     printCaption.style.display = '';
     lineItem.printSku = prod.skuId;
   });
 
-  /* ---------- Remove ---------- */
   removeBtn.addEventListener('click', () => {
     card.remove();
     state.removeItem(state.items.indexOf(lineItem));
@@ -282,19 +321,15 @@ function createProductCard() {
   state.addItem(lineItem);
 }
 
-/* ---------------------------------------------------
-   Event Wiring
---------------------------------------------------- */
 dom('addProductBtn').addEventListener('click', createProductCard);
 
-dom('brandSelect').addEventListener('change', () => {
+dom('brandSelect').addEventListener('change', function () {
   dom('productCards').innerHTML = '';
   state.reset();
 });
 
 dom('orderForm').addEventListener('submit', e => {
   e.preventDefault();
-  // Collect header info
   state.header = {
     orderNumber: dom('orderNumber').value,
     buyerName: dom('buyerName').value,
@@ -306,8 +341,6 @@ dom('orderForm').addEventListener('submit', e => {
     totalQty: state.totalQty,
     totalAmount: state.totalAmount
   };
-
-  // --- PDF Generation ---
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   let y = 10;
@@ -316,16 +349,13 @@ dom('orderForm').addEventListener('submit', e => {
   y += 8;
   doc.setFontSize(10);
   Object.entries(state.header).forEach(([k, v]) => {
-    doc.text(`${k}: ${v}`, 10, y);
-    y += 6;
+    doc.text(`${k}: ${v}`, 10, y); y += 6;
   });
   y += 4;
   state.items.forEach((it, idx) => {
-    doc.text(`Item ${idx + 1} – ${it.productName}`, 10, y);
-    y += 6;
-    doc.text(`Style SKU: ${it.styleSku}  Print SKU: ${it.printSku}`, 14, y);
-    y += 6;
-    doc.text(`Sizes: ${it.sizes}  Qty: ${it.quantity}  Unit: $${it.unitPrice}  Subtotal: $${it.subtotal}`, 14, y);
+    doc.text(`Item ${idx + 1} – ${it.productName}`, 10, y); y += 6;
+    doc.text(`Style SKU: ${it.styleSku || ""}  Print SKU: ${it.printSku || ""}`, 14, y); y += 6;
+    doc.text(`Sizes: ${it.sizes || ""}  Qty: ${it.quantity || ""}  Unit: $${it.unitPrice||""}  Subtotal: $${it.subtotal || ""}`, 14, y);
     y += 8;
   });
   doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
