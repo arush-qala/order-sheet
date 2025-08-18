@@ -204,6 +204,12 @@ function createProductCard() {
   link.style.margin = '4px 0 8px';
   details.appendChild(link);
 
+  // Available Sizes
+  const sizesSpan = document.createElement('div');
+  sizesSpan.className = 'available-sizes';
+  sizesSpan.style.display = 'none';
+  details.appendChild(sizesSpan);
+
   // Price boxes
   const priceWrap = document.createElement('div');
   priceWrap.style.display = 'flex';
@@ -296,6 +302,11 @@ function createProductCard() {
     lineItem.unitPrice = prod.landingPrice;
     lineItem.styleImgUrl = prod.imageUrl;
     styleImg.style.display = '';
+    // NEW: show sizes field
+    sizesSpan.textContent = prod.availableSizes.length 
+      ? 'Available Sizes: ' + prod.availableSizes.join(' · ')
+      : '';
+    sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
     updateSubtotal();
   });
 
@@ -365,7 +376,6 @@ dom('orderForm').addEventListener('submit', async e => {
   });
   y += 3;
 
-  // PRELOAD all needed images
   for (let idx = 0; idx < state.items.length; ++idx) {
     let it = state.items[idx];
     let styleData = null, printData = null;
@@ -381,7 +391,6 @@ dom('orderForm').addEventListener('submit', async e => {
     doc.text(`Style SKU: ${it.styleSku || ""}  Print SKU: ${it.printSku || ""}`, 14, y); y += 6;
     doc.text(`Sizes: ${it.sizes || ""}  Qty: ${it.quantity || ""}  Unit: $${it.unitPrice||""}  Subtotal: $${it.subtotal || ""}`, 14, y); y += 6;
     doc.text(`Notes: ${it.notes || ""}`, 14, y); y += 6;
-    // Images side by side (if style/print)
     if (styleData) {
       doc.text("Style", 15, y);
       doc.addImage(styleData, "JPEG", 10, y+2, 14, 14);
