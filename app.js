@@ -6,7 +6,7 @@ async function loadProductsFromSheet() {
   const csvText = await response.text();
 
   // Parse CSV (basic version)
-  const rows = csvText.trim().split("\n").map(r => r.split(","));
+const rows = csvText.trim().split(/\r?\n/).map(r => r.split(","));
   const headers = rows[0];
   productData = rows.slice(1).map(row => {
     let obj = {};
