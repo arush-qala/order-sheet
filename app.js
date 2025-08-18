@@ -32,7 +32,6 @@ class OrderSheetState {
   }
   reset() { this.items = []; this.recalculateTotals(); }
 }
-
 const state = new OrderSheetState();
 
 function autoCompleteBox(input, brand, cb) {
@@ -94,13 +93,11 @@ function createProductCard() {
   const styleField = document.createElement('input'); styleField.type='text'; styleField.placeholder='Search style by SKU or name'; styleField.style.width='100%'; styleField.style.marginBottom='8px'; styleCol.appendChild(styleField);
   const styleImg = document.createElement('img'); styleImg.alt = 'Style Image'; styleImg.style.display='none'; styleCol.appendChild(styleImg);
   const styleImgLabel = document.createElement('div'); styleImgLabel.className = 'img-label'; styleImgLabel.textContent = 'Style'; styleCol.appendChild(styleImgLabel);
-
   // 2. Print
   const printCol = document.createElement('div'); printCol.className = 'productcol printcol'; row.appendChild(printCol);
   const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print – SKU or name'; printField.style.width='100%'; printField.style.marginBottom='8px'; printCol.appendChild(printField);
   const printImg = document.createElement('img'); printImg.alt = 'Print Image'; printImg.style.display='none'; printCol.appendChild(printImg);
   const printImgLabel = document.createElement('div'); printImgLabel.className = 'img-label'; printImgLabel.textContent = 'Custom Print'; printCol.appendChild(printImgLabel);
-
   // 3. Details
   const detailsCol = document.createElement('div'); detailsCol.className = 'productcol infocol'; row.appendChild(detailsCol);
   const prodName = document.createElement('div'); prodName.className='prod-name'; detailsCol.appendChild(prodName);
@@ -110,59 +107,51 @@ function createProductCard() {
   const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
   const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
 
+  // SIZES + QTY ROW
   const sizesQtyRow = document.createElement('div');
-sizesQtyRow.className = 'sizes-qty-row';
+  sizesQtyRow.className = 'sizes-qty-row';
 
-// Sizes block
-const sizesBlock = document.createElement('div');
-sizesBlock.className = 'sizes-block';
-const sizesFieldLabel = document.createElement('label');
-sizesFieldLabel.textContent = 'Selected Sizes';
-sizesFieldLabel.htmlFor = '';
-sizesBlock.appendChild(sizesFieldLabel);
-const sizeInput = document.createElement('input');
-sizeInput.placeholder = 'e.g. 2 XS, 2 S, 1 M';
-sizesBlock.appendChild(sizeInput);
+  // Sizes block
+  const sizesBlock = document.createElement('div');
+  sizesBlock.className = 'sizes-block';
+  const sizesFieldLabel = document.createElement('label');
+  sizesFieldLabel.textContent = 'Selected Sizes';
+  sizesBlock.appendChild(sizesFieldLabel);
+  const sizeInput = document.createElement('input');
+  sizeInput.placeholder = 'e.g. 2 XS, 2 S, 1 M';
+  sizesBlock.appendChild(sizeInput);
+  // Quantity block
+  const qtyBlock = document.createElement('div');
+  qtyBlock.className = 'qty-block';
+  const qtyLabel = document.createElement('label');
+  qtyLabel.textContent = 'Quantity';
+  qtyBlock.appendChild(qtyLabel);
+  const qtyInput = document.createElement('input');
+  qtyInput.type = 'number';
+  qtyInput.placeholder = 'Quantity';
+  qtyInput.min = '1';
+  qtyBlock.appendChild(qtyInput);
+  sizesQtyRow.appendChild(sizesBlock);
+  sizesQtyRow.appendChild(qtyBlock);
+  detailsCol.appendChild(sizesQtyRow);
 
-// Quantity block
-const qtyBlock = document.createElement('div');
-qtyBlock.className = 'qty-block';
-const qtyLabel = document.createElement('label');
-qtyLabel.textContent = 'Quantity';
-qtyBlock.appendChild(qtyLabel);
-const qtyInput = document.createElement('input');
-qtyInput.type = 'number';
-qtyInput.placeholder = 'Quantity';
-qtyInput.min = '1';
-qtyBlock.appendChild(qtyInput);
-
-// Add blocks to row container
-sizesQtyRow.appendChild(sizesBlock);
-sizesQtyRow.appendChild(qtyBlock);
-detailsCol.appendChild(sizesQtyRow);
-
-
-  // LABEL AND FIELDS: unit price
+  // UNIT PRICE
   const unitPriceLabel = document.createElement('label');
   unitPriceLabel.textContent = 'Unit Price ($)';
-  unitPriceLabel.style.marginTop = '8px';
   detailsCol.appendChild(unitPriceLabel);
   const unitPriceInput = document.createElement('input');
   unitPriceInput.type = 'number';
   unitPriceInput.placeholder = 'Unit Price $';
   unitPriceInput.min = '0';
-  unitPriceInput.style.width='100%';
   detailsCol.appendChild(unitPriceInput);
 
-  // LABEL AND FIELDS: customization notes
+  // CUSTOMIZATION NOTES
   const noteLabel = document.createElement('label');
   noteLabel.textContent = 'Customization Notes';
-  noteLabel.style.marginTop = '8px';
   detailsCol.appendChild(noteLabel);
   const noteArea = document.createElement('textarea');
   noteArea.rows=2; noteArea.placeholder='Customization notes'; noteArea.style.width = '100%';
   detailsCol.appendChild(noteArea);
-
   const subtotalDisp = document.createElement('div'); subtotalDisp.className='subtotal-disp'; detailsCol.appendChild(subtotalDisp);
 
   const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
@@ -218,7 +207,6 @@ async function toDataUrl(url) {
   });
 }
 
-// --- PDF matches web 3-column layout & image labels ---
 dom('orderForm').addEventListener('submit', async e => {
   e.preventDefault();
   state.header = {
@@ -239,7 +227,6 @@ dom('orderForm').addEventListener('submit', async e => {
   doc.setFontSize(11);
   Object.entries(state.header).forEach(([k, v]) => { doc.text(`${k}: ${v}`, left, y); y += 18; });
   y += 6;
-
   for (let idx = 0; idx < state.items.length; ++idx) {
     let it = state.items[idx];
     let styleData = null, printData = null;
