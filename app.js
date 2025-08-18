@@ -1,17 +1,15 @@
 let productData = [];
-
 async function loadProductsFromSheet() {
   const url = "https://docs.google.com/spreadsheets/d/12cd298kPsjqbQUdx2zDbGQSKpQGU-kk9em1nrCC91D4/export?format=csv";
   const response = await fetch(url);
   const csvText = await response.text();
 
-  // Parse CSV (basic version)
-const rows = csvText.trim().split(/\r?\n/).map(r => r.split(","));
-  const headers = rows[0];
+  // Split on Windows/Mac/Unix linebreaks
+  const rows = csvText.trim().split(/\r?\n/).map(r => r.split(","));
+  const headers = rows[0].map(h => h.trim());
   productData = rows.slice(1).map(row => {
     let obj = {};
-    headers.forEach((h,i) => obj[h] = row[i]);
-    // typecast and split availableSizes
+    headers.forEach((h,i) => obj[h] = (row[i]||"").trim());
     obj.landingPrice = Number(obj.landingPrice);
     obj.recommendedRetailPrice = Number(obj.recommendedRetailPrice);
     obj.availableSizes = obj.availableSizes ? obj.availableSizes.split("|") : [];
