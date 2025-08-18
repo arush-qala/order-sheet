@@ -309,26 +309,38 @@
  // Trying to connect with Google Spreadsheet - database of products
 
 let productData = [];
-async function loadProductsFromSheet() {
-  const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNVrRrsiEXVml8Ecuq7kmaEh9JY1G0_X5-PGtvoXvHo37yGGGFuT9aysBUHf0LKzel73hRUWq3IWys/export?format=csv";
-  const response = await fetch(url);
-  const csvText = await response.text();
-  // Parse CSV (basic version)
-  const rows = csvText.trim().split("\n").map(r => r.split(","));
-  const headers = rows[0];
-  productData = rows.slice(1).map(row => {
+
+async function fetchProductData() {
+  const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNVrRrsiEXVml8Ecuq7kmaEh9JY1G0_X5-PGtvoXvHo37yGGGFuT9aysBUHf0LKzel73hRUWq3IWys/pub?output=csv";
+  const res = await fetch(url);
+  const csv = await res.text();
+  productData = csvToProductData(csv);
+}
+
+// Converts CSV to productData[] as per your schema
+function csvToProductData(csv) {
+  const lines = csv.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1).map(row => {
+    const cols = row.split(',').map(c => c.trim());
     let obj = {};
-    headers.forEach((h,i) => obj[h] = row[i]);
-    // typecast and split availableSizes
+    headers.forEach((h, i) => obj[h] = cols[i]);
+    // Optionally, convert fields to correct types (number arrays etc.)
+    if (obj.availableSizes) {
+      obj.availableSizes = obj.availableSizes.split('|').map(s => s.trim());
+    }
     obj.landingPrice = Number(obj.landingPrice);
     obj.recommendedRetailPrice = Number(obj.recommendedRetailPrice);
-    obj.availableSizes = obj.availableSizes ? obj.availableSizes.split("|") : [];
     return obj;
   });
 }
-loadProductsFromSheet().then(() => {
-  // After products loaded, initialize your app (e.g., enable controls, etc)
+
+// Load data, then initialize the app
+fetchProductData().then(() => {
+  // Optional: trigger any initial UI update/run setup here
+  // Now all product lookup/autocomplete will use this updated data
 });
+
 
 /*
 function fetchProductDataFromSheet(callback) {
