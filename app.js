@@ -308,21 +308,29 @@
 
  // Trying to connect with Google Spreadsheet - database of products
 
-let productData = [];
+let productData = []; // Holds dynamically loaded products from Google Sheets
 
 async function fetchProductData() {
   const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNVrRrsiEXVml8Ecuq7kmaEh9JY1G0_X5-PGtvoXvHo37yGGGFuT9aysBUHf0LKzel73hRUWq3IWys/pub?output=csv";
-  const res = await fetch(url);
-  if (!res.ok) {
-    alert("Could not load product database. Please check your connection.");
-    return;
-  }
-  const csv = await res.text();
-  productData = csvToProductData(csv);
-  
-  // Optional: call setup steps (e.g., enable add product, initialize first card)
-  if (document.getElementById('brandSelect').value) {
-    createProductCard();
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      alert("Could not load product database. Please check your connection.");
+      return;
+    }
+    const csv = await res.text();
+    productData = csvToProductData(csv);
+
+    // Optional: enable UI (if you want to block controls until loaded)
+    document.getElementById('addProductBtn').disabled = false;
+    document.getElementById('brandSelect').disabled = false;
+    // Optionally, automatically create a product card if a brand is already selected:
+    if (document.getElementById('brandSelect').value) {
+      createProductCard();
+    }
+  } catch (err) {
+    alert("Could not load product database from Google Sheets.");
+    productData = []; // Safe fallback
   }
 }
 
@@ -330,22 +338,24 @@ function csvToProductData(csv) {
   const lines = csv.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.trim());
   return lines.slice(1).map(row => {
-    // Simple CSV split, SAFE for non-quoted CSV.
     const cols = row.split(',').map(c => c.trim());
     let obj = {};
     headers.forEach((h, i) => obj[h] = cols[i]);
-    // Coerce correct types
-    obj.landingPrice = Number(obj.landingPrice);
-    obj.recommendedRetailPrice = Number(obj.recommendedRetailPrice);
-    obj.availableSizes = obj.availableSizes
-      ? obj.availableSizes.split('|').map(s => s.trim()) // Use "|" as separator in your sheet for sizes
-      : [];
-    obj.imageUrl = obj.imageURL; // fixes inconsistent casing between code/Google Sheet
+    obj.skuId = obj.skuID || obj.skuId || "";
+    obj.brandName = obj.brandName || "";
+    obj.productName = obj.productName || "";
+    obj.imageUrl = obj.imageURL || obj.imageUrl || "";
+    obj.productLink = obj.productLink || "";
+    obj.landingPrice = Number(obj.landingPrice) || 0;
+    obj.recommendedRetailPrice = Number(obj.recommendedRetailPrice) || 0;
+    obj.availableSizes = obj.availableSizes ? obj.availableSizes.split('|').map(s => s.trim()) : [];
     return obj;
-  });
+  }).filter(x => x.skuId && x.brandName); // Only keep valid rows
 }
 
+// Call once on page load
 fetchProductData();
+
 
 
 
