@@ -306,6 +306,11 @@ const productData = [
   }
 ];
 
+ // Trying to connect with Google Spreadsheet - database of products
+
+
+
+
 
 const dom = id => document.getElementById(id);
 
