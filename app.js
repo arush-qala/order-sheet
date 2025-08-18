@@ -138,12 +138,9 @@ function createProductCard() {
   const card = document.createElement('div');
   card.className = 'product-card';
 
-  // Remove Button - large clickable X
   const removeBtn = document.createElement('button');
-  removeBtn.innerHTML = '&times;'; // Unicode ×
+  removeBtn.textContent = '×';
   removeBtn.className = 'remove-card';
-  removeBtn.type = 'button';
-  removeBtn.setAttribute('aria-label', 'Remove product');
   card.appendChild(removeBtn);
 
   const flex = document.createElement('div');
@@ -198,7 +195,7 @@ function createProductCard() {
 
   const printField = document.createElement('input');
   printField.type = 'text';
-  printField.placeholder = 'Optional custom print – SKU or name';
+  printField.placeholder = 'Optional print – SKU or name';
   printField.style.width = '320px';
   printWrap.appendChild(printField);
 
@@ -320,7 +317,6 @@ function createProductCard() {
     lineItem.printImgUrl = prod.imageUrl;
   });
 
-  // Remove logic
   removeBtn.addEventListener('click', () => {
     card.remove();
     state.removeItem(state.items.indexOf(lineItem));
@@ -417,7 +413,7 @@ dom('orderForm').addEventListener('submit', async e => {
   console.log({ header: state.header, items: state.items });
 });
 
-// Auto-create first product when brand selected.
+// CHANGED: Auto-create first product when brand selected.
 dom('brandSelect').addEventListener('change', function () {
   dom('productCards').innerHTML = '';
   state.reset();
