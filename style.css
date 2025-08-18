@@ -1,91 +1,175 @@
 :root {
-  --color-white: #fff;
-  --color-black: #000;
-  --color-border: #e1e1e1;
-  --color-primary: #247e8e;
-  --color-text-secondary: #555;
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+  /* Typography */
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-4xl: 30px;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-normal: 1.5;
+  --line-height-tight: 1.2;
+  --letter-spacing-tight: -0.01em;
+  /* Spacing + radius */
+  --radius-base: 8px;
+  --radius-lg: 12px;
+  --radius-sm: 6px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --container-xl: 1280px;
+  --container-lg: 1024px;
+  --container-md: 768px;
+  --container-sm: 640px;
+  /* Color/weights for your app */
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-border: rgba(var(--color-brown-600-rgb,94,82,64), 0.2);
+  --color-card-border: rgba(var(--color-brown-600-rgb,94,82,64),0.12);
+}
+
+/* Base styles */
+html {
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
 }
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #fcfcf9;
-  color: var(--color-black);
+  padding: 0;
 }
-.container { max-width: 800px; margin: 24px auto; }
-.header { text-align:center;margin-bottom:20px; }
-.subtitle { color:var(--color-text-secondary); }
+h1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  margin-bottom: var(--space-8);
+  line-height: var(--line-height-tight);
+}
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 8px;
+  line-height: var(--line-height-tight);
+}
+.header {
+  text-align:center;
+  margin-bottom:var(--space-24);
+  padding:var(--space-16) 0;
+  border-bottom:2px solid var(--color-border);
+}
+.subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 24px auto;
+  padding: 0 var(--space-16);
+}
 
 .card {
-  background: var(--color-white);
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  margin-bottom: 24px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-card-border);
+  margin-bottom: var(--space-24);
   box-shadow: 0 2px 6px 0 rgba(0,0,0,.03);
-  padding: 16px 20px;
+  padding: var(--space-16) var(--space-20);
 }
 
-.card__header h2 {
-  margin:0 0 10px 0;
-}
+.card__header h2 { margin:0 0 10px 0;}
 
-.form-group {
-  margin-bottom: 14px;
-}
-
+.form-group { margin-bottom: var(--space-14);}
 .form-label {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   margin-bottom: 4px;
 }
 
 input.form-control, select.form-control, textarea.form-control {
   width: 100%;
   box-sizing: border-box;
-  padding: 8px 10px;
-  border-radius: 5px;
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-base);
   border: 1px solid var(--color-border);
-  font-size: 15px;
+  font-size: var(--font-size-base);
 }
-
 textarea.form-control { min-height:48px; }
-
 .btn {
   background: var(--color-primary);
   color: #fff;
   border: none;
   outline: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 500;
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   padding: 9px 18px;
   cursor: pointer;
   margin-top: 10px;
+  transition: background 0.2s;
 }
 .btn:active,
-.btn:hover { background:#1b5162; }
-
+.btn:hover { background:var(--color-primary-hover); }
 .brand-note {
   color: var(--color-text-secondary);
   font-style: italic;
   font-size: 12px;
   margin-bottom:8px;
 }
+
 .buyer-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: var(--space-14);
 }
 @media (max-width: 700px) {
   .buyer-grid { grid-template-columns: 1fr; }
 }
 
 .product-item {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-white);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
   margin-bottom: 16px;
   padding: 16px;
 }
+
 .product-images {
   display: flex;
   flex-direction: row;
@@ -93,7 +177,6 @@ textarea.form-control { min-height:48px; }
   align-items: flex-start;
   margin-bottom: 14px;
 }
-
 .product-image-wrapper {
   display: flex;
   flex-direction: column;
@@ -103,7 +186,7 @@ textarea.form-control { min-height:48px; }
   width: 120px;
   height: 140px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-base);
   border: 1px solid var(--color-border);
 }
 .image-label {
@@ -112,14 +195,15 @@ textarea.form-control { min-height:48px; }
   color: var(--color-text-secondary);
   text-align: center;
 }
-
 .product-info-header {
   margin-bottom: 10px;
-  font-weight: 600;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-lg);
 }
 .product-link-display a {
   color: var(--color-primary);
   text-decoration: underline;
+  font-size: var(--font-size-base);
 }
 .sizes-list {
   display: inline-flex;
@@ -133,26 +217,29 @@ textarea.form-control { min-height:48px; }
   border-radius: 12px;
   font-size: 13px;
 }
-
 .remove-product-btn {
   background: #f44;
   color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   padding: 7px 14px;
   cursor: pointer;
   font-size: 14px;
   margin-top:14px;
+  transition: background 0.2s;
 }
 .remove-product-btn:hover { background: #b00; }
-
 .subtotal-display {
-  font-size: 15px;
+  font-size: var(--font-size-base);
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   margin-top:8px;
   text-align:right;
 }
-
 #orderSummarySection { margin-top: 20px; }
-#orderSummary { font-size:16px; font-weight: 600; }
+#orderSummary { font-size:var(--font-size-lg); font-weight: var(--font-weight-bold); }
+
+@font-face {
+  font-family: 'FKGroteskNeue';
+  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+}
