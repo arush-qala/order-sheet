@@ -146,6 +146,111 @@ textarea {
   flex-wrap: wrap;
 }
 
+/* Thumbnail images for style and print */
 .thumbnail-wrap {
   display: flex;
-  flex-direction: column
+  flex-direction: column;
+  align-items: center;
+  margin-right: var(--spacing-4);
+}
+
+.thumbnail-wrap img {
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  margin-bottom: 2px;
+}
+
+.caption {
+  margin-top: var(--spacing-1);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.price-box {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-weight: 600;
+  margin-right: var(--spacing-2);
+  background: #fafaf7;
+}
+
+/* ORDER SUMMARY cards */
+.summary-section {
+  margin-top: var(--spacing-4);
+}
+.summary-grid {
+  display: flex;
+  gap: var(--spacing-4);
+  align-items: flex-start;
+  margin-bottom: var(--spacing-3);
+}
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 164px;
+  background: #fcfcf9;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--color-border);
+  box-shadow: 0 2px 10px rgba(120,120,120,0.03);
+  padding: 18px 18px 14px 18px;
+  text-align: left;
+  align-items: flex-start;
+  justify-content: center;
+}
+.summary-label {
+  font-size: 0.97rem;
+  color: #7c7c76;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+.summary-value {
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: #171717;
+  letter-spacing: 0.01em;
+}
+
+/* Autocomplete */
+.autocomplete-list {
+  position: absolute;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(70,70,70,0.06);
+  z-index: 9999;
+  max-height: 220px;
+  overflow-y: auto;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.autocomplete-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  border-bottom: 1px solid #f3f3ef;
+  background: #fff;
+}
+
+.autocomplete-item:last-child { border-bottom: none; }
+
+.autocomplete-item.active,
+.autocomplete-item:hover {
+  background: #f8ecd4 !important;
+  color: #000;
+}
+
+@media (max-width: 820px) {
+  .card-flex { flex-direction: column; }
+  .thumbnail-wrap { flex-direction: row; }
+  .thumbnail-wrap img { width: 68px; height: 68px; margin-right: var(--spacing-2); }
+  .summary-grid { flex-direction: column; gap: var(--spacing-3); }
+  .summary-card { min-width: unset; width: 100%; }
+}
