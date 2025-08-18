@@ -1,64 +1,95 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Order Sheet</title>
+  <title>Order Sheet – Brand Assembly LA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- jsPDF bundle enables direct PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <main id="app">
-    <header>
+  <div class="container">
+    <header class="header">
       <h1>Order Sheet</h1>
-      <p class="subtitle">Brand Assembly LA - Oct</p>
+      <h2>Brand Assembly LA – Oct</h2>
     </header>
 
-    <section id="buyer-info">
-      <div class="field full">
-        <label>Order Number</label>
-        <input type="text" id="orderNumber" required>
-      </div>
-      <div class="field half">
-        <label>Buyer / Store Name</label>
-        <input type="text" id="storeName" required>
-      </div>
-      <div class="field half">
-        <label>Email Address</label>
-        <input type="email" id="email" required>
-      </div>
-      <div class="field half">
-        <label>Phone Number</label>
-        <input type="tel" id="phone" required>
-      </div>
-      <div class="field full">
-        <label>Shipping Address</label>
-        <input type="text" id="shippingAddress" required>
-      </div>
-      <div class="field full">
-        <label>Order & Delivery Comments</label>
-        <textarea id="comments"></textarea>
-      </div>
-    </section>
+    <!-- Order & Buyer Information -->
+    <form id="orderForm" class="order-form">
+      <section class="section">
+        <h3>Order &amp; Buyer Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="orderNumber">Order Number *</label>
+            <input type="text" id="orderNumber" name="orderNumber" required>
+          </div>
+          <div class="form-group">
+            <label for="buyerName">Buyer/Store Name *</label>
+            <input type="text" id="buyerName" name="buyerName" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="shippingAddress">Shipping Address *</label>
+          <textarea id="shippingAddress" name="shippingAddress" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="orderComments">Order &amp; Delivery Comments</label>
+          <textarea id="orderComments" name="orderComments" rows="2"></textarea>
+        </div>
+      </section>
 
-    <section id="brand-select">
-      <label>Brand</label>
-      <select id="brandDropdown">
-        <option value="" disabled selected>Select Brand</option>
-      </select>
-      <p id="brandNote" class="note">All products in this order sheet will be from the selected brand.</p>
-    </section>
+      <!-- Brand Selection -->
+      <section class="section">
+        <h3>Brand Selection</h3>
+        <div class="form-group">
+          <label for="brandSelect">Brand *</label>
+          <select id="brandSelect" name="brandSelect" required>
+            <option value="">Select a brand…</option>
+            <option value="Doodlage">Doodlage</option>
+            <option value="Khara Kapas">Khara Kapas</option>
+            <option value="Naushad Ali">Naushad Ali</option>
+            <option value="The Raw India">The Raw India</option>
+          </select>
+        </div>
+        <p class="info-note">All products in this order sheet will be from the selected brand.</p>
+      </section>
 
-    <section id="product-list"></section>
+      <!-- Product Selection -->
+      <section class="section">
+        <h3>Product Selection</h3>
+        <div id="productCards" class="product-cards"></div>
+        <button type="button" id="addProductBtn" class="btn-secondary">Add Product</button>
+      </section>
 
-    <button id="addProduct" class="primary">Add Product</button>
+      <!-- Order Summary -->
+      <section class="section">
+        <h3>Order Summary</h3>
+        <div class="summary-grid">
+          <div>
+            <span class="summary-label">Total Quantity:</span>
+            <span id="totalQuantity" class="summary-value">0</span>
+          </div>
+          <div>
+            <span class="summary-label">Total Amount:</span>
+            <span id="totalAmount" class="summary-value">$0.00</span>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary">Submit &amp; Download PDF</button>
+      </section>
+    </form>
+  </div>
 
-    <footer id="summaryBar" class="hidden">
-      <span id="totalQty">Total Quantity: 0</span>
-      <span id="totalAmt">Total Amount: $0.00</span>
-      <button id="submitOrder" class="primary">Submit & Download PDF</button>
-    </footer>
-  </main>
+  <!-- Application Script -->
   <script src="app.js"></script>
 </body>
 </html>
