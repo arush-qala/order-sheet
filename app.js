@@ -37,14 +37,22 @@ const state = new OrderSheetState();
 function autoCompleteBox(input, brand, cb) {
   let items=[], index=-1, list=null;
   input.setAttribute('autocomplete', 'off');
-  input.addEventListener('input', function() {
+
+  // Helper to get results; empty string returns all, sorted by skuId
+  function getResults(val) {
+    let arr = productData.filter(p => p.brandName === brand && 
+      (val ? (p.productName.toLowerCase().includes(val) || p.skuId.toLowerCase().includes(val)) : true)
+    );
+    // sort by SKU ID string
+    arr.sort((a,b) => a.skuId.localeCompare(b.skuId, undefined, {numeric:true, sensitivity:'base'}));
+    return arr.slice(0, 8);
+  }
+
+  // Actually use this on both 'input' and 'focus'
+  function showList(val) {
     closeList();
-    const search = this.value.trim().toLowerCase();
-    if (!search) return;
-    items = productData.filter(
-      p => p.brandName === brand &&
-      (p.productName.toLowerCase().includes(search) || p.skuId.toLowerCase().includes(search))
-    ).slice(0,8);
+    const search = val ? val.trim().toLowerCase() : "";
+    items = getResults(search);
     if (!items.length) return;
     list = document.createElement('div');
     list.className = 'autocomplete-list';
@@ -64,7 +72,17 @@ function autoCompleteBox(input, brand, cb) {
     });
     document.body.appendChild(list);
     index = -1;
+  }
+
+  input.addEventListener('input', function() {
+    showList(this.value);
   });
+
+  // NEW: Show all on focus (when nothing filled out yet)
+  input.addEventListener('focus', function() {
+    if (!this.value.trim()) showList("");
+  });
+
   input.addEventListener('keydown', function(e) {
     if (!list) return;
     const len = list.childElementCount;
@@ -78,6 +96,7 @@ function autoCompleteBox(input, brand, cb) {
   function select(idx){if(typeof cb==='function')cb(items[idx]);closeList();}
   function closeList(){if(list){document.body.removeChild(list);list=null;}items=[];index=-1;}
 }
+
 
 function createProductCard() {
   const brand = dom('brandSelect').value; if (!brand) return alert('Select a brand first.');
