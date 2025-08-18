@@ -272,10 +272,15 @@ function addProduct() {
       
       <div class="product-info-display">
         <div class="product-info-header">
-          <div class="product-images">
-            <img class="product-image style-image" src="" alt="Style Image">
-            <img class="product-image print-image" src="" alt="Print Image">
+          <div class="product-image-wrapper">
+            <img src="STYLE_IMAGE_URL" class="product-image" alt="Style Image">
+            <div class="image-label">Style</div>
           </div>
+          <div class="product-image-wrapper" id="printImageWrapper" style="display:none">
+            <img src="" class="product-image" alt="Print Image" id="printImage">
+              <div class="image-label">Print</div>
+            </div>
+
           <div class="product-details-content">
             <h3 class="product-title"></h3>
             <div class="product-link-display">
