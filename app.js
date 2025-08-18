@@ -1,4 +1,4 @@
-const productData = [
+/* const productData = [
   // --- Khara Kapas (10 products) ---
   {
     skuId: "KK01",
@@ -304,7 +304,7 @@ const productData = [
     recommendedRetailPrice: 522.5,
     availableSizes: ["XS","S","M","L","XL"]
   }
-];
+]; */
 
  // Trying to connect with Google Spreadsheet - database of products
 
