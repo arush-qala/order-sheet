@@ -117,46 +117,122 @@ function autoCompleteBox(input, brand, cb) {
 }
 
 function createProductCard() {
-  const brand = dom('brandSelect').value; if (!brand) return alert('Select a brand first.');
-  const card = document.createElement('div'); card.className = 'product-card';
+  const brand = dom('brandSelect').value;
+  if (!brand) return alert('Select a brand first.');
+
+  const card = document.createElement('div');
+  card.className = 'product-card';
+
   const removeBtn = document.createElement('button');
-  removeBtn.innerHTML = '&times;'; removeBtn.className='remove-card'; removeBtn.type='button';
-  removeBtn.setAttribute('aria-label','Remove product'); card.appendChild(removeBtn);
+  removeBtn.innerHTML = '&times;';
+  removeBtn.className = 'remove-card';
+  removeBtn.type = 'button';
+  removeBtn.setAttribute('aria-label', 'Remove product');
+  card.appendChild(removeBtn);
 
   // Three columns
-  const row = document.createElement('div'); row.className = 'card-threecol'; card.appendChild(row);
+  const row = document.createElement('div');
+  row.className = 'card-threecol';
+  card.appendChild(row);
 
-  // 1. Style
-  const styleCol = document.createElement('div'); styleCol.className = 'productcol stylecol'; row.appendChild(styleCol);
+  // === 1. Style
+  const styleCol = document.createElement('div');
+  styleCol.className = 'productcol stylecol';
+  row.appendChild(styleCol);
+
   const styleField = document.createElement('input');
-  styleField.type='text'; styleField.placeholder='Search style by SKU or name'; styleField.style.width='100%'; styleField.style.marginBottom='8px'; 
+  styleField.type = 'text';
+  styleField.placeholder = 'Search style by SKU or name';
+  styleField.style.width = '100%';
+  styleField.style.marginBottom = '8px';
   styleCol.appendChild(styleField);
 
-  const styleImg = document.createElement('img'); styleImg.alt = 'Style Image'; styleImg.style.display='none'; styleCol.appendChild(styleImg);
-  const styleImgLabel = document.createElement('div'); styleImgLabel.className = 'img-label'; styleImgLabel.textContent = 'Style'; styleCol.appendChild(styleImgLabel);
+  const styleImg = document.createElement('img');
+  styleImg.alt = 'Style Image';
+  styleImg.style.display = 'none';
+  styleCol.appendChild(styleImg);
 
-  // 2. Print
-  const printCol = document.createElement('div'); printCol.className = 'productcol printcol'; row.appendChild(printCol);
-  const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print'; printField.style.width='100%'; printField.style.marginBottom='8px'; printCol.appendChild(printField);
-  const printImg = document.createElement('img'); printImg.alt = 'Print Image'; printImg.style.display='none'; printCol.appendChild(printImg);
-  const printImgLabel = document.createElement('div'); printImgLabel.className = 'img-label'; printImgLabel.textContent = 'Custom Print'; printCol.appendChild(printImgLabel);
+  const styleImgLabel = document.createElement('div');
+  styleImgLabel.className = 'img-label';
+  styleImgLabel.textContent = 'Style';
+  styleCol.appendChild(styleImgLabel);
 
-  // 3. Details
-  const detailsCol = document.createElement('div'); detailsCol.className = 'productcol infocol'; row.appendChild(detailsCol);
+  // === 2. Print
+  const printCol = document.createElement('div');
+  printCol.className = 'productcol printcol';
+  row.appendChild(printCol);
 
-  const prodName = document.createElement('div'); prodName.className='prod-name'; detailsCol.appendChild(prodName);
-  const sizesSpan = document.createElement('div'); sizesSpan.className = 'available-sizes'; sizesSpan.style.display = 'none'; detailsCol.appendChild(sizesSpan);
-  const link = document.createElement('a'); link.textContent='View Product Details'; link.target='_blank'; link.style.display='inline-block'; link.style.marginBottom='8px'; detailsCol.appendChild(link);
+  const printField = document.createElement('input');
+  printField.type = 'text';
+  printField.placeholder = 'Optional custom print';
+  printField.style.width = '100%';
+  printField.style.marginBottom = '8px';
+  printCol.appendChild(printField);
 
-  const priceRow = document.createElement('div'); priceRow.style.display='flex'; priceRow.style.alignItems='center'; detailsCol.appendChild(priceRow);
-  const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
-  const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
+  const printImg = document.createElement('img');
+  printImg.alt = 'Print Image';
+  printImg.style.display = 'none';
+  printCol.appendChild(printImg);
 
-  // --- NEW: Dynamic SIZES + QTY ROW ---
+  const printImgLabel = document.createElement('div');
+  printImgLabel.className = 'img-label';
+  printImgLabel.textContent = 'Custom Print';
+  printCol.appendChild(printImgLabel);
+
+  // === 3. Details
+  const detailsCol = document.createElement('div');
+  detailsCol.className = 'productcol infocol';
+  row.appendChild(detailsCol);
+
+  const prodName = document.createElement('div');
+  prodName.className = 'prod-name';
+  detailsCol.appendChild(prodName);
+
+  const sizesSpan = document.createElement('div');
+  sizesSpan.className = 'available-sizes';
+  sizesSpan.style.display = 'none';
+  detailsCol.appendChild(sizesSpan);
+
+  const link = document.createElement('a');
+  link.textContent = 'View Product Details';
+  link.target = '_blank';
+  link.style.display = 'inline-block';
+  link.style.marginBottom = '8px';
+  detailsCol.appendChild(link);
+
+  const priceRow = document.createElement('div');
+  priceRow.style.display = 'flex';
+  priceRow.style.alignItems = 'center';
+  detailsCol.appendChild(priceRow);
+
+  const landingBox = document.createElement('div');
+  landingBox.className = 'price-box';
+  priceRow.appendChild(landingBox);
+
+  const retailBox = document.createElement('div');
+  retailBox.className = 'price-box';
+  priceRow.appendChild(retailBox);
+
+  // === Dynamic SIZES + QTY ROW ===
   const sizesList = document.createElement('div');
   sizesList.className = 'sizes-list';
   let sizeQtyArray = [];
   let availableSizesArr = [];
+
+  function updateTotalAndSubtotal() {
+    // Only keep lines with a valid size and positive quantity
+    sizeQtyArray = sizeQtyArray.filter(line => line.size && Number(line.quantity) > 0);
+    const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) || 0), 0);
+    qtyTotalSpan.textContent = totalQty;
+    lineItem.quantity = totalQty;
+    lineItem.sizes = sizeQtyArray.filter(e => e.quantity).map(e => `${e.quantity} ${e.size}`).join(', ');
+    const unit = Number(unitPriceInput.value || 0);
+    lineItem.unitPrice = unit;
+    const subtotal = totalQty * unit;
+    lineItem.subtotal = subtotal;
+    subtotalDisp.textContent = (totalQty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
+    state.recalculateTotals();
+  }
 
   function renderSizeQtyRows() {
     sizesList.innerHTML = "";
@@ -191,7 +267,7 @@ function createProductCard() {
         updateTotalAndSubtotal();
       });
 
-      // Remove size line
+      // Remove button
       const remBtn = document.createElement('button');
       remBtn.type = 'button';
       remBtn.textContent = '×';
@@ -207,7 +283,7 @@ function createProductCard() {
       rowDiv.appendChild(qtyInput);
       if (sizeQtyArray.length > 1) rowDiv.appendChild(remBtn);
 
-      // Inline + on last row
+      // Add inline "+" ONLY at the end
       if (idx === sizeQtyArray.length - 1) {
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
@@ -216,9 +292,7 @@ function createProductCard() {
         addBtn.title = 'Add new size';
         addBtn.onclick = function(e) {
           e.preventDefault();
-          const sizeUsed = sizeQtyArray.map(line => line.size);
-          let nextAvailable = availableSizesArr.find(size => !sizeUsed.includes(size)) || availableSizesArr[0];
-          sizeQtyArray.push({ size: nextAvailable, quantity: 0 });
+          sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 0 });
           renderSizeQtyRows();
         };
         rowDiv.appendChild(addBtn);
@@ -226,6 +300,7 @@ function createProductCard() {
 
       sizesList.appendChild(rowDiv);
     });
+    updateTotalAndSubtotal(); // Call here to react to any change
   }
 
   // Total QTY display
@@ -249,7 +324,7 @@ function createProductCard() {
   unitPriceInput.min = '0';
   detailsCol.appendChild(unitPriceInput);
 
-  // SIZES TITLE + DYNAMIC LIST + QTY + ADD BUTTON
+  // SIZES TITLE + DYNAMIC LIST + QTY
   const sizesTitle = document.createElement('label');
   sizesTitle.textContent = 'Select Size(s) & Qty:';
   detailsCol.appendChild(sizesTitle);
@@ -270,25 +345,10 @@ function createProductCard() {
 
   const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
 
-  function updateTotalAndSubtotal() {
-    sizeQtyArray = sizeQtyArray.filter(line => line.size && Number(line.quantity) > 0);
-    const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) || 0), 0);
-    qtyTotalSpan.textContent = totalQty;
-    lineItem.quantity = totalQty;
-    lineItem.sizes = sizeQtyArray.filter(e => e.quantity).map(e => `${e.quantity} ${e.size}`).join(', ');
-    const unit = Number(unitPriceInput.value || 0);
-    lineItem.unitPrice = unit;
-    const subtotal = totalQty * unit;
-    lineItem.subtotal = subtotal;
-    subtotalDisp.textContent = (totalQty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
-    state.recalculateTotals();
-  }
-
   function onStyleChange(prod) {
     availableSizesArr = (prod.availableSizes && prod.availableSizes.length) ? prod.availableSizes : [];
     sizeQtyArray = [{ size: availableSizesArr[0] || "", quantity: 0 }];
     renderSizeQtyRows();
-    updateTotalAndSubtotal();
   }
 
   unitPriceInput.addEventListener('input', updateTotalAndSubtotal);
@@ -318,6 +378,7 @@ function createProductCard() {
   removeBtn.addEventListener('click', () => { card.remove(); state.removeItem(state.items.indexOf(lineItem)); });
   dom('productCards').appendChild(card); state.addItem(lineItem);
 }
+
 
 async function toDataUrl(url) {
   return new Promise((resolve, reject) => {
