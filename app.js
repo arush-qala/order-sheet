@@ -32,12 +32,13 @@ class OrderSheetState {
   }
   reset() { this.items = []; this.recalculateTotals(); }
 }
+
 const state = new OrderSheetState();
 
 function autoCompleteBox(input, brand, cb) {
-  let items = [], index = -1, list = null;
+  let items=[], index=-1, list=null;
   input.setAttribute('autocomplete', 'off');
-  input.addEventListener('input', function () {
+  input.addEventListener('input', function() {
     closeList();
     const search = this.value.trim().toLowerCase();
     if (!search) return;
@@ -65,18 +66,18 @@ function autoCompleteBox(input, brand, cb) {
     document.body.appendChild(list);
     index = -1;
   });
-  input.addEventListener('keydown', function (e) {
+  input.addEventListener('keydown', function(e) {
     if (!list) return;
     const len = list.childElementCount;
-    if (e.key === 'ArrowDown') { index = (index + 1 + len) % len; highlight(); e.preventDefault(); }
-    if (e.key === 'ArrowUp')   { index = (index - 1 + len) % len; highlight(); e.preventDefault(); }
-    if (e.key === 'Enter')     { if (index > -1) { select(index); e.preventDefault(); } }
-    if (e.key === 'Escape')    { closeList(); }
+    if (e.key === 'ArrowDown') { index = (index + 1 + len) % len; highlight(); e.preventDefault();}
+    if (e.key === 'ArrowUp') { index = (index - 1 + len) % len; highlight(); e.preventDefault();}
+    if (e.key === 'Enter') { if (index > -1) { select(index); e.preventDefault(); } }
+    if (e.key === 'Escape') closeList();
   });
-  input.addEventListener('blur', function(){ setTimeout(closeList, 100); });
-  function highlight() { Array.from(list.children).forEach((item, idx) => item.classList.toggle('active', idx === index)); }
-  function select(idx) { if (typeof cb === 'function') cb(items[idx]); closeList(); }
-  function closeList() { if (list) { document.body.removeChild(list); list = null; } items = []; index = -1; }
+  input.addEventListener('blur', ()=>setTimeout(closeList,100));
+  function highlight(){Array.from(list.children).forEach((item,idx)=>item.classList.toggle('active',idx===index));}
+  function select(idx){if(typeof cb==='function')cb(items[idx]);closeList();}
+  function closeList(){if(list){document.body.removeChild(list);list=null;}items=[];index=-1;}
 }
 
 function createProductCard() {
@@ -88,16 +89,17 @@ function createProductCard() {
 
   // Three columns
   const row = document.createElement('div'); row.className = 'card-threecol'; card.appendChild(row);
-
-  // 1. Style search+image
+  // 1. Style
   const styleCol = document.createElement('div'); styleCol.className = 'productcol stylecol'; row.appendChild(styleCol);
   const styleField = document.createElement('input'); styleField.type='text'; styleField.placeholder='Search style by SKU or name'; styleField.style.width='100%'; styleField.style.marginBottom='8px'; styleCol.appendChild(styleField);
   const styleImg = document.createElement('img'); styleImg.alt = 'Style Image'; styleImg.style.display='none'; styleCol.appendChild(styleImg);
+  const styleImgLabel = document.createElement('div'); styleImgLabel.className = 'img-label'; styleImgLabel.textContent = 'Style'; styleCol.appendChild(styleImgLabel);
 
-  // 2. Print search+image
+  // 2. Print
   const printCol = document.createElement('div'); printCol.className = 'productcol printcol'; row.appendChild(printCol);
   const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print – SKU or name'; printField.style.width='100%'; printField.style.marginBottom='8px'; printCol.appendChild(printField);
   const printImg = document.createElement('img'); printImg.alt = 'Print Image'; printImg.style.display='none'; printCol.appendChild(printImg);
+  const printImgLabel = document.createElement('div'); printImgLabel.className = 'img-label'; printImgLabel.textContent = 'Custom Print'; printCol.appendChild(printImgLabel);
 
   // 3. Details
   const detailsCol = document.createElement('div'); detailsCol.className = 'productcol infocol'; row.appendChild(detailsCol);
@@ -121,12 +123,15 @@ function createProductCard() {
     subtotalDisp.textContent = (qty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
     state.recalculateTotals();
   }
-  qtyInput.addEventListener('input', updateSubtotal); unitPriceInput.addEventListener('input', updateSubtotal);
-  sizeInput.addEventListener('input', () => lineItem.sizes = sizeInput.value); noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
+
+  qtyInput.addEventListener('input', updateSubtotal);
+  unitPriceInput.addEventListener('input', updateSubtotal);
+  sizeInput.addEventListener('input', () => lineItem.sizes = sizeInput.value);
+  noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
 
   autoCompleteBox(styleField, brand, prod => {
     styleField.value = `${prod.skuId} – ${prod.productName}`;
-    styleImg.src = prod.imageUrl; styleImg.style.display = '';
+    styleImg.src = prod.imageUrl; styleImg.style.display = ''; styleImgLabel.classList.add('active');
     prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
     landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
     unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
@@ -136,14 +141,14 @@ function createProductCard() {
     updateSubtotal();
   });
   autoCompleteBox(printField, brand, prod => {
-    printField.value = `${prod.skuId} – ${prod.productName}`; printImg.src = prod.imageUrl; printImg.style.display = ''; lineItem.printSku = prod.skuId; lineItem.printImgUrl = prod.imageUrl;
+    printField.value = `${prod.skuId} – ${prod.productName}`; printImg.src = prod.imageUrl; printImg.style.display = ''; printImgLabel.classList.add('active');
+    lineItem.printSku = prod.skuId; lineItem.printImgUrl = prod.imageUrl;
   });
 
   removeBtn.addEventListener('click', () => { card.remove(); state.removeItem(state.items.indexOf(lineItem)); });
   dom('productCards').appendChild(card); state.addItem(lineItem);
 }
 
-// PDF output as three column – visually matches product card
 async function toDataUrl(url) {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
@@ -163,6 +168,7 @@ async function toDataUrl(url) {
   });
 }
 
+// --- PDF matches web 3-column layout & image labels ---
 dom('orderForm').addEventListener('submit', async e => {
   e.preventDefault();
   state.header = {
@@ -189,52 +195,45 @@ dom('orderForm').addEventListener('submit', async e => {
     let styleData = null, printData = null;
     try { styleData = it.styleImgUrl ? await toDataUrl(it.styleImgUrl) : null; }catch{}
     try { printData = it.printImgUrl ? await toDataUrl(it.printImgUrl) : null; }catch{}
-    doc.setFontSize(12); doc.setFont(undefined, "bold");
-    doc.text(`Item ${idx + 1}`, left, y);
-    doc.setFont(undefined, "normal");
-    // Columns (left: style, center: print, right: details)
-    const col1 = left, col2 = left+155, col3 = left+320;
+    // Three cols layout
+    const col1 = left, col2 = left+170, col3 = left+340;
     let rowMaxH = 0;
-    // Style
+    doc.setFontSize(12); doc.setFont(undefined,"bold");
+    doc.text(`Item ${idx+1}`, left, y);
+    // Style col
     if (styleData) {
-      doc.setFontSize(10);
-      doc.text("Style", col1+20, y+13);
-      doc.addImage(styleData, "JPEG", col1+4, y+18, 105, 105);
-      rowMaxH = 123;
+      doc.setFontSize(10); doc.text("Style", col1+42, y+17);
+      doc.addImage(styleData, "JPEG", col1+10, y+26, 120, 120);
+      rowMaxH = 137;
     }
-    // Print
+    // Print col
     if (printData) {
-      doc.setFontSize(10);
-      doc.text("Print", col2+20, y+13);
-      doc.addImage(printData, "JPEG", col2+4, y+18, 105, 105);
-      rowMaxH = Math.max(rowMaxH,123);
+      doc.setFontSize(10); doc.text("Custom Print", col2+25, y+17);
+      doc.addImage(printData, "JPEG", col2+10, y+26, 120, 120);
+      rowMaxH = Math.max(rowMaxH,137);
     }
+    // Details col
     doc.setFontSize(10);
-    // Details Column (Name, sizes, link, price, quantity, notes)
-    let infoY = y+10;
-    doc.setFont(undefined,"bold"); doc.text(it.productName || "", col3, infoY+11);
-    doc.setFont(undefined,"normal");
-    let infoRow = infoY+22;
-    // Show sizes
+    let infoRow = y+2;
+    doc.setFont(undefined,"bold"); doc.text(it.productName || "", col3, infoRow+20);
+    doc.setFont(undefined,"normal"); infoRow += 35;
     if (it.styleSku) {
       const p = productData.find(p=>p.skuId===it.styleSku);
       if (p && p.availableSizes && p.availableSizes.length) {
-        doc.text("Available Sizes: "+p.availableSizes.join(" · "), col3, infoRow); infoRow+=15;
+        doc.text("Available Sizes: "+p.availableSizes.join(" · "), col3, infoRow); infoRow+=14;
       }
     }
-    // Link
     if (it.styleSku) {
       const p = productData.find(p=>p.skuId===it.styleSku);
-      if (p && p.productLink) doc.textWithLink('Product Details Link', col3, infoRow, {url: p.productLink}); infoRow+=15;
+      if (p && p.productLink) doc.textWithLink('Product Details Link', col3, infoRow, {url: p.productLink}); infoRow+=14;
     }
-    // Price
-    doc.text(`Landing $${it.unitPrice||""} · RRP ${(()=>{const p=productData.find(p=>p.skuId===it.styleSku);return p?p.recommendedRetailPrice:""})()}`, col3, infoRow); infoRow+=15;
-    doc.text(`Sizes: ${it.sizes||""} · Qty: ${it.quantity||""}`, col3, infoRow); infoRow+=15;
-    doc.text(`Notes: ${it.notes||""}`, col3, infoRow); infoRow+=15;
+    doc.text(`Landing $${it.unitPrice||""} · RRP ${(()=>{const p=productData.find(p=>p.skuId===it.styleSku);return p?p.recommendedRetailPrice:""})()}`, col3, infoRow); infoRow+=14;
+    doc.text(`Sizes: ${it.sizes||""} · Qty: ${it.quantity||""}`, col3, infoRow); infoRow+=14;
+    doc.text(`Notes: ${it.notes||""}`, col3, infoRow); infoRow+=14;
     doc.setFont(undefined,"bold");
-    doc.text(`Subtotal $${it.subtotal||""}`, col3, infoRow+2); 
-    rowMaxH = Math.max(rowMaxH, infoRow-(y+10)+34);
-    y += rowMaxH + 26;
+    doc.text(`Subtotal $${it.subtotal||""}`, col3, infoRow+4); 
+    rowMaxH = Math.max(rowMaxH, infoRow-(y+2)+30);
+    y += rowMaxH + 32;
     if (y > 660) { doc.addPage(); y = 36; }
   }
   doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
