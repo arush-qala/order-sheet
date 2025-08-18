@@ -310,7 +310,7 @@
 
 let productData = [];
 async function loadProductsFromSheet() {
-  const url = "https://docs.google.com/spreadsheets/d/12cd298kPsjqbQUdx2zDbGQSKpQGU-kk9em1nrCC91D4/export?format=csv";
+  const url = "https://docs.google.com/spreadsheets/d/2PACX-1vSNVrRrsiEXVml8Ecuq7kmaEh9JY1G0_X5-PGtvoXvHo37yGGGFuT9aysBUHf0LKzel73hRUWq3IWys/export?format=csv";
   const response = await fetch(url);
   const csvText = await response.text();
   // Parse CSV (basic version)
