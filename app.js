@@ -65,7 +65,6 @@ function autoCompleteBox(input, brand, cb) {
     list.className = 'autocomplete-list';
     list.style.position = 'absolute';
 
-    // Position the autocomplete list
     const rect = input.getBoundingClientRect();
     const scrollTop  = (window.pageYOffset || document.documentElement.scrollTop);
     const scrollLeft = (window.pageXOffset || document.documentElement.scrollLeft);
@@ -270,7 +269,9 @@ function createProductCard() {
     quantity: 0,
     unitPrice: 0,
     subtotal: 0,
-    notes: ''
+    notes: '',
+    styleImgUrl: '',
+    printImgUrl: ''
   };
 
   function updateSubtotal() {
@@ -302,6 +303,7 @@ function createProductCard() {
     lineItem.styleSku = prod.skuId;
     lineItem.productName = prod.productName;
     lineItem.unitPrice = prod.landingPrice;
+    lineItem.styleImgUrl = prod.imageUrl;
     styleImg.style.display = '';
     updateSubtotal();
   });
@@ -312,6 +314,7 @@ function createProductCard() {
     printImg.style.display = '';
     printCaption.style.display = '';
     lineItem.printSku = prod.skuId;
+    lineItem.printImgUrl = prod.imageUrl;
   });
 
   removeBtn.addEventListener('click', () => {
@@ -323,14 +326,30 @@ function createProductCard() {
   state.addItem(lineItem);
 }
 
-dom('addProductBtn').addEventListener('click', createProductCard);
+// ---- Helper: Load remote image as base64 dataURL -----
+async function toDataUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function () {
+      const canvas = document.createElement('canvas');
+      canvas.width = 70;
+      canvas.height = 70;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      const ratio = Math.min(canvas.width/this.width, canvas.height/this.height);
+      const w = this.width * ratio, h = this.height * ratio;
+      ctx.drawImage(this, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.90));
+    };
+    img.onerror = reject;
+    img.src = url + (url.includes("?") ? "&" : "?") + "rand=" + Math.random();
+  });
+}
 
-dom('brandSelect').addEventListener('change', function () {
-  dom('productCards').innerHTML = '';
-  state.reset();
-});
-
-dom('orderForm').addEventListener('submit', e => {
+// ---- Generate PDF with images -----
+dom('orderForm').addEventListener('submit', async e => {
   e.preventDefault();
   state.header = {
     orderNumber: dom('orderNumber').value,
@@ -353,14 +372,51 @@ dom('orderForm').addEventListener('submit', e => {
   Object.entries(state.header).forEach(([k, v]) => {
     doc.text(`${k}: ${v}`, 10, y); y += 6;
   });
-  y += 4;
-  state.items.forEach((it, idx) => {
+  y += 3;
+
+  // PRELOAD all needed images
+  for (let idx = 0; idx < state.items.length; ++idx) {
+    let it = state.items[idx];
+    let styleData = null, printData = null;
+    try {
+      styleData = it.styleImgUrl ? await toDataUrl(it.styleImgUrl) : null;
+    }catch{}
+    try {
+      printData = it.printImgUrl ? await toDataUrl(it.printImgUrl) : null;
+    }catch{}
+    doc.setFont(undefined, "bold");
     doc.text(`Item ${idx + 1} – ${it.productName}`, 10, y); y += 6;
+    doc.setFont(undefined, "normal");
     doc.text(`Style SKU: ${it.styleSku || ""}  Print SKU: ${it.printSku || ""}`, 14, y); y += 6;
-    doc.text(`Sizes: ${it.sizes || ""}  Qty: ${it.quantity || ""}  Unit: $${it.unitPrice||""}  Subtotal: $${it.subtotal || ""}`, 14, y);
-    y += 8;
-  });
+    doc.text(`Sizes: ${it.sizes || ""}  Qty: ${it.quantity || ""}  Unit: $${it.unitPrice||""}  Subtotal: $${it.subtotal || ""}`, 14, y); y += 6;
+    doc.text(`Notes: ${it.notes || ""}`, 14, y); y += 6;
+
+    // Images side by side (if style/print)
+    if (styleData) {
+      doc.text("Style", 15, y);
+      doc.addImage(styleData, "JPEG", 10, y+1, 22, 22);
+    }
+    if (printData) {
+      doc.text("Print", 48, y);
+      doc.addImage(printData, "JPEG", 42, y+1, 22, 22);
+    }
+    if(styleData || printData) y += 26;
+    else y += 4;
+
+    // If at bottom, new page
+    if (y > 265) {
+      doc.addPage();
+      y = 10;
+    }
+  }
   doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
   alert('PDF downloaded. JSON payloads logged to console for integration.');
   console.log({ header: state.header, items: state.items });
+});
+
+dom('addProductBtn').addEventListener('click', createProductCard);
+
+dom('brandSelect').addEventListener('change', function () {
+  dom('productCards').innerHTML = '';
+  state.reset();
 });
