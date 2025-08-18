@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <!-- jsPDF bundle enables direct PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -16,8 +15,8 @@
       <h2>Brand Assembly LA – Oct</h2>
     </header>
 
-    <!-- Order & Buyer Information -->
-    <form id="orderForm" class="order-form">
+    <form id="orderForm" class="order-form" autocomplete="off">
+      <!-- Order & Buyer Information -->
       <section class="section">
         <h3>Order &amp; Buyer Information</h3>
         <div class="form-grid">
@@ -72,15 +71,15 @@
       </section>
 
       <!-- Order Summary -->
-      <section class="section">
+      <section class="section summary-section">
         <h3>Order Summary</h3>
         <div class="summary-grid">
-          <div>
-            <span class="summary-label">Total Quantity:</span>
+          <div class="summary-card">
+            <span class="summary-label">Total Quantity</span>
             <span id="totalQuantity" class="summary-value">0</span>
           </div>
-          <div>
-            <span class="summary-label">Total Amount:</span>
+          <div class="summary-card">
+            <span class="summary-label">Total Amount</span>
             <span id="totalAmount" class="summary-value">$0.00</span>
           </div>
         </div>
@@ -88,8 +87,6 @@
       </section>
     </form>
   </div>
-
-  <!-- Application Script -->
   <script src="app.js"></script>
 </body>
 </html>
