@@ -10,17 +10,14 @@ async function fetchProductData() {
     }
     const csv = await res.text();
     productData = csvToProductData(csv);
-
-    // Optional: enable UI (if you want to block controls until loaded)
     document.getElementById('addProductBtn').disabled = false;
     document.getElementById('brandSelect').disabled = false;
-    // Optionally, automatically create a product card if a brand is already selected:
     if (document.getElementById('brandSelect').value) {
       createProductCard();
     }
   } catch (err) {
     alert("Could not load product database from Google Sheets.");
-    productData = []; // Safe fallback
+    productData = [];
   }
 }
 
@@ -40,45 +37,12 @@ function csvToProductData(csv) {
     obj.recommendedRetailPrice = Number(obj.recommendedRetailPrice) || 0;
     obj.availableSizes = obj.availableSizes ? obj.availableSizes.split('|').map(s => s.trim()) : [];
     return obj;
-  }).filter(x => x.skuId && x.brandName); // Only keep valid rows
+  }).filter(x => x.skuId && x.brandName);
 }
 
-// <<< PLACE IT HERE, before you enable any UI or listen for user interactions! >>>
 document.getElementById('addProductBtn').disabled = true;
 document.getElementById('brandSelect').disabled = true;
-
-// Call once on page load
 fetchProductData();
-
-
-
-
-/*
-function fetchProductDataFromSheet(callback) {
-  // Replace GID if your sheet uses a different tab
-  const SHEET_ID = '2PACX-1vSGSBJA4h8Rbg6eCNk63pR4CGb4wwBPmHa6kN2B3R2wu_MJX35fdWRgWJ5FKDtChOo22lW5roEViMwq';
-  const GID = '0'; // update this if your sheet tab is different
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
-  fetch(url)
-    .then(response => response.text())
-    .then(text => {
-      // Strip the JS wrapper to get raw JSON
-      const json = JSON.parse(text.match(/(?<=setResponse\\().*(?=\\);)/s)[0]);
-      const rows = json.table.rows;
-      const headers = json.table.cols.map(col => col.label || col.id);
-
-      // Map rows to objects with correct headers
-      const products = rows.map(row => {
-        const obj = {};
-        row.c.forEach((cell, i) => obj[headers[i]] = cell ? cell.v : "");
-        return obj;
-      });
-      callback(products);
-    });
-}
-*/
-
-
 
 const dom = id => document.getElementById(id);
 
@@ -99,23 +63,19 @@ class OrderSheetState {
   }
   reset() { this.items = []; this.recalculateTotals(); }
 }
+
 const state = new OrderSheetState();
 
 function autoCompleteBox(input, brand, cb) {
   let items=[], index=-1, list=null;
   input.setAttribute('autocomplete', 'off');
-
-  // Helper to get results; empty string returns all, sorted by skuId
   function getResults(val) {
     let arr = productData.filter(p => p.brandName === brand && 
       (val ? (p.productName.toLowerCase().includes(val) || p.skuId.toLowerCase().includes(val)) : true)
     );
-    // sort by SKU ID string
     arr.sort((a,b) => a.skuId.localeCompare(b.skuId, undefined, {numeric:true, sensitivity:'base'}));
     return arr.slice(0, 8);
   }
-
-  // Actually use this on both 'input' and 'focus'
   function showList(val) {
     closeList();
     const search = val ? val.trim().toLowerCase() : "";
@@ -140,16 +100,8 @@ function autoCompleteBox(input, brand, cb) {
     document.body.appendChild(list);
     index = -1;
   }
-
-  input.addEventListener('input', function() {
-    showList(this.value);
-  });
-
-  // NEW: Show all on focus (when nothing filled out yet)
-  input.addEventListener('focus', function() {
-    if (!this.value.trim()) showList("");
-  });
-
+  input.addEventListener('input', function() { showList(this.value); });
+  input.addEventListener('focus', function() { if (!this.value.trim()) showList(""); });
   input.addEventListener('keydown', function(e) {
     if (!list) return;
     const len = list.childElementCount;
@@ -164,120 +116,57 @@ function autoCompleteBox(input, brand, cb) {
   function closeList(){if(list){document.body.removeChild(list);list=null;}items=[];index=-1;}
 }
 
-
 function createProductCard() {
-  const brand = dom('brandSelect').value;
-  if (!brand) return alert('Select a brand first.');
-
-  const card = document.createElement('div');
-  card.className = 'product-card';
-
+  const brand = dom('brandSelect').value; if (!brand) return alert('Select a brand first.');
+  const card = document.createElement('div'); card.className = 'product-card';
   const removeBtn = document.createElement('button');
-  removeBtn.innerHTML = '&times;';
-  removeBtn.className = 'remove-card';
-  removeBtn.type = 'button';
-  removeBtn.setAttribute('aria-label', 'Remove product');
-  card.appendChild(removeBtn);
+  removeBtn.innerHTML = '&times;'; removeBtn.className='remove-card'; removeBtn.type='button';
+  removeBtn.setAttribute('aria-label','Remove product'); card.appendChild(removeBtn);
 
   // Three columns
-  const row = document.createElement('div');
-  row.className = 'card-threecol';
-  card.appendChild(row);
+  const row = document.createElement('div'); row.className = 'card-threecol'; card.appendChild(row);
 
-  // === 1. Style ===
-  const styleCol = document.createElement('div');
-  styleCol.className = 'productcol stylecol';
-  row.appendChild(styleCol);
-
+  // 1. Style
+  const styleCol = document.createElement('div'); styleCol.className = 'productcol stylecol'; row.appendChild(styleCol);
   const styleField = document.createElement('input');
-  styleField.type = 'text';
-  styleField.placeholder = 'Search style by SKU or name';
-  styleField.style.width = '100%';
-  styleField.style.marginBottom = '8px';
+  styleField.type='text'; styleField.placeholder='Search style by SKU or name'; styleField.style.width='100%'; styleField.style.marginBottom='8px'; 
   styleCol.appendChild(styleField);
 
-  const styleImg = document.createElement('img');
-  styleImg.alt = 'Style Image';
-  styleImg.style.display = 'none';
-  styleCol.appendChild(styleImg);
+  const styleImg = document.createElement('img'); styleImg.alt = 'Style Image'; styleImg.style.display='none'; styleCol.appendChild(styleImg);
+  const styleImgLabel = document.createElement('div'); styleImgLabel.className = 'img-label'; styleImgLabel.textContent = 'Style'; styleCol.appendChild(styleImgLabel);
 
-  const styleImgLabel = document.createElement('div');
-  styleImgLabel.className = 'img-label';
-  styleImgLabel.textContent = 'Style';
-  styleCol.appendChild(styleImgLabel);
+  // 2. Print
+  const printCol = document.createElement('div'); printCol.className = 'productcol printcol'; row.appendChild(printCol);
+  const printField = document.createElement('input'); printField.type='text'; printField.placeholder='Optional custom print'; printField.style.width='100%'; printField.style.marginBottom='8px'; printCol.appendChild(printField);
+  const printImg = document.createElement('img'); printImg.alt = 'Print Image'; printImg.style.display='none'; printCol.appendChild(printImg);
+  const printImgLabel = document.createElement('div'); printImgLabel.className = 'img-label'; printImgLabel.textContent = 'Custom Print'; printCol.appendChild(printImgLabel);
 
-  // === 2. Print ===
-  const printCol = document.createElement('div');
-  printCol.className = 'productcol printcol';
-  row.appendChild(printCol);
+  // 3. Details
+  const detailsCol = document.createElement('div'); detailsCol.className = 'productcol infocol'; row.appendChild(detailsCol);
 
-  const printField = document.createElement('input');
-  printField.type = 'text';
-  printField.placeholder = 'Optional custom print';
-  printField.style.width = '100%';
-  printField.style.marginBottom = '8px';
-  printCol.appendChild(printField);
+  const prodName = document.createElement('div'); prodName.className='prod-name'; detailsCol.appendChild(prodName);
+  const sizesSpan = document.createElement('div'); sizesSpan.className = 'available-sizes'; sizesSpan.style.display = 'none'; detailsCol.appendChild(sizesSpan);
+  const link = document.createElement('a'); link.textContent='View Product Details'; link.target='_blank'; link.style.display='inline-block'; link.style.marginBottom='8px'; detailsCol.appendChild(link);
 
-  const printImg = document.createElement('img');
-  printImg.alt = 'Print Image';
-  printImg.style.display = 'none';
-  printCol.appendChild(printImg);
+  const priceRow = document.createElement('div'); priceRow.style.display='flex'; priceRow.style.alignItems='center'; detailsCol.appendChild(priceRow);
+  const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
+  const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
 
-  const printImgLabel = document.createElement('div');
-  printImgLabel.className = 'img-label';
-  printImgLabel.textContent = 'Custom Print';
-  printCol.appendChild(printImgLabel);
-
-  // === 3. Details ===
-  const detailsCol = document.createElement('div');
-  detailsCol.className = 'productcol infocol';
-  row.appendChild(detailsCol);
-
-  const prodName = document.createElement('div');
-  prodName.className = 'prod-name';
-  detailsCol.appendChild(prodName);
-
-  const sizesSpan = document.createElement('div');
-  sizesSpan.className = 'available-sizes';
-  sizesSpan.style.display = 'none';
-  detailsCol.appendChild(sizesSpan);
-
-  const link = document.createElement('a');
-  link.textContent = 'View Product Details';
-  link.target = '_blank';
-  link.style.display = 'inline-block';
-  link.style.marginBottom = '8px';
-  detailsCol.appendChild(link);
-
-  const priceRow = document.createElement('div');
-  priceRow.style.display = 'flex';
-  priceRow.style.alignItems = 'center';
-  detailsCol.appendChild(priceRow);
-
-  const landingBox = document.createElement('div');
-  landingBox.className = 'price-box';
-  priceRow.appendChild(landingBox);
-
-  const retailBox = document.createElement('div');
-  retailBox.className = 'price-box';
-  priceRow.appendChild(retailBox);
-
-  // ==== New Dynamic SIZES + QTY ROW LOGIC ====
+  // --- NEW: Dynamic SIZES + QTY ROW ---
   const sizesList = document.createElement('div');
   sizesList.className = 'sizes-list';
-
-  let sizeQtyArray = []; // [{size: 'S', quantity: 2}, ...]
+  let sizeQtyArray = [];
   let availableSizesArr = [];
 
   function renderSizeQtyRows() {
-    sizesList.innerHTML = ""; // Clear before re-render
-
+    sizesList.innerHTML = "";
     sizeQtyArray.forEach((item, idx) => {
       const rowDiv = document.createElement('div');
       rowDiv.className = 'sizes-qty-row';
 
       // Size dropdown
       const sizeSel = document.createElement('select');
+      sizeSel.style.width = '74px';
       availableSizesArr.forEach(size => {
         const opt = document.createElement('option');
         opt.value = size;
@@ -287,22 +176,22 @@ function createProductCard() {
       sizeSel.value = item.size || availableSizesArr[0] || '';
       sizeSel.onchange = function() {
         item.size = this.value;
-        updateAvailableSizeOptions();
+        updateTotalAndSubtotal();
       };
 
-      // Qty
+      // Qty input
       const qtyInput = document.createElement('input');
       qtyInput.type = 'number';
       qtyInput.placeholder = 'Qty';
       qtyInput.min = '0';
       qtyInput.value = item.quantity;
-      qtyInput.style.width = '65px';
+      qtyInput.style.width = '55px';
       qtyInput.addEventListener('input', function() {
         item.quantity = Number(this.value) || 0;
         updateTotalAndSubtotal();
       });
 
-      // Remove size line button
+      // Remove size line
       const remBtn = document.createElement('button');
       remBtn.type = 'button';
       remBtn.textContent = '×';
@@ -318,23 +207,26 @@ function createProductCard() {
       rowDiv.appendChild(qtyInput);
       if (sizeQtyArray.length > 1) rowDiv.appendChild(remBtn);
 
+      // Inline + on last row
+      if (idx === sizeQtyArray.length - 1) {
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.textContent = '+';
+        addBtn.className = 'add-size-btn-inline';
+        addBtn.title = 'Add new size';
+        addBtn.onclick = function(e) {
+          e.preventDefault();
+          const sizeUsed = sizeQtyArray.map(line => line.size);
+          let nextAvailable = availableSizesArr.find(size => !sizeUsed.includes(size)) || availableSizesArr[0];
+          sizeQtyArray.push({ size: nextAvailable, quantity: 0 });
+          renderSizeQtyRows();
+        };
+        rowDiv.appendChild(addBtn);
+      }
+
       sizesList.appendChild(rowDiv);
     });
   }
-
-  // Add size line button
-  const addSizeBtn = document.createElement('button');
-  addSizeBtn.type = 'button';
-  addSizeBtn.textContent = '+ Size';
-  addSizeBtn.className = 'add-size-btn';
-  addSizeBtn.onclick = function(e) {
-    e.preventDefault();
-    // Find first available (unselected) size, or add duplicate if user wants
-    const sizeUsed = sizeQtyArray.map(line => line.size);
-    const nextAvailable = availableSizesArr.find(size => !sizeUsed.includes(size)) || availableSizesArr[0];
-    sizeQtyArray.push({ size: nextAvailable, quantity: 0 });
-    renderSizeQtyRows();
-  };
 
   // Total QTY display
   const qtyTotalWrap = document.createElement('div');
@@ -357,44 +249,33 @@ function createProductCard() {
   unitPriceInput.min = '0';
   detailsCol.appendChild(unitPriceInput);
 
-  // SIZES TITLE + DYNAMIC LIST + ADD BUTTON
+  // SIZES TITLE + DYNAMIC LIST + QTY + ADD BUTTON
   const sizesTitle = document.createElement('label');
   sizesTitle.textContent = 'Select Size(s) & Qty:';
   detailsCol.appendChild(sizesTitle);
   detailsCol.appendChild(sizesList);
-  detailsCol.appendChild(addSizeBtn);
   detailsCol.appendChild(qtyTotalWrap);
 
-  // Customize notes
+  // Customization notes
   const noteLabel = document.createElement('label');
   noteLabel.textContent = 'Customization Notes';
   detailsCol.appendChild(noteLabel);
 
   const noteArea = document.createElement('textarea');
-  noteArea.rows = 2;
-  noteArea.placeholder = 'Customization notes';
-  noteArea.style.width = '100%';
+  noteArea.rows = 2; noteArea.placeholder='Customization notes'; noteArea.style.width = '100%';
   detailsCol.appendChild(noteArea);
 
   const subtotalDisp = document.createElement('div');
-  subtotalDisp.className = 'subtotal-disp';
-  detailsCol.appendChild(subtotalDisp);
+  subtotalDisp.className = 'subtotal-disp'; detailsCol.appendChild(subtotalDisp);
 
-  // Core order line item
   const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
 
-  // --- Helper Functions
   function updateTotalAndSubtotal() {
-    // Remove lines with no size or negative/zero qty
     sizeQtyArray = sizeQtyArray.filter(line => line.size && Number(line.quantity) > 0);
-
     const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) || 0), 0);
     qtyTotalSpan.textContent = totalQty;
     lineItem.quantity = totalQty;
-
-    // Save as string summary to .sizes field for export/PDF
     lineItem.sizes = sizeQtyArray.filter(e => e.quantity).map(e => `${e.quantity} ${e.size}`).join(', ');
-
     const unit = Number(unitPriceInput.value || 0);
     lineItem.unitPrice = unit;
     const subtotal = totalQty * unit;
@@ -403,42 +284,23 @@ function createProductCard() {
     state.recalculateTotals();
   }
 
-  // When style is selected, set sizes and reset sizes-qty UI
   function onStyleChange(prod) {
     availableSizesArr = (prod.availableSizes && prod.availableSizes.length) ? prod.availableSizes : [];
-    // Start with one row by default
-    sizeQtyArray = [{size: availableSizesArr[0] || "", quantity: 0}];
+    sizeQtyArray = [{ size: availableSizesArr[0] || "", quantity: 0 }];
     renderSizeQtyRows();
     updateTotalAndSubtotal();
   }
 
-  function updateAvailableSizeOptions() {
-    // Ensures that changing one row to use a used size is allowed if you want (e.g., two size "S" if needed)
-    // Optionally, you could prevent duplicates by making used sizes disabled in other dropdowns
-    // No additional logic needed for now
-    updateTotalAndSubtotal();
-  }
-
-  // Unit price and customization notes listeners
   unitPriceInput.addEventListener('input', updateTotalAndSubtotal);
   noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
 
-  // Autocomplete and data population
   autoCompleteBox(styleField, brand, prod => {
     styleField.value = `${prod.skuId} – ${prod.productName}`;
-    styleImg.src = prod.imageUrl;
-    styleImg.style.display = '';
-    styleImgLabel.classList.add('active');
-    prodName.textContent = prod.productName;
-    link.style.display = 'inline-block';
-    link.href = prod.productLink;
-    landingBox.textContent = `Landing $${prod.landingPrice}`;
-    retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
-    unitPriceInput.value = prod.landingPrice;
-    lineItem.styleSku = prod.skuId;
-    lineItem.productName = prod.productName;
-    lineItem.unitPrice = prod.landingPrice;
-    lineItem.styleImgUrl = prod.imageUrl;
+    styleImg.src = prod.imageUrl; styleImg.style.display = ''; styleImgLabel.classList.add('active');
+    prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
+    landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
+    unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
+    lineItem.unitPrice = prod.landingPrice; lineItem.styleImgUrl = prod.imageUrl;
     sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join(' · ') : '';
     sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
     onStyleChange(prod);
@@ -453,13 +315,8 @@ function createProductCard() {
     lineItem.printImgUrl = prod.imageUrl;
   });
 
-  removeBtn.addEventListener('click', () => {
-    card.remove();
-    state.removeItem(state.items.indexOf(lineItem));
-  });
-
-  dom('productCards').appendChild(card);
-  state.addItem(lineItem);
+  removeBtn.addEventListener('click', () => { card.remove(); state.removeItem(state.items.indexOf(lineItem)); });
+  dom('productCards').appendChild(card); state.addItem(lineItem);
 }
 
 async function toDataUrl(url) {
@@ -506,24 +363,20 @@ dom('orderForm').addEventListener('submit', async e => {
     let styleData = null, printData = null;
     try { styleData = it.styleImgUrl ? await toDataUrl(it.styleImgUrl) : null; }catch{}
     try { printData = it.printImgUrl ? await toDataUrl(it.printImgUrl) : null; }catch{}
-    // Three cols layout
     const col1 = left, col2 = left+170, col3 = left+340;
     let rowMaxH = 0;
     doc.setFontSize(12); doc.setFont(undefined,"bold");
     doc.text(`Item ${idx+1}`, left, y);
-    // Style col
     if (styleData) {
       doc.setFontSize(10); doc.text("Style", col1+42, y+17);
       doc.addImage(styleData, "JPEG", col1+10, y+26, 120, 120);
       rowMaxH = 137;
     }
-    // Print col
     if (printData) {
       doc.setFontSize(10); doc.text("Custom Print", col2+25, y+17);
       doc.addImage(printData, "JPEG", col2+10, y+26, 120, 120);
       rowMaxH = Math.max(rowMaxH,137);
     }
-    // Details col
     doc.setFontSize(10);
     let infoRow = y+2;
     doc.setFont(undefined,"bold"); doc.text(it.productName || "", col3, infoRow+20);
