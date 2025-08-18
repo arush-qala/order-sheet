@@ -138,9 +138,9 @@ function createProductCard() {
   const card = document.createElement('div');
   card.className = 'product-card';
 
-  // Remove Button: clearer, larger, accessible, top-right.
+  // Remove Button - large clickable X
   const removeBtn = document.createElement('button');
-  removeBtn.textContent = 'Remove';
+  removeBtn.innerHTML = '&times;'; // Unicode ×
   removeBtn.className = 'remove-card';
   removeBtn.type = 'button';
   removeBtn.setAttribute('aria-label', 'Remove product');
