@@ -220,19 +220,19 @@ function createProductCard() {
   let availableSizesArr = [];
 
   function updateTotalAndSubtotal() {
-    // Only keep lines with a valid size and positive quantity
-    sizeQtyArray = sizeQtyArray.filter(line => line.size && Number(line.quantity) > 0);
-    const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) || 0), 0);
-    qtyTotalSpan.textContent = totalQty;
-    lineItem.quantity = totalQty;
-    lineItem.sizes = sizeQtyArray.filter(e => e.quantity).map(e => `${e.quantity} ${e.size}`).join(', ');
-    const unit = Number(unitPriceInput.value || 0);
-    lineItem.unitPrice = unit;
-    const subtotal = totalQty * unit;
-    lineItem.subtotal = subtotal;
-    subtotalDisp.textContent = (totalQty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
-    state.recalculateTotals();
-  }
+  const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) > 0 ? Number(entry.quantity) : 0), 0);
+  qtyTotalSpan.textContent = totalQty;
+  lineItem.quantity = totalQty;
+  // Only include positive-qty sizes in the display string
+  lineItem.sizes = sizeQtyArray.filter(e => Number(e.quantity) > 0).map(e => `${e.quantity} ${e.size}`).join(', ');
+  const unit = Number(unitPriceInput.value || 0);
+  lineItem.unitPrice = unit;
+  const subtotal = totalQty * unit;
+  lineItem.subtotal = subtotal;
+  subtotalDisp.textContent = (totalQty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
+  state.recalculateTotals();
+}
+
 
   function renderSizeQtyRows() {
     sizesList.innerHTML = "";
@@ -300,7 +300,7 @@ function createProductCard() {
 
       sizesList.appendChild(rowDiv);
     });
-    updateTotalAndSubtotal(); // Call here to react to any change
+   // updateTotalAndSubtotal(); // Call here to react to any change
   }
 
   // Total QTY display
@@ -347,8 +347,12 @@ function createProductCard() {
 
   function onStyleChange(prod) {
     availableSizesArr = (prod.availableSizes && prod.availableSizes.length) ? prod.availableSizes : [];
-    sizeQtyArray = [{ size: availableSizesArr[0] || "", quantity: 0 }];
-    renderSizeQtyRows();
+    sizeQtyArray.length = 0; // Clear array
+if (availableSizesArr.length) {
+  sizeQtyArray.push({ size: availableSizesArr, quantity: 0 });
+}
+renderSizeQtyRows();
+
   }
 
   unitPriceInput.addEventListener('input', updateTotalAndSubtotal);
