@@ -111,8 +111,8 @@ textarea {resize:vertical;}
   .sizes-block input, .qty-block input { max-width: 100%; }
 }
 
-.prod-name{font-weight:700;font-size:1.07rem;margin-bottom:2px;}
-.available-sizes{font-size:.99rem;font-family:'Inter',sans-serif;font-weight:500;color:#3f3f37;letter-spacing:.08em;text-transform:uppercase;opacity:.82;margin-bottom:2px;}
+.prod-name{font-weight:700;font-size:1.07rem;margin-bottom:10px;}
+.available-sizes{font-size:.99rem;font-family:'Inter',sans-serif;font-weight:500;color:#3f3f37;letter-spacing:.08em;text-transform:uppercase;opacity:.82;margin-bottom:10px;}
 .price-box{padding:var(--spacing-2) var(--spacing-3);border:1px solid var(--color-border);border-radius:var(--radius);font-weight:600;margin-right:var(--spacing-2);background:#fafaf7;}
 .subtotal-disp{font-size:1.09rem;font-weight:bold;color:#211;margin-top:12px;margin-bottom:6px;}
 .summary-section{margin-top:var(--spacing-4);}
