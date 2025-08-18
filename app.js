@@ -307,7 +307,28 @@
 ]; */
 
  // Trying to connect with Google Spreadsheet - database of products
+function fetchProductDataFromSheet(callback) {
+  // Replace GID if your sheet uses a different tab
+  const SHEET_ID = '2PACX-1vSGSBJA4h8Rbg6eCNk63pR4CGb4wwBPmHa6kN2B3R2wu_MJX35fdWRgWJ5FKDtChOo22lW5roEViMwq';
+  const GID = '0'; // update this if your sheet tab is different
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+  fetch(url)
+    .then(response => response.text())
+    .then(text => {
+      // Strip the JS wrapper to get raw JSON
+      const json = JSON.parse(text.match(/(?<=setResponse\\().*(?=\\);)/s)[0]);
+      const rows = json.table.rows;
+      const headers = json.table.cols.map(col => col.label || col.id);
 
+      // Map rows to objects with correct headers
+      const products = rows.map(row => {
+        const obj = {};
+        row.c.forEach((cell, i) => obj[headers[i]] = cell ? cell.v : "");
+        return obj;
+      });
+      callback(products);
+    });
+}
 
 
 
