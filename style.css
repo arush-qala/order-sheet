@@ -54,6 +54,16 @@ textarea {resize:vertical;}
   box-sizing: border-box;
   margin-bottom: 10px;
 }
+.infocol label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #232323;
+  margin-bottom: 3px;
+  margin-top: 8px;
+  display: block;
+}
+
+
 /* ---- END: PRODUCT CARD INPUTS/BOX REFINEMENT ---- */
 .prod-name{font-weight:700;font-size:1.07rem;margin-bottom:2px;}
 .available-sizes{font-size:.99rem;font-family:'Inter',sans-serif;font-weight:500;color:#3f3f37;letter-spacing:.08em;text-transform:uppercase;opacity:.82;margin-bottom:2px;}
