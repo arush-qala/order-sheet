@@ -47,31 +47,25 @@ function autoCompleteBox(input, brand, cb) {
   let items = [];
   let index = -1;
   let list = null;
-
   input.setAttribute('autocomplete', 'off');
   input.addEventListener('input', function () {
     closeList();
     const search = this.value.trim().toLowerCase();
     if (!search) return;
-
     items = productData
       .filter(p => p.brandName === brand &&
         (p.productName.toLowerCase().includes(search) || p.skuId.toLowerCase().includes(search)))
       .slice(0, 8); // show max 8
-
     if (!items.length) return;
-
     list = document.createElement('div');
     list.className = 'autocomplete-list';
     list.style.position = 'absolute';
-
     const rect = input.getBoundingClientRect();
     const scrollTop  = (window.pageYOffset || document.documentElement.scrollTop);
     const scrollLeft = (window.pageXOffset || document.documentElement.scrollLeft);
     list.style.left  = `${rect.left + scrollLeft}px`;
     list.style.top   = `${rect.bottom + scrollTop}px`;
     list.style.width = `${rect.width}px`;
-
     items.forEach((item, idx) => {
       const div = document.createElement('div');
       div.className = 'autocomplete-item';
@@ -83,10 +77,8 @@ function autoCompleteBox(input, brand, cb) {
       list.appendChild(div);
     });
     document.body.appendChild(list);
-
     index = -1;
   });
-
   input.addEventListener('keydown', function (e) {
     if (!list) return;
     const len = list.childElementCount;
@@ -110,11 +102,9 @@ function autoCompleteBox(input, brand, cb) {
       closeList();
     }
   });
-
   input.addEventListener('blur', function() {
     setTimeout(closeList, 100);
   });
-
   function highlight() {
     Array.from(list.children).forEach((item, idx) => {
       item.classList.toggle('active', idx === index);
@@ -134,16 +124,14 @@ function autoCompleteBox(input, brand, cb) {
 function createProductCard() {
   const brand = dom('brandSelect').value;
   if (!brand) return alert('Select a brand first.');
-
   const card = document.createElement('div');
   card.className = 'product-card';
-
-  // Remove Button - large clickable X
-    const removeBtn = document.createElement('button');
-  removeBtn.innerHTML = '&times;'; // subtle "×"
+  // Remove Button: subtle "×" with large area
+  const removeBtn = document.createElement('button');
+  removeBtn.innerHTML = '&times;';
   removeBtn.className = 'remove-card';
   removeBtn.type = 'button';
-  removeBtn.setAttribute('aria-label', 'Remove product');
+  removeBtn.setAttribute('aria-label','Remove product');
   card.appendChild(removeBtn);
 
   const flex = document.createElement('div');
@@ -320,7 +308,6 @@ function createProductCard() {
     lineItem.printImgUrl = prod.imageUrl;
   });
 
-  // Remove logic
   removeBtn.addEventListener('click', () => {
     card.remove();
     state.removeItem(state.items.indexOf(lineItem));
@@ -337,12 +324,12 @@ async function toDataUrl(url) {
     img.crossOrigin = "Anonymous";
     img.onload = function () {
       const canvas = document.createElement('canvas');
-      canvas.width = 70;
-      canvas.height = 70;
+      canvas.width = 40;
+      canvas.height = 40;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = "#fff";
       ctx.fillRect(0,0,canvas.width,canvas.height);
-      const ratio = Math.min(canvas.width/this.width, canvas.height/this.height);
+      const ratio = Math.min(canvas.width/this.width, canvas.height/this.height, 1.0);
       const w = this.width * ratio, h = this.height * ratio;
       ctx.drawImage(this, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
       resolve(canvas.toDataURL('image/jpeg', 0.90));
@@ -394,24 +381,18 @@ dom('orderForm').addEventListener('submit', async e => {
     doc.text(`Style SKU: ${it.styleSku || ""}  Print SKU: ${it.printSku || ""}`, 14, y); y += 6;
     doc.text(`Sizes: ${it.sizes || ""}  Qty: ${it.quantity || ""}  Unit: $${it.unitPrice||""}  Subtotal: $${it.subtotal || ""}`, 14, y); y += 6;
     doc.text(`Notes: ${it.notes || ""}`, 14, y); y += 6;
-
     // Images side by side (if style/print)
     if (styleData) {
       doc.text("Style", 15, y);
-      doc.addImage(styleData, "JPEG", 10, y+1, 22, 22);
+      doc.addImage(styleData, "JPEG", 10, y+2, 14, 14);
     }
     if (printData) {
-      doc.text("Print", 48, y);
-      doc.addImage(printData, "JPEG", 42, y+1, 22, 22);
+      doc.text("Print", 40, y);
+      doc.addImage(printData, "JPEG", 36, y+2, 14, 14);
     }
-    if(styleData || printData) y += 26;
+    if(styleData || printData) y += 18;
     else y += 4;
-
-    // If at bottom, new page
-    if (y > 265) {
-      doc.addPage();
-      y = 10;
-    }
+    if (y > 265) { doc.addPage(); y = 10; }
   }
   doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
   console.log({ header: state.header, items: state.items });
