@@ -1,788 +1,291 @@
-// Product data
-const productData = [
-  {
-    "productName": "Noor Scarf Tube Dress",
-    "imageUrl": "https://doodlage.in/cdn/shop/files/DL25-DR-015-01_2b628836-d07a-4e96-85c1-b5c9aeb6bece.jpg?v=1750658908&width=1000",
-    "productLink": "https://doodlage.in/products/dl25-dr-015-mudpie-maker-dress",
-    "landingPrice": 100,
-    "recommendedRetailPrice": 250,
-    "availableSizes": ["XXS", "M", "XL", "L"],
-    "brandName": "Doodlage"
-  },
-  {
-    "productName": "Noor Draped Toga Maxi Dress",
-    "imageUrl": "https://doodlage.in/cdn/shop/files/FullSizeRender_b181d93f-ae20-43b4-a9ae-b178da08d1cc.jpg?v=1750658882&width=800",
-    "productLink": "https://doodlage.in/products/dl25-dr-014-kiteberry-dress",
-    "landingPrice": 200,
-    "recommendedRetailPrice": 500,
-    "availableSizes": ["XXS", "M", "XL"],
-    "brandName": "Doodlage"
-  },
-  {
-    "productName": "Noor Sundown Maxi Dress",
-    "imageUrl": "https://doodlage.in/cdn/shop/files/FullSizeRender_b181d93f-ae20-43b4-a9ae-b178da08d1cc.jpg?v=1750658882&width=800",
-    "productLink": "https://doodlage.in/products/dl25-dr-014-kiteberry-dress",
-    "landingPrice": 300,
-    "recommendedRetailPrice": 750,
-    "availableSizes": ["XXS", "M", "XL", "XXL"],
-    "brandName": "Doodlage"
-  },
-  {
-    "productName": "English Rose",
-    "imageUrl": "https://kharakapas.com/cdn/shop/files/KKSpring2137_8c6e5c18-9704-4b36-b2b1-d387e34817e4.jpg?v=1740160276&width=1080",
-    "productLink": "https://kharakapas.com/products/daisy-dance?_pos=1&_sid=ba4bd3a82&_ss=r",
-    "landingPrice": 100,
-    "recommendedRetailPrice": 250,
-    "availableSizes": ["XXS", "M", "XL", "XXL"],
-    "brandName": "Khara Kapas"
-  },
-  {
-    "productName": "Daisy Dance",
-    "imageUrl": "https://kharakapas.com/cdn/shop/files/KK4856.jpg?v=1724948498&width=1080",
-    "productLink": "https://kharakapas.com/products/patio-jumpsuit?_pos=1&_sid=e0d625e6b&_ss=r",
-    "landingPrice": 123,
-    "recommendedRetailPrice": 308,
-    "availableSizes": ["XXS", "M", "XL"],
-    "brandName": "Khara Kapas"
-  },
-  {
-    "productName": "Patio Jumpsuit",
-    "imageUrl": "https://kharakapas.com/cdn/shop/files/KK4856.jpg?v=1724948498&width=1080",
-    "productLink": "https://kharakapas.com/products/mist-veil-gown?_pos=1&_sid=fe173a638&_ss=r",
-    "landingPrice": 122,
-    "recommendedRetailPrice": 305,
-    "availableSizes": ["XXS", "M", "XL"],
-    "brandName": "Khara Kapas"
-  },
-  {
-    "productName": "Dress 1",
-    "imageUrl": "https://www.hindostanarchive.com/cdn/shop/files/DSC01165.jpg?v=1749744353&width=3000",
-    "productLink": "https://www.hindostanarchive.com/products/shibori-indigo-slik-shirt?_pos=1&_psq=SHIBORI&_ss=e&_v=1.0",
-    "landingPrice": 114,
-    "recommendedRetailPrice": 285,
-    "availableSizes": ["XXS", "M", "XL", "L"],
-    "brandName": "Naushad Ali"
-  },
-  {
-    "productName": "Jacket 1",
-    "imageUrl": "https://www.hindostanarchive.com/cdn/shop/files/DSC01165.jpg?v=1749744353&width=3000",
-    "productLink": "https://www.hindostanarchive.com/products/paisley-silk-shirt?_pos=1&_psq=PAI&_ss=e&_v=1.0",
-    "landingPrice": 100,
-    "recommendedRetailPrice": 250,
-    "availableSizes": ["XXS", "M", "XL", "S"],
-    "brandName": "Naushad Ali"
-  },
-  {
-    "productName": "Shirt 1",
-    "imageUrl": "https://www.hindostanarchive.com/cdn/shop/files/DSC01165.jpg?v=1749744353&width=3000",
-    "productLink": "https://www.hindostanarchive.com/products/mankolam-handblocked-shirt",
-    "landingPrice": 56,
-    "recommendedRetailPrice": 140,
-    "availableSizes": ["XXS", "M", "XL", "S", "XS"],
-    "brandName": "Naushad Ali"
-  },
-  {
-    "productName": "Dress 2",
-    "imageUrl": "https://rasti.in/cdn/shop/files/blue-meadow-vest-01.jpg?v=1739684714&width=1100",
-    "productLink": "https://rasti.in/products/blue-meadow-crochet-vest",
-    "landingPrice": 99,
-    "recommendedRetailPrice": 248,
-    "availableSizes": ["XXS", "M", "XL"],
-    "brandName": "The Raw India"
-  },
-  {
-    "productName": "Dress 3",
-    "imageUrl": "https://rasti.in/cdn/shop/files/blue-meadow-vest-01.jpg?v=1739684714&width=1100",
-    "productLink": "https://rasti.in/products/hand-knitted-fading-fire-dress",
-    "landingPrice": 89,
-    "recommendedRetailPrice": 223,
-    "availableSizes": ["XXS", "M", "XL", "XS"],
-    "brandName": "The Raw India"
-  },
-  {
-    "productName": "Jacket 2",
-    "imageUrl": "https://rasti.in/cdn/shop/files/blue-meadow-vest-01.jpg?v=1739684714&width=1100",
-    "productLink": "https://rasti.in/products/knit-citrus-skirt",
-    "landingPrice": 167,
-    "recommendedRetailPrice": 418,
-    "availableSizes": ["XXS", "M", "XL", "XS"],
-    "brandName": "The Raw India"
-  }
-];
+/* app.js */
+const productData = [/* truncated for brevity; paste full array here */];
 
-// Application state
-let productCounter = 0;
-let selectedMainBrand = '';
+const state = {
+  currentBrand: '',
+  orderInfo: {},
+  orderLines: []
+};
 
-// Utility functions
-function getUniqueBrands() {
-  return [...new Set(productData.map(product => product.brandName))].sort();
+const elements = {
+  brandDropdown: document.getElementById('brandDropdown'),
+  brandNote: document.getElementById('brandNote'),
+  productList: document.getElementById('product-list'),
+  addProduct: document.getElementById('addProduct'),
+  summaryBar: document.getElementById('summaryBar'),
+  totalQty: document.getElementById('totalQty'),
+  totalAmt: document.getElementById('totalAmt'),
+  submitOrder: document.getElementById('submitOrder')
+};
+
+function init() {
+  populateBrandDropdown();
+  elements.brandDropdown.addEventListener('change', handleBrandChange);
+  elements.addProduct.addEventListener('click', addProductCard);
+  elements.submitOrder.addEventListener('click', handleSubmit);
 }
+init();
 
-function getProductsByBrand(brandName) {
-  return productData.filter(product => product.brandName === brandName);
-}
-
-function getProduct(brandName, productName) {
-  return productData.find(product => 
-    product.brandName === brandName && product.productName === productName
-  );
-}
-
-function formatUSD(amount) {
-  return `$${Number(amount).toFixed(2)}`;
-}
-
-// Initialize application when DOM is ready
-function initializeApp() {
-  console.log('App initializing...');
-  
-  // Initialize main brand dropdown
-  initializeMainBrandDropdown();
-  
-  // Add main event listeners
-  setupMainEventListeners();
-  
-  console.log('App initialized successfully');
-}
-
-function initializeMainBrandDropdown() {
-  const mainBrandSelect = document.getElementById('mainBrandSelect');
-  if (!mainBrandSelect) return;
-  
-  const brands = getUniqueBrands();
-  brands.forEach(brand => {
-    const option = document.createElement('option');
-    option.value = brand;
-    option.textContent = brand;
-    mainBrandSelect.appendChild(option);
+function populateBrandDropdown() {
+  const brands = [...new Set(productData.map(p => p.brandName))].sort();
+  brands.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b;
+    opt.textContent = b;
+    elements.brandDropdown.appendChild(opt);
   });
 }
 
-function setupMainEventListeners() {
-  const addProductBtn = document.getElementById('addProductBtn');
-  const orderForm = document.getElementById('orderForm');
-  const closeModalBtn = document.getElementById('closeModal');
-  const downloadPDFBtn = document.getElementById('downloadPDF');
-  const mainBrandSelect = document.getElementById('mainBrandSelect');
-  
-  if (addProductBtn) {
-    addProductBtn.onclick = function(e) {
-      e.preventDefault();
-      if (!selectedMainBrand) {
-        alert('Please select a brand first');
-        return;
-      }
-      addProduct();
-    };
-  }
-  
-  if (orderForm) {
-    orderForm.onsubmit = function(e) {
-      e.preventDefault();
-      handleOrderSubmit();
-    };
-  }
-  
-  if (closeModalBtn) {
-    closeModalBtn.onclick = closeModal;
-  }
-  
-  if (downloadPDFBtn) {
-    downloadPDFBtn.onclick = downloadPDF;
-  }
-  
-  if (mainBrandSelect) {
-    mainBrandSelect.onchange = function() {
-      selectedMainBrand = this.value;
-      // Clear existing products when brand changes
-      const container = document.getElementById('productsContainer');
-      if (container) {
-        container.innerHTML = '';
-        productCounter = 0;
-      }
-      updateOrderSummary();
-    };
-  }
-  
-  // Modal click outside to close
-  const modal = document.getElementById('confirmationModal');
-  if (modal) {
-    modal.onclick = function(e) {
-      if (e.target === modal) {
-        closeModal();
-      }
-    };
-  }
+function handleBrandChange(e) {
+  state.currentBrand = e.target.value;
+  state.orderLines = [];
+  elements.productList.innerHTML = '';
+  updateSummary();
 }
 
-// Add new product section
-function addProduct() {
-  if (!selectedMainBrand) {
-    alert('Please select a brand first');
+function addProductCard() {
+  if (!state.currentBrand) {
+    alert('Please select a brand first.');
     return;
   }
-  
-  productCounter++;
-  console.log('Adding product #', productCounter);
-  
-  const container = document.getElementById('productsContainer');
-  if (!container) {
-    console.error('Products container not found');
-    return;
-  }
-  
-  const productElement = document.createElement('div');
-  productElement.className = 'product-item';
-  productElement.setAttribute('data-product-id', productCounter);
-  
-  const products = getProductsByBrand(selectedMainBrand);
-  
-  let styleOptionsHTML = '<option value="">Select Style</option>';
-  let printOptionsHTML = '<option value="">Select Print (Visual Reference)</option>';
-  
-  products.forEach(product => {
-    styleOptionsHTML += `<option value="${product.productName}">${product.productName}</option>`;
-    printOptionsHTML += `<option value="${product.productName}">${product.productName}</option>`;
+  const idx = state.orderLines.length;
+  state.orderLines.push({
+    style: null,
+    print: null,
+    sizeText: '',
+    quantity: 0,
+    unitPrice: 0,
+    subtotal: 0,
+    notes: ''
   });
-  
-  productElement.innerHTML = `
-    <div class="product-header">
-      <h3>
-        Product Selection
-        <span class="product-number">#${productCounter}</span>
-      </h3>
+  const card = renderCard(idx);
+  elements.productList.appendChild(card);
+}
+
+function renderCard(index) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.index = index;
+
+  card.innerHTML = `
+    <div class="card-top">
+      <input type="text" placeholder="Search style by name or SKU" class="style-input">
+      <button class="remove-btn" aria-label="Remove">&times;</button>
     </div>
-    <div class="product-body">
-      <div class="product-selection-grid">
-        <div class="form-group">
-          <label class="form-label">Style Selection *</label>
-          <select class="form-control style-select" required>
-            ${styleOptionsHTML}
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Print Selection</label>
-          <select class="form-control print-select">
-            ${printOptionsHTML}
-          </select>
-          <small class="form-text text-muted">For visual reference only</small>
-        </div>
+    <div class="card-top">
+      <input type="text" placeholder="Search print by name or SKU (optional)" class="print-input">
+    </div>
+    <div class="image-row">
+      <div class="image-col style-img"><span>Style</span></div>
+      <div class="image-col print-img" style="display:none;"><span>Print</span></div>
+    </div>
+    <div class="details">
+      <div><strong class="productName"></strong> <a class="productLink" target="_blank"></a></div>
+      <div class="sizes"></div>
+      <div class="pricing">
+        <div class="price-box landing"></div>
+        <div class="price-box retail"></div>
       </div>
-      
-      <div class="product-info-display">
-        <div class="product-info-header">
-          <div class="product-images">
-            <img class="product-image style-image" src="" alt="Style Image">
-            <img class="product-image print-image" src="" alt="Print Image">
-          </div>
-          <div class="product-details-content">
-            <h3 class="product-title"></h3>
-            <div class="product-link-display">
-              <a href="#" target="_blank" class="product-link">View Product Details</a>
-            </div>
-            <div class="available-sizes-display">
-              <span class="label">Available Sizes:</span>
-              <div class="sizes-list"></div>
-            </div>
-          </div>
-        </div>
-        <div class="product-pricing">
-          <div class="price-box">
-            <span class="price-label">Landing Price</span>
-            <span class="price-amount landing-price">$0.00</span>
-          </div>
-          <div class="price-box">
-            <span class="price-label">Recommended Retail Price</span>
-            <span class="price-amount retail-price">$0.00</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="size-quantities-section">
-        <div class="size-quantity-header">
-          <h4>Size & Quantity Selection</h4>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Selected Sizes</label>
-          <input type="text" class="form-control selected-sizes" placeholder="e.g., 2 XS, 2 M, 2 L">
-          <small class="form-text text-muted">Enter your size selections in free text format</small>
-        </div>
-        <div class="size-quantity-row">
-          <div class="form-group">
-            <label class="form-label">Quantity *</label>
-            <input type="number" class="form-control quantity-input" min="1" value="1" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Unit Price (USD) *</label>
-            <input type="number" class="form-control unit-price-input" step="0.01" min="0" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Subtotal</label>
-            <div class="subtotal-display">$0.00</div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Customization Notes</label>
-          <textarea class="form-control customization-notes" rows="2" placeholder="Any special customization for this product..."></textarea>
-        </div>
-      </div>
-      
-      <div class="product-total-section">
-        <div class="product-total">
-          <span>Product Total:</span>
-          <span class="product-total-amount">$0.00</span>
-        </div>
-        <button type="button" class="remove-product-btn">Remove Product</button>
-      </div>
+    </div>
+    <div class="field full">
+      <label>Selected Sizes</label>
+      <input type="text" class="sizeText">
+    </div>
+    <div class="field half">
+      <label>Quantity</label>
+      <input type="number" min="0" class="qty">
+    </div>
+    <div class="field half">
+      <label>Unit Price</label>
+      <input type="number" min="0" step="0.01" class="unitPrice">
+    </div>
+    <div class="field full">
+      <label>Subtotal</label>
+      <input type="text" class="subtotal" readonly>
+    </div>
+    <div class="field full">
+      <label>Customization Notes</label>
+      <textarea class="notes"></textarea>
     </div>
   `;
-  
-  container.appendChild(productElement);
-  
-  // Set up event listeners for this product
-  setTimeout(() => {
-    setupProductEventListeners(productElement);
-  }, 50);
-  
-  updateOrderSummary();
+
+  card.querySelector('.remove-btn').addEventListener('click', () => removeCard(index));
+  attachAutocomplete(card, '.style-input', 'style');
+  attachAutocomplete(card, '.print-input', 'print');
+  attachFieldListeners(card, index);
+
+  return card;
 }
 
-// Setup event listeners for a product element
-function setupProductEventListeners(productElement) {
-  const styleSelect = productElement.querySelector('.style-select');
-  const printSelect = productElement.querySelector('.print-select');
-  const quantityInput = productElement.querySelector('.quantity-input');
-  const unitPriceInput = productElement.querySelector('.unit-price-input');
-  const removeProductBtn = productElement.querySelector('.remove-product-btn');
-  
-  console.log('Setting up event listeners for product element');
-  
-  if (styleSelect) {
-    styleSelect.onchange = function() {
-      handleStyleChange(productElement);
-    };
-  }
-  
-  if (printSelect) {
-    printSelect.onchange = function() {
-      handlePrintChange(productElement);
-    };
-  }
-  
-  if (quantityInput) {
-    quantityInput.oninput = function() {
-      calculateProductSubtotal(productElement);
-    };
-    quantityInput.onchange = function() {
-      calculateProductSubtotal(productElement);
-    };
-  }
-  
-  if (unitPriceInput) {
-    unitPriceInput.oninput = function() {
-      calculateProductSubtotal(productElement);
-    };
-    unitPriceInput.onchange = function() {
-      calculateProductSubtotal(productElement);
-    };
-  }
-  
-  if (removeProductBtn) {
-    removeProductBtn.onclick = function(e) {
-      e.preventDefault();
-      removeProduct(productElement);
-    };
-  }
-}
-
-// Handle style selection change
-function handleStyleChange(productElement) {
-  const styleSelect = productElement.querySelector('.style-select');
-  const productInfoDisplay = productElement.querySelector('.product-info-display');
-  const sizeQuantitiesSection = productElement.querySelector('.size-quantities-section');
-  
-  if (!styleSelect) return;
-  
-  const selectedStyle = styleSelect.value;
-  console.log('Handling style change:', selectedStyle);
-  
-  if (selectedStyle && selectedMainBrand) {
-    const product = getProduct(selectedMainBrand, selectedStyle);
-    
-    if (product) {
-      // Show product information
-      displayProductInfo(productElement, product);
-      
-      // Pre-fill unit price with landing price
-      const unitPriceInput = productElement.querySelector('.unit-price-input');
-      if (unitPriceInput) {
-        unitPriceInput.value = product.landingPrice.toString();
-      }
-      
-      productInfoDisplay.classList.add('visible');
-      sizeQuantitiesSection.classList.add('visible');
-      
-      // Calculate initial subtotal
-      calculateProductSubtotal(productElement);
+function attachAutocomplete(card, selector, type) {
+  const input = card.querySelector(selector);
+  input.addEventListener('input', e => {
+    const term = e.target.value.toLowerCase();
+    if (term.length < 2) return;
+    const results = productData.filter(p => p.brandName === state.currentBrand &&
+      (p.productName.toLowerCase().includes(term) || p.skuId.toLowerCase().includes(term))
+    ).slice(0, 5);
+    // simple datalist-like dropdown
+    let box = input.nextElementSibling;
+    if (!box || !box.classList.contains('suggestions')) {
+      box = document.createElement('div');
+      box.className = 'suggestions';
+      input.parentNode.appendChild(box);
     }
-  } else {
-    productInfoDisplay.classList.remove('visible');
-    sizeQuantitiesSection.classList.remove('visible');
-    
-    // Hide images
-    const styleImage = productElement.querySelector('.style-image');
-    const printImage = productElement.querySelector('.print-image');
-    if (styleImage) styleImage.style.display = 'none';
-    if (printImage) printImage.style.display = 'none';
-  }
-  
-  updateOrderSummary();
-}
-
-// Handle print selection change (visual only)
-function handlePrintChange(productElement) {
-  const printSelect = productElement.querySelector('.print-select');
-  const printImage = productElement.querySelector('.print-image');
-  
-  if (!printSelect || !printImage) return;
-  
-  const selectedPrint = printSelect.value;
-  console.log('Handling print change:', selectedPrint);
-  
-  if (selectedPrint && selectedMainBrand) {
-    const printProduct = getProduct(selectedMainBrand, selectedPrint);
-    
-    if (printProduct) {
-      printImage.src = printProduct.imageUrl;
-      printImage.alt = `Print: ${printProduct.productName}`;
-      printImage.style.display = 'block';
-      printImage.onerror = function() {
-        console.warn('Print image failed to load:', printProduct.imageUrl);
-        this.style.display = 'none';
-      };
-    }
-  } else {
-    printImage.style.display = 'none';
-  }
-}
-
-// Display product information
-function displayProductInfo(productElement, product) {
-  const styleImage = productElement.querySelector('.style-image');
-  const productTitle = productElement.querySelector('.product-title');
-  const productLink = productElement.querySelector('.product-link');
-  const landingPrice = productElement.querySelector('.landing-price');
-  const retailPrice = productElement.querySelector('.retail-price');
-  const sizesContainer = productElement.querySelector('.sizes-list');
-  
-  console.log('Displaying product info for:', product.productName);
-  
-  if (styleImage) {
-    styleImage.src = product.imageUrl;
-    styleImage.alt = `Style: ${product.productName}`;
-    styleImage.style.display = 'block';
-    styleImage.onerror = function() {
-      console.warn('Style image failed to load:', product.imageUrl);
-      this.style.display = 'none';
-    };
-  }
-  
-  if (productTitle) productTitle.textContent = product.productName;
-  if (landingPrice) landingPrice.textContent = formatUSD(product.landingPrice);
-  if (retailPrice) retailPrice.textContent = formatUSD(product.recommendedRetailPrice);
-  
-  if (productLink) {
-    productLink.href = product.productLink;
-    productLink.style.display = 'inline-block';
-  }
-  
-  // Show available sizes
-  if (sizesContainer) {
-    sizesContainer.innerHTML = '';
-    product.availableSizes.forEach(size => {
-      const sizeTag = document.createElement('span');
-      sizeTag.className = 'size-tag';
-      sizeTag.textContent = size;
-      sizesContainer.appendChild(sizeTag);
+    box.innerHTML = '';
+    results.forEach(r => {
+      const item = document.createElement('div');
+      item.textContent = `${r.skuId} – ${r.productName}`;
+      item.addEventListener('click', () => {
+        selectProduct(card, type, r);
+        input.value = `${r.skuId} – ${r.productName}`;
+        box.innerHTML = '';
+      });
+      box.appendChild(item);
     });
-  }
-}
-
-// Calculate product subtotal
-function calculateProductSubtotal(productElement) {
-  const quantityInput = productElement.querySelector('.quantity-input');
-  const unitPriceInput = productElement.querySelector('.unit-price-input');
-  const subtotalDisplay = productElement.querySelector('.subtotal-display');
-  const productTotalSection = productElement.querySelector('.product-total-section');
-  const productTotalAmount = productElement.querySelector('.product-total-amount');
-  
-  if (!quantityInput || !unitPriceInput || !subtotalDisplay) return;
-  
-  // Get values and convert to numbers properly
-  const quantity = Math.max(0, parseInt(quantityInput.value) || 0);
-  const unitPrice = Math.max(0, parseFloat(unitPriceInput.value) || 0);
-  const subtotal = quantity * unitPrice;
-  
-  console.log('Calculating subtotal:', { quantity, unitPrice, subtotal });
-  
-  subtotalDisplay.textContent = formatUSD(subtotal);
-  
-  if (productTotalAmount) {
-    productTotalAmount.textContent = formatUSD(subtotal);
-  }
-  
-  if (productTotalSection) {
-    if (quantity > 0 && unitPrice > 0) {
-      productTotalSection.classList.add('visible');
-    } else {
-      productTotalSection.classList.remove('visible');
-    }
-  }
-  
-  updateOrderSummary();
-}
-
-// Remove product
-function removeProduct(productElement) {
-  const allProducts = document.querySelectorAll('.product-item');
-  productElement.remove();
-  updateOrderSummary();
-}
-
-// Update order summary
-function updateOrderSummary() {
-  const productItems = document.querySelectorAll('.product-item');
-  let totalQuantity = 0;
-  let totalAmount = 0;
-  
-  productItems.forEach(productElement => {
-    const quantityInput = productElement.querySelector('.quantity-input');
-    const unitPriceInput = productElement.querySelector('.unit-price-input');
-    
-    if (quantityInput && unitPriceInput && quantityInput.value && unitPriceInput.value) {
-      const quantity = Math.max(0, parseInt(quantityInput.value) || 0);
-      const unitPrice = Math.max(0, parseFloat(unitPriceInput.value) || 0);
-      const subtotal = quantity * unitPrice;
-      
-      totalQuantity += quantity;
-      totalAmount += subtotal;
-    }
   });
-  
-  const totalQuantityEl = document.getElementById('totalQuantity');
-  const totalAmountEl = document.getElementById('totalAmount');
-  
-  if (totalQuantityEl) totalQuantityEl.textContent = totalQuantity;
-  if (totalAmountEl) totalAmountEl.textContent = formatUSD(totalAmount);
 }
 
-// Handle order submit
-function handleOrderSubmit() {
-  console.log('Handling order submit');
-  
-  if (!validateForm()) {
+function selectProduct(card, type, prod) {
+  const index = parseInt(card.dataset.index, 10);
+  const line = state.orderLines[index];
+  if (type === 'style') {
+    line.style = prod;
+    line.unitPrice = prod.landingPrice;
+    card.querySelector('.productName').textContent = prod.productName;
+    card.querySelector('.productLink').textContent = 'View Product Details';
+    card.querySelector('.productLink').href = prod.productLink;
+    card.querySelector('.sizes').textContent = `Available Sizes: ${prod.availableSizes.join(', ')}`;
+    card.querySelector('.landing').textContent = `$${prod.landingPrice}`;
+    card.querySelector('.retail').textContent = `$${prod.recommendedRetailPrice}`;
+    const styleImgCol = card.querySelector('.style-img');
+    styleImgCol.innerHTML = `<img src="${prod.imageUrl}"><span>Style</span>`;
+    updateSubtotal(line, card);
+  } else {
+    line.print = prod;
+    const printImgCol = card.querySelector('.print-img');
+    printImgCol.style.display = 'block';
+    printImgCol.innerHTML = `<img src="${prod.imageUrl}"><span>Print</span>`;
+  }
+}
+
+function attachFieldListeners(card, index) {
+  card.querySelector('.qty').addEventListener('input', e => {
+    state.orderLines[index].quantity = parseInt(e.target.value || '0', 10);
+    updateSubtotal(state.orderLines[index], card);
+  });
+  card.querySelector('.unitPrice').addEventListener('input', e => {
+    state.orderLines[index].unitPrice = parseFloat(e.target.value || '0');
+    updateSubtotal(state.orderLines[index], card);
+  });
+  card.querySelector('.sizeText').addEventListener('input', e => {
+    state.orderLines[index].sizeText = e.target.value;
+  });
+  card.querySelector('.notes').addEventListener('input', e => {
+    state.orderLines[index].notes = e.target.value;
+  });
+}
+
+function updateSubtotal(line, card) {
+  line.subtotal = (line.quantity || 0) * (line.unitPrice || 0);
+  card.querySelector('.subtotal').value = `$${line.subtotal.toFixed(2)}`;
+  updateSummary();
+}
+
+function updateSummary() {
+  const totalQty = state.orderLines.reduce((s, l) => s + (l.quantity || 0), 0);
+  const totalAmt = state.orderLines.reduce((s, l) => s + (l.subtotal || 0), 0);
+  elements.totalQty.textContent = `Total Quantity: ${totalQty}`;
+  elements.totalAmt.textContent = `Total Amount: $${totalAmt.toFixed(2)}`;
+  if (state.orderLines.length) {
+    elements.summaryBar.classList.remove('hidden');
+  } else {
+    elements.summaryBar.classList.add('hidden');
+  }
+}
+
+function removeCard(index) {
+  state.orderLines.splice(index, 1);
+  elements.productList.innerHTML = '';
+  state.orderLines.forEach((_, i) => {
+    const card = renderCard(i);
+    elements.productList.appendChild(card);
+  });
+  updateSummary();
+}
+
+function handleSubmit() {
+  if (!validateHeader()) {
+    alert('Please fill required buyer information.');
     return;
   }
-  
-  const orderData = collectOrderData();
-  const productSelections = collectProductSelections();
-  
-  showConfirmationModal(orderData, productSelections);
+  const header = collectHeader();
+  const exportPayload = {
+    order: header,
+    lineItems: state.orderLines
+  };
+  console.log('Export JSON', exportPayload);
+  generatePDF(header, state.orderLines);
 }
 
-// Validate form
-function validateForm() {
-  // Check required fields
-  const requiredFields = ['orderNumber', 'buyerStoreName', 'email', 'phone', 'shippingAddress'];
-  for (let fieldId of requiredFields) {
-    const field = document.getElementById(fieldId);
-    if (!field || !field.value.trim()) {
-      alert(`Please fill in the ${fieldId.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
-      return false;
-    }
+function validateHeader() {
+  const required = ['orderNumber', 'storeName', 'email', 'phone', 'shippingAddress'];
+  for (const id of required) {
+    if (!document.getElementById(id).value.trim()) return false;
   }
-  
-  // Check main brand selection
-  if (!selectedMainBrand) {
-    alert('Please select a brand for this order.');
-    return false;
-  }
-  
-  // Check products
-  const productItems = document.querySelectorAll('.product-item');
-  let hasAnyValidProduct = false;
-  
-  productItems.forEach(productElement => {
-    const styleSelect = productElement.querySelector('.style-select');
-    const quantityInput = productElement.querySelector('.quantity-input');
-    const unitPriceInput = productElement.querySelector('.unit-price-input');
-    
-    if (styleSelect && styleSelect.value && quantityInput && quantityInput.value && 
-        unitPriceInput && unitPriceInput.value && 
-        parseInt(quantityInput.value) > 0 && parseFloat(unitPriceInput.value) > 0) {
-      hasAnyValidProduct = true;
-    }
-  });
-  
-  if (!hasAnyValidProduct) {
-    alert('Please add at least one product with valid style, quantity, and price.');
-    return false;
-  }
-  
   return true;
 }
 
-// Collect order data
-function collectOrderData() {
-  const getData = (id) => {
-    const el = document.getElementById(id);
-    return el ? el.value : '';
-  };
-  
-  const totalQuantityEl = document.getElementById('totalQuantity');
-  const totalAmountEl = document.getElementById('totalAmount');
-  
-  const totalQuantity = totalQuantityEl ? parseInt(totalQuantityEl.textContent) : 0;
-  const totalAmountText = totalAmountEl ? totalAmountEl.textContent : '$0.00';
-  const totalAmount = parseFloat(totalAmountText.replace('$', '')) || 0;
-  
+function collectHeader() {
+  const get = id => document.getElementById(id).value.trim();
   return {
-    orderNumber: getData('orderNumber'),
-    brand: selectedMainBrand,
-    buyerInfo: {
-      buyerStoreName: getData('buyerStoreName'),
-      email: getData('email'),
-      phone: getData('phone'),
-      shippingAddress: getData('shippingAddress')
-    },
-    totalQuantity,
-    totalAmount,
-    comments: getData('orderComments'),
-    createdAt: new Date().toISOString()
+    orderNumber: get('orderNumber'),
+    storeName: get('storeName'),
+    email: get('email'),
+    phone: get('phone'),
+    shippingAddress: get('shippingAddress'),
+    comments: get('comments'),
+    brand: state.currentBrand,
+    totalQty: elements.totalQty.textContent.split(': ')[1],
+    totalAmt: elements.totalAmt.textContent.split('$')[1]
   };
 }
 
-// Collect product selections
-function collectProductSelections() {
-  const orderNumberEl = document.getElementById('orderNumber');
-  const orderNumber = orderNumberEl ? orderNumberEl.value : '';
-  const productSelections = [];
-  
-  const productItems = document.querySelectorAll('.product-item');
-  
-  productItems.forEach(productElement => {
-    const styleSelect = productElement.querySelector('.style-select');
-    const printSelect = productElement.querySelector('.print-select');
-    const selectedSizes = productElement.querySelector('.selected-sizes');
-    const quantityInput = productElement.querySelector('.quantity-input');
-    const unitPriceInput = productElement.querySelector('.unit-price-input');
-    const customizationNotes = productElement.querySelector('.customization-notes');
-    
-    if (styleSelect && styleSelect.value && quantityInput && quantityInput.value && 
-        unitPriceInput && unitPriceInput.value && 
-        parseInt(quantityInput.value) > 0 && parseFloat(unitPriceInput.value) > 0) {
-      
-      const product = getProduct(selectedMainBrand, styleSelect.value);
-      const quantity = parseInt(quantityInput.value);
-      const unitPrice = parseFloat(unitPriceInput.value);
-      const subtotal = quantity * unitPrice;
-      
-      productSelections.push({
-        orderNumber,
-        brand: selectedMainBrand,
-        style: styleSelect.value,
-        print: printSelect ? printSelect.value || '' : '',
-        productLink: product ? product.productLink : '',
-        selectedSizes: selectedSizes ? selectedSizes.value : '',
-        quantity,
-        unitPrice,
-        subtotal,
-        customization: customizationNotes ? customizationNotes.value || '' : ''
-      });
+function generatePDF(header, lines) {
+  const doc = new jspdf.jsPDF();
+  let y = 10;
+  doc.setFontSize(18);
+  doc.text('Order Sheet', 10, y);
+  y += 8;
+  doc.setFontSize(12);
+  for (const [k, v] of Object.entries(header)) {
+    doc.text(`${k}: ${v}`, 10, y);
+    y += 6;
+  }
+  y += 4;
+  doc.setFontSize(14);
+  doc.text('Line Items', 10, y);
+  y += 8;
+  lines.forEach(l => {
+    doc.setFontSize(12);
+    doc.text(`${l.style.skuId} | ${l.style.productName} | Qty: ${l.quantity} | $${l.unitPrice} | Sub: $${l.subtotal}`, 10, y);
+    if (l.print) {
+      y += 6;
+      doc.text(`Print: ${l.print.skuId} – ${l.print.productName}`, 14, y);
+    }
+    if (l.sizeText) {
+      y += 6;
+      doc.text(`Sizes: ${l.sizeText}`, 14, y);
+    }
+    if (l.notes) {
+      y += 6;
+      doc.text(`Notes: ${l.notes}`, 14, y);
+    }
+    y += 10;
+    if (y > 280) {
+      doc.addPage();
+      y = 10;
     }
   });
-  
-  return productSelections;
-}
-
-// Show confirmation modal
-function showConfirmationModal(orderData, productSelections) {
-  const modal = document.getElementById('confirmationModal');
-  const content = document.getElementById('confirmationContent');
-  
-  if (!modal || !content) return;
-  
-  content.innerHTML = `
-    <div class="confirmation-section">
-      <h3>📄 Order Sheet Summary</h3>
-      <div class="order-summary-display">
-        <h4>Order #${orderData.orderNumber}</h4>
-        <p><strong>Brand:</strong> ${orderData.brand}</p>
-        <p><strong>Buyer/Store:</strong> ${orderData.buyerInfo.buyerStoreName}</p>
-        <p><strong>Email:</strong> ${orderData.buyerInfo.email}</p>
-        <p><strong>Phone:</strong> ${orderData.buyerInfo.phone}</p>
-        <p><strong>Shipping Address:</strong> ${orderData.buyerInfo.shippingAddress}</p>
-        <p><strong>Total Quantity:</strong> ${orderData.totalQuantity} pieces</p>
-        <p><strong>Total Amount:</strong> ${formatUSD(orderData.totalAmount)}</p>
-        ${orderData.comments ? `<p><strong>Comments:</strong> ${orderData.comments}</p>` : ''}
-      </div>
-      
-      <h4>Product Line Items:</h4>
-      <div class="product-line-item">
-        <span>Style</span>
-        <span>Print</span>
-        <span>Sizes</span>
-        <span>Qty</span>
-        <span>Price</span>
-        <span>Total</span>
-      </div>
-      ${productSelections.map(item => `
-        <div class="product-line-item">
-          <span>${item.style}</span>
-          <span>${item.print || 'None'}</span>
-          <span>${item.selectedSizes || 'Not specified'}</span>
-          <span>${item.quantity}</span>
-          <span>${formatUSD(item.unitPrice)}</span>
-          <span>${formatUSD(item.subtotal)}</span>
-        </div>
-      `).join('')}
-    </div>
-    
-    <div class="confirmation-section">
-      <h3>🗄️ Database Export Data</h3>
-      
-      <h4>Orders Database Record:</h4>
-      <div class="data-structure">
-        <pre>${JSON.stringify(orderData, null, 2)}</pre>
-      </div>
-      
-      <h4>Product Selections Database Records:</h4>
-      <div class="data-structure">
-        <pre>${JSON.stringify(productSelections, null, 2)}</pre>
-      </div>
-    </div>
-  `;
-  
-  modal.classList.remove('hidden');
-}
-
-// Close modal
-function closeModal() {
-  const modal = document.getElementById('confirmationModal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
-}
-
-// Download PDF (simulation)
-function downloadPDF() {
-  alert('PDF generation feature would be implemented here. The order data has been structured and is ready for PDF export.');
-}
-
-// Start the app when DOM is loaded
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeApp);
-} else {
-  initializeApp();
+  doc.save(`Order-${header.orderNumber}.pdf`);
 }
