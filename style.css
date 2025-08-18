@@ -1,101 +1,120 @@
-/* style.css */
 :root {
-  --font-family: "Helvetica Neue", Arial, sans-serif;
-  --border-color: #e1e1e1;
-  --accent: #204060;
-  --danger: #c0392b;
-  --radius: 4px;
-  --spacing: 1rem;
+  /* Primitive Color Tokens */
+  --color-white: #fff;
+  --color-black: #000;
+  --color-border: #e1e1e1;
+  --color-primary: #21808d;
+  --color-primary-hover: #166371;
+  --color-danger: #c0392b;
+  --color-surface: #fffffd;
+  --color-background: #fcfcf9;
+  --color-text: #13343b;
+  --color-text-secondary: #62706f;
+  --radius: 8px;
+  --shadow: 0 2px 6px 0 rgba(0,0,0,0.05);
+  /* Typography */
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-size-base: 15px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
+  --space-8: 8px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --container-xl: 1280px;
 }
 
-* {
-  box-sizing: border-box;
-}
+/* Reset box sizing for all */
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: var(--font-family);
-  color: #333;
-  background: #fafafa;
+  font-family: var(--font-family-base);
+  color: var(--color-text);
+  background: var(--color-background);
+  font-size: var(--font-size-base);
 }
-
 header {
   text-align: center;
-  padding: 2rem 1rem;
-  border-bottom: 2px solid var(--border-color);
+  padding: var(--space-20) var(--space-16) var(--space-8) var(--space-16);
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: var(--space-16);
 }
-
 h1 {
-  margin: 0;
-  font-size: 2rem;
+  margin: 0 0 10px 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
 }
-
 h2 {
-  margin: 0.5rem 0 0;
-  color: #555;
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 2px;
+}
+input, textarea, select {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  padding: var(--space-8) var(--space-14);
+  margin-bottom: var(--space-8);
+  background: var(--color-surface);
+}
+textarea { min-height: 48px; }
+
+.note {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-top: 4px;
+  margin-bottom: 12px;
 }
 
 #buyer-info,
 #brand-select {
   max-width: 900px;
-  margin: 2rem auto;
+  margin: var(--space-14) auto;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing);
+  gap: var(--space-20);
 }
-
-.field {
-  display: flex;
-  flex-direction: column;
-}
-
-.full {
-  flex: 1 1 100%;
-}
-
-.half {
-  flex: 1 1 calc(50% - var(--spacing));
-}
-
-label {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-}
-
-input,
-textarea,
-select {
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  font-size: 1rem;
-}
-
-textarea {
-  min-height: 4rem;
-}
-
-.note {
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-}
+.field {display:flex; flex-direction:column;}
+.full {flex: 1 1 100%;}
+.half {flex: 1 1 calc(50% - var(--space-16));}
 
 #product-list {
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0 auto var(--space-24) auto;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing);
+  gap: var(--space-20);
 }
 
 .card {
-  background: #fff;
-  border: 1px solid var(--border-color);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: var(--spacing);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: var(--space-16);
+  box-shadow: var(--shadow);
+  margin-bottom: var(--space-14);
 }
-
 .card-top {
   display: flex;
   justify-content: space-between;
@@ -105,82 +124,130 @@ textarea {
 .remove-btn {
   background: none;
   border: none;
-  color: var(--danger);
-  font-size: 1.2rem;
+  color: var(--color-danger);
+  font-size: 1.4rem;
   cursor: pointer;
+  margin-left:var(--space-16);
+  padding:0;
 }
 
 .image-row {
   display: flex;
-  gap: var(--spacing);
-  margin: 1rem 0;
+  gap: var(--space-20);
+  margin: var(--space-14) 0;
 }
 
 .image-col {
   flex: 1;
   text-align: center;
 }
-
 .image-col img {
-  width: 100%;
-  height: auto;
-  max-height: 250px;
+  width: 120px;
+  height: 140px;
   object-fit: cover;
-  border-radius: var(--radius);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 4px 1px rgba(0,0,0,0.03);
 }
-
 .image-col span {
   display: block;
-  margin-top: 0.25rem;
-  font-weight: 600;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
 }
 
 .pricing {
   display: flex;
-  gap: var(--spacing);
+  gap: var(--space-20);
+  margin-top:6px;
 }
-
 .price-box {
   flex: 1;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
+  padding: var(--space-8);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   text-align: center;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-background);
+  font-size: 15px;
 }
 
 #addProduct {
   display: block;
   margin: 2rem auto;
   padding: 0.75rem 2rem;
-  font-size: 1rem;
+  font-size: var(--font-size-md);
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
   cursor: pointer;
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow);
+  transition: background .2s;
 }
+#addProduct:active, #addProduct:hover { background: var(--color-primary-hover); }
 
 .primary {
-  background: var(--accent);
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: var(--radius);
+  font-weight: var(--font-weight-bold);
 }
 
 #summaryBar {
   position: sticky;
   bottom: 0;
-  background: #fff;
-  border-top: 2px solid var(--border-color);
-  padding: 1rem;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-top: 2px solid var(--color-border);
+  padding: var(--space-16);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 500;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+.hidden { display: none !important; }
+
+.suggestions {
+  position: absolute;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 0 0 8px 8px;
+  margin-top: -8px;
+  width: 100%;
+  z-index: 100;
+  box-shadow: 0 4px 12px 0 rgba(0,0,0,0.04);
+}
+.suggestions div {
+  padding:8px 16px;
+  cursor:pointer;
+  font-size:14px;
+  color: var(--color-text);
+}
+.suggestions div:hover {
+  background: var(--color-primary);
+  color: #fff;
 }
 
-.hidden {
-  display: none;
-}
-
+.details { margin-bottom: var(--space-16);}
+.productName { font-weight: var(--font-weight-semibold); font-size: var(--font-size-md);}
+.productLink { color: var(--color-primary); font-size: var(--font-size-base); text-decoration: underline;}
+.sizes { font-size: 14px; color: var(--color-text-secondary);}
+.landing, .retail { font-weight:var(--font-weight-semibold); }
+.subtotal { font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-8); background: #f8fbfc;}
+input.subtotal[readonly] { background:#f4f4f4; color: var(--color-primary);}
 @media (max-width: 700px) {
-  .image-row {
-    flex-direction: column;
-  }
+  .image-row { flex-direction:column; }
+  #buyer-info, #brand-select { flex-direction: column; }
+  .half, .full { flex:1 1 100%; }
+}
+@font-face {
+  font-family: 'FKGroteskNeue';
+  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
 }
