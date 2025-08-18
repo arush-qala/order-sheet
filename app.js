@@ -307,6 +307,30 @@
 ]; */
 
  // Trying to connect with Google Spreadsheet - database of products
+
+let productData = [];
+async function loadProductsFromSheet() {
+  const url = "https://docs.google.com/spreadsheets/d/12cd298kPsjqbQUdx2zDbGQSKpQGU-kk9em1nrCC91D4/export?format=csv";
+  const response = await fetch(url);
+  const csvText = await response.text();
+  // Parse CSV (basic version)
+  const rows = csvText.trim().split("\n").map(r => r.split(","));
+  const headers = rows[0];
+  productData = rows.slice(1).map(row => {
+    let obj = {};
+    headers.forEach((h,i) => obj[h] = row[i]);
+    // typecast and split availableSizes
+    obj.landingPrice = Number(obj.landingPrice);
+    obj.recommendedRetailPrice = Number(obj.recommendedRetailPrice);
+    obj.availableSizes = obj.availableSizes ? obj.availableSizes.split("|") : [];
+    return obj;
+  });
+}
+loadProductsFromSheet().then(() => {
+  // After products loaded, initialize your app (e.g., enable controls, etc)
+});
+
+/*
 function fetchProductDataFromSheet(callback) {
   // Replace GID if your sheet uses a different tab
   const SHEET_ID = '2PACX-1vSGSBJA4h8Rbg6eCNk63pR4CGb4wwBPmHa6kN2B3R2wu_MJX35fdWRgWJ5FKDtChOo22lW5roEViMwq';
@@ -329,7 +353,7 @@ function fetchProductDataFromSheet(callback) {
       callback(products);
     });
 }
-
+*/
 
 
 
