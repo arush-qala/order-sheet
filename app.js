@@ -410,7 +410,6 @@ dom('orderForm').addEventListener('submit', async e => {
     }
   }
   doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
-  alert('PDF downloaded. JSON payloads logged to console for integration.');
   console.log({ header: state.header, items: state.items });
 });
 
