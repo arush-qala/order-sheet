@@ -109,10 +109,49 @@ function createProductCard() {
   const priceRow = document.createElement('div'); priceRow.style.display='flex'; priceRow.style.alignItems='center'; detailsCol.appendChild(priceRow);
   const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
   const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
-  const sizeInput = document.createElement('input'); sizeInput.placeholder='Selected sizes (e.g. 2 XS, 2 S, 1 M)'; sizeInput.style.width='100%'; sizeInput.style.marginTop='10px'; detailsCol.appendChild(sizeInput);
-  const qtyInput = document.createElement('input'); qtyInput.type='number'; qtyInput.placeholder='Quantity'; qtyInput.style.marginTop='8px'; qtyInput.min='1'; qtyInput.style.width='100%'; detailsCol.appendChild(qtyInput);
-  const unitPriceInput = document.createElement('input'); unitPriceInput.type='number'; unitPriceInput.placeholder='Unit Price $'; unitPriceInput.style.marginTop='8px'; unitPriceInput.min='0'; unitPriceInput.style.width='100%'; detailsCol.appendChild(unitPriceInput);
-  const noteArea = document.createElement('textarea'); noteArea.rows=2; noteArea.placeholder='Customization notes'; noteArea.style.marginTop='8px'; noteArea.style.width = '100%'; detailsCol.appendChild(noteArea);
+
+  // LABEL AND FIELDS: selected sizes
+  const sizesFieldLabel = document.createElement('label');
+  sizesFieldLabel.textContent = 'Selected Sizes';
+  sizesFieldLabel.style.marginTop = '10px'; sizesFieldLabel.htmlFor = '';
+  detailsCol.appendChild(sizesFieldLabel);
+  const sizeInput = document.createElement('input');
+  sizeInput.placeholder = 'e.g. 2 XS, 2 S, 1 M';
+  sizeInput.style.width='100%';
+  detailsCol.appendChild(sizeInput);
+
+  // LABEL AND FIELDS: quantity
+  const qtyLabel = document.createElement('label');
+  qtyLabel.textContent = 'Quantity'; qtyLabel.style.marginTop = '8px';
+  detailsCol.appendChild(qtyLabel);
+  const qtyInput = document.createElement('input');
+  qtyInput.type = 'number';
+  qtyInput.placeholder = 'Quantity';
+  qtyInput.min = '1';
+  qtyInput.style.width='100%';
+  detailsCol.appendChild(qtyInput);
+
+  // LABEL AND FIELDS: unit price
+  const unitPriceLabel = document.createElement('label');
+  unitPriceLabel.textContent = 'Unit Price ($)';
+  unitPriceLabel.style.marginTop = '8px';
+  detailsCol.appendChild(unitPriceLabel);
+  const unitPriceInput = document.createElement('input');
+  unitPriceInput.type = 'number';
+  unitPriceInput.placeholder = 'Unit Price $';
+  unitPriceInput.min = '0';
+  unitPriceInput.style.width='100%';
+  detailsCol.appendChild(unitPriceInput);
+
+  // LABEL AND FIELDS: customization notes
+  const noteLabel = document.createElement('label');
+  noteLabel.textContent = 'Customization Notes';
+  noteLabel.style.marginTop = '8px';
+  detailsCol.appendChild(noteLabel);
+  const noteArea = document.createElement('textarea');
+  noteArea.rows=2; noteArea.placeholder='Customization notes'; noteArea.style.width = '100%';
+  detailsCol.appendChild(noteArea);
+
   const subtotalDisp = document.createElement('div'); subtotalDisp.className='subtotal-disp'; detailsCol.appendChild(subtotalDisp);
 
   const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
