@@ -45,7 +45,7 @@ body {
 /* Luxury Headers */
 .header h1 {
   margin: 0;
-  font-size: 3rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--color-midnight);
