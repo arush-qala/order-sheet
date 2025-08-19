@@ -362,6 +362,7 @@ function renderSizeQtyRows() {
         e.preventDefault();
         sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 1 });
         renderSizeQtyRows();
+        updateTotalAndSubtotal(); // 👈 Now updates totals right after row is added!
       };
       rowDiv.appendChild(addBtn);
     }
