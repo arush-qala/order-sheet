@@ -1,3 +1,4 @@
+
 let productData = []; // Holds dynamically loaded products from Google Sheets
 
 async function fetchProductData() {
@@ -444,6 +445,204 @@ autoCompleteBox(styleField, brand, prod => {
   removeBtn.addEventListener('click', () => { card.remove(); state.removeItem(state.items.indexOf(lineItem)); });
   dom('productCards').appendChild(card); state.addItem(lineItem);
 }
+
+
+async function toDataUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function () {
+      const canvas = document.createElement('canvas');
+      canvas.width = 140; canvas.height = 140;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+      const ratio = Math.min(canvas.width/this.width, canvas.height/this.height, 1.0);
+      const w = this.width * ratio, h = this.height * ratio;
+      ctx.drawImage(this, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.90));
+    };
+    img.onerror = reject;
+    img.src = url + (url.includes("?") ? "&" : "?") + "rand=" + Math.random();
+  });
+}
+
+
+dom('orderForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  
+  // Show progress
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = '📧 Sending order...';
+  
+  // Collect order data
+  state.header = {
+    orderNumber: dom('orderNumber').value,
+    buyerName: dom('buyerName').value,
+    email: dom('email').value,
+    phone: dom('phone').value,
+    shippingAddress: dom('shippingAddress').value,
+    orderComments: dom('orderComments').value,
+    brand: dom('brandSelect').value,
+    totalQty: state.totalQty,
+    totalAmount: state.totalAmount,
+    timestamp: new Date().toLocaleString('en-GB', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    }),
+    userAgent: navigator.userAgent.substr(0, 100) // Track which device/browser
+  };
+
+  // Prepare products for email
+  const products = state.items.map(item => ({
+    productName: item.productName,
+    productSku: item.styleSku,
+    printSku: item.printSku || '',
+    sizes: item.sizes,
+    unitPrice: item.unitPrice,
+    subtotal: item.subtotal.toFixed(2),
+    notes: item.notes
+  }));
+
+  try {
+    // STEP 1: Send email notification
+    emailjs.init("EAXAUT5KyAX7qT35l"); // Replace with your actual public key
+    
+    await emailjs.send(
+      "service_mjhvpwj",  // Replace with your service ID
+      "template_wpcfoca", // Replace with your template ID
+      {
+        ...state.header,
+        products: products,
+        totalAmount: state.totalAmount.toFixed(2)
+      }
+    );
+    
+    submitBtn.textContent = '✅ Order emailed! Generating PDF...';
+    
+    // STEP 2: Generate PDF (your existing code)
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
+    let y = 32, left = 36;
+    
+    doc.setFontSize(17); 
+    doc.text('Order Sheet – Brand Assembly LA', left, y); 
+    y += 24;
+    doc.setFontSize(11);
+    
+    Object.entries(state.header).forEach(([k, v]) => { 
+      doc.text(`${k}: ${v}`, left, y); 
+      y += 18; 
+    });
+    y += 6;
+    
+    // Process each item with optimized image handling
+    for (let idx = 0; idx < state.items.length; ++idx) {
+      let it = state.items[idx];
+      
+      // Parallel image processing for speed
+      const [styleData, printData] = await Promise.all([
+        it.styleImgUrl ? toDataUrl(it.styleImgUrl).catch(() => null) : Promise.resolve(null),
+        it.printImgUrl ? toDataUrl(it.printImgUrl).catch(() => null) : Promise.resolve(null)
+      ]);
+      
+      // Three cols layout
+      const col1 = left, col2 = left+170, col3 = left+340;
+      let rowMaxH = 0;
+      
+      doc.setFontSize(12); 
+      doc.setFont(undefined,"bold");
+      doc.text(`Item ${idx+1}`, left, y);
+      
+      // Style col
+      if (styleData) {
+        doc.setFontSize(10); 
+        doc.text("Style", col1+42, y+17);
+        doc.addImage(styleData, "JPEG", col1+10, y+26, 120, 120, undefined, 'FAST');
+        rowMaxH = 137;
+      }
+      
+      // Print col
+      if (printData) {
+        doc.setFontSize(10); 
+        doc.text("Custom Print", col2+25, y+17);
+        doc.addImage(printData, "JPEG", col2+10, y+26, 120, 120, undefined, 'FAST');
+        rowMaxH = Math.max(rowMaxH,137);
+      }
+      
+      // Details col
+      doc.setFontSize(10);
+      let infoRow = y+2;
+      doc.setFont(undefined,"bold"); 
+      doc.text(it.productName || "", col3, infoRow+20);
+      doc.setFont(undefined,"normal"); 
+      infoRow += 35;
+      
+      if (it.styleSku) {
+        const p = productData.find(p=>p.skuId===it.styleSku);
+        if (p && p.availableSizes && p.availableSizes.length) {
+          doc.text("Available Sizes: "+p.availableSizes.join(" · "), col3, infoRow); 
+          infoRow+=14;
+        }
+      }
+      if (it.styleSku) {
+        const p = productData.find(p=>p.skuId===it.styleSku);
+        if (p && p.productLink) doc.textWithLink('Product Details Link', col3, infoRow, {url: p.productLink}); 
+        infoRow+=14;
+      }
+      
+      doc.text(`Landing $${it.unitPrice||""} · RRP ${(()=>{const p=productData.find(p=>p.skuId===it.styleSku);return p?p.recommendedRetailPrice:""})()}`, col3, infoRow); 
+      infoRow+=14;
+      doc.text(`Sizes: ${it.sizes||""} · Qty: ${it.quantity||""}`, col3, infoRow); 
+      infoRow+=14;
+      doc.text(`Notes: ${it.notes||""}`, col3, infoRow); 
+      infoRow+=14;
+      doc.setFont(undefined,"bold");
+      doc.text(`Subtotal $${it.subtotal||""}`, col3, infoRow+4); 
+      
+      rowMaxH = Math.max(rowMaxH, infoRow-(y+2)+30);
+      y += rowMaxH + 32;
+      if (y > 660) { doc.addPage(); y = 36; }
+    }
+    
+    doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+    
+    submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
+    alert("✅ SUCCESS!\n\n📧 Order details emailed to arush@qala.global\n📄 PDF downloaded to your device\n\nBoth backups are secured!");
+    
+  } catch (error) {
+    console.error('Error:', error);
+    
+    // Even if email fails, still generate PDF
+    submitBtn.textContent = '⚠️ Email failed, generating PDF...';
+    
+    // Generate PDF as fallback
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
+    // ... (your existing PDF code) ...
+    doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+    
+    alert("⚠️ EMAIL FAILED but PDF saved!\n\nPlease manually send this order info:\n" + JSON.stringify({...state.header, items: products}, null, 2));
+  } finally {
+    // Restore button after 3 seconds
+    setTimeout(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }, 3000);
+  }
+  
+  console.log({ header: state.header, items: state.items });
+});
+
+
+
+dom('brandSelect').addEventListener('change', function () {
+  dom('productCards').innerHTML = '';
+  state.reset();
+  if (this.value) createProductCard();
+});
+dom('addProductBtn').addEventListener('click', createProductCard);
 
 
 async function toDataUrl(url) {
