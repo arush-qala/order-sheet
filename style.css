@@ -235,3 +235,34 @@ textarea {resize:vertical;}
   font-size: 1rem;
   padding: var(--spacing-2);
 }
+
+
+.product-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  padding-left: 0;
+  padding-right: 0;
+  /* match .infocol > textarea (customization notes) for alignment */
+}
+
+.qty-summary-left {
+  flex: 1 1 50%;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #212;
+  text-align: left;
+  padding-left: 0;
+}
+
+.subtotal-summary-right {
+  flex: 1 1 50%;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #215;
+  text-align: right;
+  padding-right: 0;
+}
