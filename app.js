@@ -377,18 +377,6 @@ sizesTitle.textContent = 'Select Size(s) & Qty:';
 detailsCol.appendChild(sizesTitle);
 detailsCol.appendChild(sizesList);
 
-// Total QTY display
-const qtyTotalWrap = document.createElement('div');
-const qtyTotalLabel = document.createElement('span');
-qtyTotalLabel.textContent = 'Total Qty: ';
-const qtyTotalSpan = document.createElement('span');
-qtyTotalSpan.className = 'current-qty-total';
-qtyTotalSpan.textContent = '0';
-qtyTotalWrap.appendChild(qtyTotalLabel);
-qtyTotalWrap.appendChild(qtyTotalSpan);
-
-detailsCol.appendChild(qtyTotalWrap);
-
 // === Unit Price Override aligns with selects ===
 const unitPriceLabel = document.createElement('label');
 unitPriceLabel.textContent = 'Unit Price Override ($)';
