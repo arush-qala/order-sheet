@@ -234,7 +234,7 @@ function createProductCard() {
   link.textContent = 'View Product Details';
   link.target = '_blank';
   link.style.display = 'inline-block';
-  link.style.marginBottom = '8px';
+  link.style.marginBottom = '18px';
   detailsCol.appendChild(link);
 
   const priceRow = document.createElement('div');
