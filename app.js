@@ -369,12 +369,7 @@ function createProductCard() {
   unitPriceInput.min = '0';
   detailsCol.appendChild(unitPriceInput);
 
-  // SIZES TITLE + DYNAMIC LIST + QTY
-  const sizesTitle = document.createElement('label');
-  sizesTitle.textContent = 'Select Size(s) & Qty:';
-  detailsCol.appendChild(sizesTitle);
-  detailsCol.appendChild(sizesList);
-  detailsCol.appendChild(qtyTotalWrap);
+
 
   // Customization notes
   const noteLabel = document.createElement('label');
