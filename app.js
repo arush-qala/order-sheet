@@ -466,6 +466,35 @@ dom('orderForm').addEventListener('submit', async e => {
     if (y > 660) { doc.addPage(); y = 36; }
   }
   doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+  // Build the full order object for sending:
+let orderExportData = {
+  ...state.header,
+  items: state.items.map(item => ({
+    styleSku: item.styleSku,
+    productName: item.productName,
+    printSku: item.printSku,
+    unitPrice: item.unitPrice,
+    notes: item.notes,
+    // for multi-size logic:
+    sizeQtyList: (item.sizes || "").split(',').map(s => {
+      let m = s.match(/(\d+)\s*(\S+)/);
+      return m ? { size: m[2], quantity: Number(m[1]) } : null;
+    }).filter(Boolean)
+  }))
+};
+
+// Now your fetch block goes here:
+fetch("https://script.google.com/macros/s/AKfycbzwcv_YnFBIX1_9GONksb7xAASWHSCbqh9ygyKs_wOPKTbdjFRmsmkajHSz9uAR3Kq8JA/exec", {
+  method: "POST",
+  body: JSON.stringify(orderExportData),
+  headers: { "Content-Type": "application/json" }
+}).then(response => response.json()).then(res => {
+  if(res.result==="SUCCESS"){
+    alert("Order successfully sent to admin email!");
+  } else {
+    alert("Could not email order: " + (res.message || "Unknown error"));
+  }
+});
   console.log({ header: state.header, items: state.items });
 });
 
