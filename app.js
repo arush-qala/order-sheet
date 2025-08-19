@@ -481,11 +481,11 @@ dom('orderForm').addEventListener('submit', async e => {
 
   try {
     // STEP 1: Send email notification
-    emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your actual public key
+    emailjs.init("EAXAUT5KyAX7qT35l"); // Replace with your actual public key
     
     await emailjs.send(
-      "YOUR_SERVICE_ID",  // Replace with your service ID
-      "YOUR_TEMPLATE_ID", // Replace with your template ID
+      "service_mjhvpwj",  // Replace with your service ID
+      "template_wpcfoca", // Replace with your template ID
       {
         ...state.header,
         products: products,
