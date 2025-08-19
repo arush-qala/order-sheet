@@ -389,7 +389,7 @@ detailsCol.appendChild(noteLabel);
 
 const noteArea = document.createElement('textarea');
 noteArea.rows = 2; 
-noteArea.placeholder='Customization notes';
+/* noteArea.placeholder='Customization notes';*/
 noteArea.style.width = '100%';
 detailsCol.appendChild(noteArea);
 
