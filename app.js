@@ -352,7 +352,7 @@ function createProductCard() {
 
   // UNIT PRICE
   const unitPriceLabel = document.createElement('label');
-  unitPriceLabel.textContent = 'Unit Price ($)';
+  unitPriceLabel.textContent = 'Unit Price Override ($)';
   detailsCol.appendChild(unitPriceLabel);
 
   const unitPriceInput = document.createElement('input');
