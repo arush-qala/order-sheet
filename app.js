@@ -250,17 +250,24 @@ function createProductCard() {
   retailBox.className = 'price-box';
   priceRow.appendChild(retailBox);
 
-  // === Dynamic SIZES + QTY ROW ===
-  const sizesList = document.createElement('div');
-  sizesList.className = 'sizes-list';
-  let sizeQtyArray = [];
-  let availableSizesArr = [];
+ // === Dynamic SIZES + QTY ROW ===
+const sizesList = document.createElement('div');
+sizesList.className = 'sizes-list';
+let sizeQtyArray = [];
+let availableSizesArr = [];
 
-  function updateTotalAndSubtotal() {
+// Unit price input created here so we can reference for sizing
+const unitPriceInput = document.createElement('input');
+unitPriceInput.type = 'number';
+unitPriceInput.min = '0';
+unitPriceInput.step = '0.01';
+unitPriceInput.className = 'unit-price-override';
+unitPriceInput.placeholder = 'Unit Price $';
+
+function updateTotalAndSubtotal() {
   const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) > 0 ? Number(entry.quantity) : 0), 0);
   qtyTotalSpan.textContent = totalQty;
   lineItem.quantity = totalQty;
-  // Only include positive-qty sizes in the display string
   lineItem.sizes = sizeQtyArray.filter(e => Number(e.quantity) > 0).map(e => `${e.quantity} ${e.size}`).join(', ');
   const unit = Number(unitPriceInput.value || 0);
   lineItem.unitPrice = unit;
@@ -270,145 +277,160 @@ function createProductCard() {
   state.recalculateTotals();
 }
 
+function renderSizeQtyRows() {
+  sizesList.innerHTML = "";
+  sizeQtyArray.forEach((item, idx) => {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'sizes-qty-row';
 
-  function renderSizeQtyRows() {
-    sizesList.innerHTML = "";
-    sizeQtyArray.forEach((item, idx) => {
-      const rowDiv = document.createElement('div');
-      rowDiv.className = 'sizes-qty-row';
-
-      // Size dropdown
-      const sizeSel = document.createElement('select');
-      sizeSel.style.width = '74px';
-      availableSizesArr.forEach(size => {
-        const opt = document.createElement('option');
-        opt.value = size;
-        opt.textContent = size;
-        sizeSel.appendChild(opt);
-      });
-      sizeSel.value = item.size || availableSizesArr[0] || '';
-      sizeSel.onchange = function() {
-        item.size = this.value;
-        updateTotalAndSubtotal();
-      };
-
-      // Qty input
-      const qtyInput = document.createElement('input');
-      qtyInput.type = 'number';
-      qtyInput.placeholder = 'Qty';
-      qtyInput.min = '0';
-      qtyInput.value = item.quantity;
-      qtyInput.style.width = '55px';
-      qtyInput.addEventListener('input', function() {
-        item.quantity = Number(this.value) || 0;
-        updateTotalAndSubtotal();
-      });
-
-      // Remove button
-      const remBtn = document.createElement('button');
-      remBtn.type = 'button';
-      remBtn.textContent = '×';
-      remBtn.className = 'remove-size-btn';
-      remBtn.title = 'Remove size';
-      remBtn.onclick = () => {
-        sizeQtyArray.splice(idx, 1);
-        renderSizeQtyRows();
-        updateTotalAndSubtotal();
-      };
-
-      rowDiv.appendChild(sizeSel);
-      rowDiv.appendChild(qtyInput);
-      if (sizeQtyArray.length > 1) rowDiv.appendChild(remBtn);
-
-      // Add inline "+" ONLY at the end
-      if (idx === sizeQtyArray.length - 1) {
-        const addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.textContent = '+';
-        addBtn.className = 'add-size-btn-inline';
-        addBtn.title = 'Add new size';
-        addBtn.onclick = function(e) {
-          e.preventDefault();
-          sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 0 });
-          renderSizeQtyRows();
-        };
-        rowDiv.appendChild(addBtn);
-      }
-
-      sizesList.appendChild(rowDiv);
+    // Size dropdown
+    const sizeSel = document.createElement('select');
+    sizeSel.className = 'size-select';
+    sizeSel.style.width = '70px';
+    availableSizesArr.forEach(size => {
+      const opt = document.createElement('option');
+      opt.value = size;
+      opt.textContent = size;
+      sizeSel.appendChild(opt);
     });
-   // updateTotalAndSubtotal(); // Call here to react to any change
-  }
+    sizeSel.value = item.size || availableSizesArr[0] || '';
+    sizeSel.onchange = function() {
+      item.size = this.value;
+      updateTotalAndSubtotal();
+    };
 
-  // Total QTY display
-  const qtyTotalWrap = document.createElement('div');
-  const qtyTotalLabel = document.createElement('span');
-  qtyTotalLabel.textContent = 'Total Qty: ';
-  const qtyTotalSpan = document.createElement('span');
-  qtyTotalSpan.className = 'current-qty-total';
-  qtyTotalSpan.textContent = '0';
-  qtyTotalWrap.appendChild(qtyTotalLabel);
-  qtyTotalWrap.appendChild(qtyTotalSpan);
+    // Quantity stepper box
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.className = 'qty-stepper';
+    qtyInput.min = '1';
+    qtyInput.step = '1';
+    qtyInput.placeholder = 'Qty';
+    qtyInput.value = item.quantity > 0 ? item.quantity : 1;
+    qtyInput.style.width = '60px';
+    qtyInput.addEventListener('input', function() {
+      // Only allow minimum 1
+      item.quantity = Math.max(1, Number(this.value) || 1);
+      this.value = item.quantity;
+      updateTotalAndSubtotal();
+    });
 
+    // For up/down keys and +/- buttons
+    qtyInput.addEventListener('change', function() {
+      item.quantity = Math.max(1, Number(this.value) || 1);
+      this.value = item.quantity;
+      updateTotalAndSubtotal();
+    });
 
- 
-  // UNIT PRICE
-  const unitPriceLabel = document.createElement('label');
-  unitPriceLabel.textContent = 'Unit Price Override ($)';
-  detailsCol.appendChild(unitPriceLabel);
+    // Remove button
+    const remBtn = document.createElement('button');
+    remBtn.type = 'button';
+    remBtn.textContent = '×';
+    remBtn.className = 'remove-size-btn';
+    remBtn.title = 'Remove size';
+    remBtn.onclick = () => {
+      sizeQtyArray.splice(idx, 1);
+      renderSizeQtyRows();
+      updateTotalAndSubtotal();
+    };
 
-  const unitPriceInput = document.createElement('input');
-  unitPriceInput.type = 'number';
-  unitPriceInput.placeholder = 'Unit Price $';
-  unitPriceInput.min = '0';
-  detailsCol.appendChild(unitPriceInput);
+    rowDiv.appendChild(sizeSel);
+    rowDiv.appendChild(qtyInput);
+    if (sizeQtyArray.length > 1) rowDiv.appendChild(remBtn);
 
-   // SIZES TITLE + DYNAMIC LIST + QTY
-  const sizesTitle = document.createElement('label');
-  sizesTitle.textContent = 'Select Size(s) & Qty:';
-  detailsCol.appendChild(sizesTitle);
-  detailsCol.appendChild(sizesList);
-  detailsCol.appendChild(qtyTotalWrap);
+    // Add inline "+" ONLY at the end
+    if (idx === sizeQtyArray.length - 1) {
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.textContent = '+';
+      addBtn.className = 'add-size-btn-inline';
+      addBtn.title = 'Add new size';
+      addBtn.onclick = function(e) {
+        e.preventDefault();
+        sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 1 });
+        renderSizeQtyRows();
+      };
+      rowDiv.appendChild(addBtn);
+    }
 
-
-  // Customization notes
-  const noteLabel = document.createElement('label');
-  noteLabel.textContent = 'Customization Notes';
-  detailsCol.appendChild(noteLabel);
-
-  const noteArea = document.createElement('textarea');
-  noteArea.rows = 2; noteArea.placeholder='Customization notes'; noteArea.style.width = '100%';
-  detailsCol.appendChild(noteArea);
-
-  const subtotalDisp = document.createElement('div');
-  subtotalDisp.className = 'subtotal-disp'; detailsCol.appendChild(subtotalDisp);
-
-  const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
-
-  function onStyleChange(prod) {
-    availableSizesArr = (prod.availableSizes && prod.availableSizes.length) ? prod.availableSizes : [];
-    sizeQtyArray.length = 0; // Clear array
-if (availableSizesArr.length) {
-  sizeQtyArray.push({ size: availableSizesArr, quantity: 0 });
-}
-renderSizeQtyRows();
-
-  }
-
-  unitPriceInput.addEventListener('input', updateTotalAndSubtotal);
-  noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
-
-  autoCompleteBox(styleField, brand, prod => {
-    styleField.value = `${prod.skuId} – ${prod.productName}`;
-    styleImg.src = prod.imageUrl; styleImg.style.display = ''; styleImgLabel.classList.add('active');
-    prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
-    landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
-    unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
-    lineItem.unitPrice = prod.landingPrice; lineItem.styleImgUrl = prod.imageUrl;
-    sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join(' · ') : '';
-    sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
-    onStyleChange(prod);
+    sizesList.appendChild(rowDiv);
   });
+}
+
+// Row label
+const sizesTitle = document.createElement('label');
+sizesTitle.textContent = 'Select Size(s) & Qty:';
+detailsCol.appendChild(sizesTitle);
+detailsCol.appendChild(sizesList);
+
+// Total QTY display
+const qtyTotalWrap = document.createElement('div');
+const qtyTotalLabel = document.createElement('span');
+qtyTotalLabel.textContent = 'Total Qty: ';
+const qtyTotalSpan = document.createElement('span');
+qtyTotalSpan.className = 'current-qty-total';
+qtyTotalSpan.textContent = '0';
+qtyTotalWrap.appendChild(qtyTotalLabel);
+qtyTotalWrap.appendChild(qtyTotalSpan);
+
+detailsCol.appendChild(qtyTotalWrap);
+
+// === Unit Price Override aligns with selects ===
+const unitPriceLabel = document.createElement('label');
+unitPriceLabel.textContent = 'Unit Price Override ($)';
+detailsCol.appendChild(unitPriceLabel);
+detailsCol.appendChild(unitPriceInput);
+
+// Notes and subtotal (as per your code follows below...)
+
+const noteLabel = document.createElement('label');
+noteLabel.textContent = 'Customization Notes';
+detailsCol.appendChild(noteLabel);
+
+const noteArea = document.createElement('textarea');
+noteArea.rows = 2; 
+noteArea.placeholder='Customization notes';
+noteArea.style.width = '100%';
+detailsCol.appendChild(noteArea);
+
+const subtotalDisp = document.createElement('div');
+subtotalDisp.className = 'subtotal-disp'; 
+detailsCol.appendChild(subtotalDisp);
+
+const lineItem = {
+  styleSku:'', printSku:'', productName:'', sizes:'',
+  quantity:0, unitPrice:0, subtotal:0, notes:'',
+  styleImgUrl:'', printImgUrl:''
+};
+
+function onStyleChange(prod) {
+  availableSizesArr = Array.isArray(prod.availableSizes) ? prod.availableSizes : [];
+  sizeQtyArray.length = 0;
+  if (availableSizesArr.length) {
+    sizeQtyArray.push({
+      size: availableSizesArr[0], // default to first size
+      quantity: 1                 // default to 1
+    });
+  }
+  renderSizeQtyRows();
+  updateTotalAndSubtotal();
+}
+
+unitPriceInput.addEventListener('input', updateTotalAndSubtotal);
+noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
+
+autoCompleteBox(styleField, brand, prod => {
+  styleField.value = `${prod.skuId} – ${prod.productName}`;
+  styleImg.src = prod.imageUrl; styleImg.style.display = ''; styleImgLabel.classList.add('active');
+  prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
+  landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
+  unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
+  lineItem.unitPrice = prod.landingPrice; lineItem.styleImgUrl = prod.imageUrl;
+  sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join(' · ') : '';
+  sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
+  onStyleChange(prod);
+});
+
 
   autoCompleteBox(printField, brand, prod => {
     printField.value = `${prod.skuId} – ${prod.productName}`;
