@@ -267,16 +267,28 @@ unitPriceInput.placeholder = 'Unit Price $';
 
 function updateTotalAndSubtotal() {
   const totalQty = sizeQtyArray.reduce((sum, entry) => sum + (Number(entry.quantity) > 0 ? Number(entry.quantity) : 0), 0);
-  qtyTotalSpan.textContent = totalQty;
-  lineItem.quantity = totalQty;
-  lineItem.sizes = sizeQtyArray.filter(e => Number(e.quantity) > 0).map(e => `${e.quantity} ${e.size}`).join(', ');
   const unit = Number(unitPriceInput.value || 0);
+  lineItem.quantity = totalQty;
+
+  // Set left summary label (total quantity)
+  qtySummary.textContent = (totalQty > 0 && unit > 0)
+    ? `Total Qty: ${totalQty}`
+    : "";
+  // Set right summary label (subtotal)
+  lineItem.sizes = sizeQtyArray.filter(e => Number(e.quantity) > 0).map(e => `${e.quantity} ${e.size}`).join(', ');
   lineItem.unitPrice = unit;
   const subtotal = totalQty * unit;
   lineItem.subtotal = subtotal;
-  subtotalDisp.textContent = (totalQty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
+  subtotalDisp.textContent = (totalQty > 0 && unit > 0)
+    ? `Subtotal $${subtotal.toFixed(2)}`
+    : '';
+
+  // Show/hide summary row
+  summaryRow.style.display = (totalQty > 0 && unit > 0) ? 'flex' : 'none';
+
   state.recalculateTotals();
 }
+
 
 function renderSizeQtyRows() {
   sizesList.innerHTML = "";
@@ -390,13 +402,37 @@ detailsCol.appendChild(noteLabel);
 
 const noteArea = document.createElement('textarea');
 noteArea.rows = 2; 
-/* noteArea.placeholder='Customization notes';*/
 noteArea.style.width = '100%';
 detailsCol.appendChild(noteArea);
 
-const subtotalDisp = document.createElement('div');
-subtotalDisp.className = 'subtotal-disp'; 
-detailsCol.appendChild(subtotalDisp);
+// --- Summary Row (Total Qty Left, Subtotal Right, Inline) ---
+const summaryRow = document.createElement('div');
+summaryRow.style.display = 'none'; // Start hidden
+summaryRow.style.justifyContent = 'space-between';
+summaryRow.style.alignItems = 'center';
+summaryRow.style.marginTop = '12px';
+summaryRow.style.marginBottom = '8px';
+summaryRow.style.width = '100%';
+
+const qtySummary = document.createElement('span');
+qtySummary.className = 'qty-summary-left';
+qtySummary.style.fontWeight = 'bold';
+qtySummary.style.fontSize = '1.03em';
+qtySummary.style.textAlign = 'left';
+
+const subtotalDisp = document.createElement('span');
+subtotalDisp.className = 'subtotal-disp';
+subtotalDisp.style.fontWeight = 'bold';
+subtotalDisp.style.fontSize = '1.06em';
+subtotalDisp.style.textAlign = 'right';
+
+summaryRow.appendChild(qtySummary);
+summaryRow.appendChild(subtotalDisp);
+
+detailsCol.appendChild(summaryRow);
+
+
+  
 
 const lineItem = {
   styleSku:'', printSku:'', productName:'', sizes:'',
