@@ -175,3 +175,33 @@ textarea {resize:vertical;}
   padding: 1px 8px 2px 8px;
   height: 28px;
 }
+
+
+.sizes-list .sizes-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+
+.size-select {
+  width: 70px !important;
+}
+
+.qty-stepper {
+  width: 60px !important;
+  text-align: center;
+}
+
+/* This matches the whole width of size+qty row for unit price override */
+.unit-price-override {
+  display: block;
+  width: 140px !important; /* 70px + 60px + 7px between + minor 3px fudge for borders */
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  padding: var(--spacing-2);
+}
