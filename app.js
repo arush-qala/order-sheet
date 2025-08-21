@@ -371,8 +371,8 @@ remBtn.title = 'Remove this size';
       addBtn.type = 'button';
       addBtn.innerHTML = `
     <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
-      <line x1="8" y1="4" x2="8" y2="12" stroke="#29923d" stroke-width="2.2" stroke-linecap="round"/>
-      <line x1="4" y1="8" x2="12" y2="8" stroke="#29923d" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="8" y1="4" x2="8" y2="12" stroke="#000000" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="4" y1="8" x2="12" y2="8" stroke="#000000" stroke-width="2.2" stroke-linecap="round"/>
     </svg>
   `;
       addBtn.className = 'add-size-btn-inline';
