@@ -338,3 +338,84 @@ textarea {resize:vertical;}
 .remove-size-btn:active svg line {
   stroke: #a11212;
 }
+
+
+
+/* Enhanced mobile support for size-qty rows */
+@media (max-width: 768px) {
+  .sizes-list .sizes-qty-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    width: 100%;
+  }
+  
+  /* Make size select smaller on mobile */
+  .size-select {
+    width: 55px !important;
+    min-width: 55px;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+  }
+  
+  /* Make quantity input smaller on mobile */
+  .qty-stepper {
+    width: 45px !important;
+    min-width: 45px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  /* Make buttons more compact on mobile */
+  .add-size-btn-inline,
+  .remove-size-btn {
+    min-width: 24px !important;
+    min-height: 24px !important;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  
+  .add-size-btn-inline svg,
+  .remove-size-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Adjust unit price override to match mobile row width */
+  .unit-price-override {
+    width: 130px !important; /* Adjusted for mobile: 55px + 45px + 24px + gaps */
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .sizes-list .sizes-qty-row {
+    gap: 4px;
+  }
+  
+  .size-select {
+    width: 50px !important;
+    font-size: 0.85rem;
+  }
+  
+  .qty-stepper {
+    width: 40px !important;
+    font-size: 0.85rem;
+  }
+  
+  .add-size-btn-inline,
+  .remove-size-btn {
+    min-width: 22px !important;
+    min-height: 22px !important;
+  }
+  
+  .unit-price-override {
+    width: 120px !important; /* Adjusted for very small screens */
+  }
+}
