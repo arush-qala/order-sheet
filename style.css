@@ -340,7 +340,7 @@ textarea {resize:vertical;}
 }
 
 
-
+/*
 /* Enhanced mobile support for size-qty rows */
 @media (max-width: 768px) {
   .sizes-list .sizes-qty-row {
@@ -418,4 +418,32 @@ textarea {resize:vertical;}
   .unit-price-override {
     width: 120px !important; /* Adjusted for very small screens */
   }
+}*/
+
+
+/* --- MOBILE ROW ALIGNMENT FIX --- */
+.sizes-qty-row {
+  display: flex;
+  align-items: center; /* Vertically align items in the center */
+  flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
+  gap: 8px; /* Consistent spacing between items */
+  width: 100%;
+  max-width: 250px; /* Optional: Constrain the max width on mobile */
 }
+
+/* Adjust child elements to be more flexible */
+.sizes-qty-row .size-select {
+  flex: 1 1 90px; /* Allow shrinking but base width is 90px */
+  min-width: 80px; /* Don't let it get too small */
+}
+
+.sizes-qty-row .qty-stepper {
+  flex: 1 1 60px; /* Allow shrinking but base width is 60px */
+  min-width: 50px;
+}
+
+.sizes-qty-row .remove-size-btn,
+.sizes-qty-row .add-size-btn-inline {
+  flex-shrink: 0; /* Prevent the buttons from shrinking */
+}
+
