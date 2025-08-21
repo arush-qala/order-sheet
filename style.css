@@ -300,3 +300,41 @@ textarea {resize:vertical;}
 
 
 
+.add-size-btn-inline,
+.remove-size-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0 6px 0 6px;
+  cursor: pointer;
+  border-radius: 3px;
+  line-height: 1;
+  margin-left: 7px;
+  transition: background 0.13s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  min-height: 26px;
+}
+
+.add-size-btn-inline svg line {
+  stroke: #29923d;
+}
+.remove-size-btn svg line {
+  stroke: #c22525;
+}
+
+.add-size-btn-inline:hover, .add-size-btn-inline:focus {
+  background: #e5f8ea;
+}
+.remove-size-btn:hover, .remove-size-btn:focus {
+  background: #fcdddd;
+}
+
+.add-size-btn-inline:active svg line {
+  stroke: #146522;
+}
+.remove-size-btn:active svg line {
+  stroke: #a11212;
+}
