@@ -345,9 +345,9 @@ function renderSizeQtyRows() {
 const remBtn = document.createElement('button');
 remBtn.type = 'button';
 remBtn.innerHTML = `
-  <svg viewBox="0 0 16 16" width="17" height="17" style="display:block" aria-hidden="true">
-    <line x1="4" y1="4" x2="12" y2="12" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-    <line x1="12" y1="4" x2="4" y2="12" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+  <svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true">
+    <line x1="4" y1="4" x2="12" y2="12" stroke="#c22525" stroke-width="2" stroke-linecap="round"/>
+    <line x1="12" y1="4" x2="4" y2="12" stroke="#c22525" stroke-width="2" stroke-linecap="round"/>
   </svg>
 `;
 remBtn.className = 'remove-size-btn';
