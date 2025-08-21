@@ -318,9 +318,9 @@ textarea {resize:vertical;}
   min-height: 26px;
 }
 
-.add-size-btn-inline svg line {
+/* .add-size-btn-inline svg line {
   stroke: #29923d;
-}
+} */
 .remove-size-btn svg line {
   stroke: #c22525;
 }
