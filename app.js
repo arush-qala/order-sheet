@@ -747,6 +747,41 @@ dom('orderForm').addEventListener('submit', async e => {
     notes: item.notes
   }));
 
+const orderInfo = {
+  orderId: state.header.orderNumber,
+  timestamp: state.header.timestamp,
+  buyerName: state.header.buyerName,
+  email: state.header.email,
+  phone: state.header.phone,
+  shippingAddress: state.header.shippingAddress,
+  brand: state.header.brand,
+  orderComments: state.header.orderComments
+};
+const items = state.items.map((item, idx) => ({
+  productSku: item.styleSku,
+  productName: item.productName,
+  printSku: item.printSku || "",
+  sizes: item.sizes,
+  unitPrice: item.unitPrice,
+  subtotal: item.subtotal,
+  notes: item.notes
+}));
+fetch("AKfycbwlTlk4rtWvSCNtnauZmEECNm1wg8TO1t7ioBotLNuj_DS9NT6yACM6YpPMPOE3I7HD", {
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  body: JSON.stringify({ order: orderInfo, items: items })
+}).then(res => res.json()).then(res => {
+    if (res && res.result === "SUCCESS") {
+      console.log("Logged to Google Sheet:", res.orderId);
+    } else {
+      console.warn("Order NOT saved to Google Sheet:", (res && res.message));
+    }
+}).catch(err => {
+    console.error("POST to Google Sheet failed:", err);
+});
+
+
+  
   try {
     // STEP 1: Send email notification
     emailjs.init("EAXAUT5KyAX7qT35l"); // Replace with your actual public key
