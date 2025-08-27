@@ -490,7 +490,7 @@ autoCompleteBox(styleField, brand, prod => {
   dom('productCards').appendChild(card); state.addItem(lineItem);
 }
 
-
+/*
 async function toDataUrl(url) {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
@@ -508,7 +508,7 @@ async function toDataUrl(url) {
     img.onerror = reject;
     img.src = url + (url.includes("?") ? "&" : "?") + "rand=" + Math.random();
   });
-}
+}*/
 
 
 dom('orderForm').addEventListener('submit', async e => {
@@ -725,7 +725,7 @@ dom('brandSelect').addEventListener('change', function () {
 });
 dom('addProductBtn').addEventListener('click', createProductCard);
 
-
+/*
 async function toDataUrl(url) {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
@@ -743,7 +743,7 @@ async function toDataUrl(url) {
     img.onerror = reject;
     img.src = url + (url.includes("?") ? "&" : "?") + "rand=" + Math.random();
   });
-}
+} */
 
 
 dom('orderForm').addEventListener('submit', async e => {
