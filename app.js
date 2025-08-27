@@ -725,34 +725,5 @@ dom('brandSelect').addEventListener('change', function () {
 });
 dom('addProductBtn').addEventListener('click', createProductCard);
 
-/*
-async function toDataUrl(url) {
-  return new Promise((resolve, reject) => {
-    const img = new window.Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = function () {
-      const canvas = document.createElement('canvas');
-      canvas.width = 140; canvas.height = 140;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
-      const ratio = Math.min(canvas.width/this.width, canvas.height/this.height, 1.0);
-      const w = this.width * ratio, h = this.height * ratio;
-      ctx.drawImage(this, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.90));
-    };
-    img.onerror = reject;
-    img.src = url + (url.includes("?") ? "&" : "?") + "rand=" + Math.random();
-  });
-} */
 
 
-
-
-
-
-dom('brandSelect').addEventListener('change', function () {
-  dom('productCards').innerHTML = '';
-  state.reset();
-  if (this.value) createProductCard();
-});
-dom('addProductBtn').addEventListener('click', createProductCard);
