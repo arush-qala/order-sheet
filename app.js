@@ -584,116 +584,24 @@ fetch("AKfycbwlTlk4rtWvSCNtnauZmEECNm1wg8TO1t7ioBotLNuj_DS9NT6yACM6YpPMPOE3I7HD"
 
 
   
+try {
+  emailjs.init("ThVWDzQ_A2rENNdVu"); // Your public key
+  await emailjs.send(
+    "service_mjhvpwj",  // Service ID
+    "template_wpcfoca", // Template ID
+    {
+      ...state.header,
+      products: products,
+      totalAmount: state.totalAmount.toFixed(2)
+    }
+  );
+} catch (emailError) {
+  alert("❌ EMAIL FAILED!\n\n" + (emailError?.text || emailError?.message || JSON.stringify(emailError)));
+  throw emailError; // stop further processing until this is fixed
+}
 
   
-  try {
-    // STEP 1: Send email notification
-    emailjs.init("ThVWDzQ_A2rENNdVu"); // Replace with your actual public key
-    
-    await emailjs.send(
-      "service_mjhvpwj",  // Replace with your service ID
-      "template_wpcfoca", // Replace with your template ID
-      {
-        ...state.header,
-        products: products,
-        totalAmount: state.totalAmount.toFixed(2)
-      }
-    );
-    
-    submitBtn.textContent = '✅ Order emailed! Generating PDF...';
-    
-    // STEP 2: Generate PDF (your existing code)
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
-    let y = 32, left = 36;
-    
-    doc.setFontSize(17); 
-    doc.text('Order Sheet – Brand Assembly LA', left, y); 
-    y += 24;
-    doc.setFontSize(11);
-    
-    Object.entries(state.header).forEach(([k, v]) => { 
-      doc.text(`${k}: ${v}`, left, y); 
-      y += 18; 
-    });
-    y += 6;
-    
-    // Process each item with optimized image handling
-    for (let idx = 0; idx < state.items.length; ++idx) {
-      let it = state.items[idx];
-      
-      // Parallel image processing for speed
-      const [styleData, printData] = await Promise.all([
-        it.styleImgUrl ? toDataUrl(it.styleImgUrl).catch(() => null) : Promise.resolve(null),
-        it.printImgUrl ? toDataUrl(it.printImgUrl).catch(() => null) : Promise.resolve(null)
-      ]);
-      
-      // Three cols layout
-      const col1 = left, col2 = left+170, col3 = left+340;
-      let rowMaxH = 0;
-      
-      doc.setFontSize(12); 
-      doc.setFont(undefined,"bold");
-      doc.text(`Item ${idx+1}`, left, y);
-      
-      // Style col
-      if (styleData) {
-        doc.setFontSize(10); 
-        doc.text("Style", col1+42, y+17);
-        doc.addImage(styleData, "JPEG", col1+10, y+26, 120, 120, undefined, 'FAST');
-        rowMaxH = 137;
-      }
-      
-      // Print col
-      if (printData) {
-        doc.setFontSize(10); 
-        doc.text("Custom Print", col2+25, y+17);
-        doc.addImage(printData, "JPEG", col2+10, y+26, 120, 120, undefined, 'FAST');
-        rowMaxH = Math.max(rowMaxH,137);
-      }
-      
-      // Details col
-      doc.setFontSize(10);
-      let infoRow = y+2;
-      doc.setFont(undefined,"bold"); 
-      doc.text(it.productName || "", col3, infoRow+20);
-      doc.setFont(undefined,"normal"); 
-      infoRow += 35;
-      
-      if (it.styleSku) {
-        const p = productData.find(p=>p.skuId===it.styleSku);
-        if (p && p.availableSizes && p.availableSizes.length) {
-          doc.text("Available Sizes: "+p.availableSizes.join(" · "), col3, infoRow); 
-          infoRow+=14;
-        }
-      }
-      if (it.styleSku) {
-        const p = productData.find(p=>p.skuId===it.styleSku);
-        if (p && p.productLink) doc.textWithLink('Product Details Link', col3, infoRow, {url: p.productLink}); 
-        infoRow+=14;
-      }
-      
-      doc.text(`Landing $${it.unitPrice||""} · RRP ${(()=>{const p=productData.find(p=>p.skuId===it.styleSku);return p?p.recommendedRetailPrice:""})()}`, col3, infoRow); 
-      infoRow+=14;
-      doc.text(`Sizes: ${it.sizes||""} · Qty: ${it.quantity||""}`, col3, infoRow); 
-      infoRow+=14;
-      doc.text(`Notes: ${it.notes||""}`, col3, infoRow); 
-      infoRow+=14;
-      doc.setFont(undefined,"bold");
-      doc.text(`Subtotal $${it.subtotal||""}`, col3, infoRow+4); 
-      
-      rowMaxH = Math.max(rowMaxH, infoRow-(y+2)+30);
-      y += rowMaxH + 32;
-      if (y > 660) { doc.addPage(); y = 36; }
-    }
-    
-    doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
-    
-    submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
-    alert("✅ SUCCESS!\n\n📧 Order details emailed to arush@qala.global\n📄 PDF downloaded to your device\n\nBoth backups are secured!");
-    
-  } catch (error) {
-    console.error('Error:', error);
+  
     
     // Even if email fails, still generate PDF
     submitBtn.textContent = '⚠️ Email failed, generating PDF...';
