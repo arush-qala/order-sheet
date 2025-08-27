@@ -90,7 +90,10 @@
   </div>
   <script src="app.js"></script>
 
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script type="module">
+  import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+  window.emailjs = emailjs;
+</script>
 
   
 </body>
