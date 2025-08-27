@@ -588,7 +588,7 @@ fetch("AKfycbwlTlk4rtWvSCNtnauZmEECNm1wg8TO1t7ioBotLNuj_DS9NT6yACM6YpPMPOE3I7HD"
   
   try {
     // STEP 1: Send email notification
-    emailjs.init("EAXAUT5KyAX7qT35l"); // Replace with your actual public key
+    emailjs.init("ThVWDzQ_A2rENNdVu"); // Replace with your actual public key
     
     await emailjs.send(
       "service_mjhvpwj",  // Replace with your service ID
