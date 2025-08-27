@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
 </head>
 <body>
   <div class="container">
@@ -88,13 +88,17 @@
       </section>
     </form>
   </div>
-  <script src="app.js"></script>
+ 
 
 <script type="module">
   import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
   window.emailjs = emailjs;
 </script>
 
+<!-- Then your other dependencies: -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   <script src="app.js"></script>
   
 </body>
 </html>
