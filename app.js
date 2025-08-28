@@ -523,28 +523,19 @@ dom('orderForm').addEventListener('submit', async e => {
   }));
   
   
- const orderHeader = {
-  orderNumber: state.header.orderNumber,
-  timestamp: state.header.timestamp,
-  buyerName: state.header.buyerName,
-  email: state.header.email,
-  phone: state.header.phone,
-  shippingAddress: state.header.shippingAddress,
-  brand: state.header.brand,
-  orderComments: state.header.orderComments
-};
+
 
 for (let i = 0; i < state.items.length; ++i) {
   const item = state.items[i];
   const flatRowObject = {
-    OrderID: orderHeader.orderNumber,
-    SubmissionTimestamp: orderHeader.timestamp,
-    BuyerName: orderHeader.buyerName,
-    Email: orderHeader.email,
-    Phone: orderHeader.phone,
-    ShippingAddress: orderHeader.shippingAddress,
-    Brand: orderHeader.brand,
-    OrderComments: orderHeader.orderComments,
+    OrderID: state.header.orderNumber,
+    SubmissionTimestamp: state.header.timestamp,
+    BuyerName: state.header.buyerName,
+    Email: state.header.email,
+    Phone: state.header.phone,
+    ShippingAddress: state.header.shippingAddress,
+    Brand: state.header.brand,
+    OrderComments: state.header.orderComments,
     ProductSelectionID: i + 1,
     ProductSKU: item.styleSku,
     ProductName: item.productName,
