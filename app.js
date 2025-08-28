@@ -521,19 +521,59 @@ dom('orderForm').addEventListener('submit', async e => {
     subtotal: item.subtotal,
     notes: item.notes
   }));
-  fetch(SHEET_ENDPOINT, {
-    method: "POST", headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ order: orderInfo, items: items })
-  }).then(res => res.json()).then(res => {
-      if (res && res.result === "SUCCESS") {
-        console.log("Logged to Google Sheet:", res.orderId);
-      } else {
-        console.warn("Order NOT saved to Google Sheet:", (res && res.message));
-      }
-  }).catch(err => {
-      console.error("POST to Google Sheet failed:", err);
-  });
+  
+  
+ const orderHeader = {
+  orderNumber: state.header.orderNumber,
+  timestamp: state.header.timestamp,
+  buyerName: state.header.buyerName,
+  email: state.header.email,
+  phone: state.header.phone,
+  shippingAddress: state.header.shippingAddress,
+  brand: state.header.brand,
+  orderComments: state.header.orderComments
+};
 
+for (let i = 0; i < state.items.length; ++i) {
+  const item = state.items[i];
+  const row = {
+    OrderID: orderHeader.orderNumber,
+    SubmissionTimestamp: orderHeader.timestamp,
+    BuyerName: orderHeader.buyerName,
+    Email: orderHeader.email,
+    Phone: orderHeader.phone,
+    ShippingAddress: orderHeader.shippingAddress,
+    Brand: orderHeader.brand,
+    OrderComments: orderHeader.orderComments,
+    ProductSelectionID: i + 1,
+    ProductSKU: item.styleSku,
+    ProductName: item.productName,
+    CustomPrintSKU: item.printSku,
+    SizesAndQuantities: item.sizes,
+    UnitPrice: item.unitPrice,
+    Subtotal: item.subtotal,
+    Notes: item.notes
+  };
+  fetch(SHEET_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(row)
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res && res.result === "SUCCESS") {
+      console.log("Row added for product:", item.productName);
+    } else {
+      console.warn("Failed to add row for:", item.productName);
+    }
+  })
+  .catch(err => {
+    console.error("POST to Google Sheet failed:", err);
+  });
+}
+
+
+  
   // Send email and show diagnostics if failure
   try {
   emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -649,6 +689,9 @@ dom('orderForm').addEventListener('submit', async e => {
   }
   console.log({ header: state.header, items: state.items });
 });
+
+
+
 
 // --- Brand selection triggers product card regeneration ---
 dom('brandSelect').addEventListener('change', function () {
