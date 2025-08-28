@@ -672,7 +672,7 @@ for(let idx=0; idx<state.items.length; ++idx) {
 
   // Unit Price + logic, RRP
   let usedUnit = (typeof it.unitPrice === "number" ? it.unitPrice : Number(it.unitPrice));
-  let landing = (it.styleSku ? (productData.find(p=>p.skuId===it.styleSku)?.landingPrice : usedUnit);
+  let landing = it.styleSku ? (productData.find(p => p.skuId === it.styleSku)?.landingPrice) : usedUnit;
   let showUnit = usedUnit && usedUnit !== landing ? usedUnit : landing;
   doc.setFont(undefined,"bold");
   doc.text("Unit Price: ", infoX, row);
