@@ -603,46 +603,41 @@ doc.setFont(undefined,"bold");
 doc.text('Qala Collective – Order Sheet', x, y);
 y += 34;
 
-// === TOP: Order fields as Labeled Boxes ===
+// === TOP: Order fields as Labeled Boxes ===
+const boxH = 21, labelY = y, boxY = labelY + 10;
+const fieldW = [100, 165, 170, 110];
+const fieldGap = 24;
 
-// Sizing/layout setup
-const fieldGap = 26;
-const labelY = y;
-const boxY = labelY+12;
-const boxH = 19;
-const fieldW = [110, 119, 170, 110]; // Width for each box: Order#, Buyer, Email, Phone
-
-// Order Number
-doc.setFontSize(10.5);
+// Order Number box
 doc.setFont(undefined, "bold");
 doc.text('Order Number', x, labelY);
 doc.setFont(undefined, "normal");
-doc.setDrawColor(180,180,180).setFillColor(245,245,255);
+doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(x, boxY, fieldW[0], boxH, 'F');
-doc.text((state.header.orderNumber||''), x+4, boxY+14);
+doc.text(state.header.orderNumber||'', x+4, boxY+15);
 
-// Buyer/Store Name
-doc.setFont(undefined, "bold");
-doc.text('Buyer/Store Name', x+fieldW[0]+fieldGap, labelY);
+// Buyer/Store Name box
+doc.setFont(undefined,"bold");
+doc.text('Buyer/Store Name', x + fieldW[0] + fieldGap, labelY);
 doc.setFont(undefined, "normal");
 doc.rect(x+fieldW[0]+fieldGap, boxY, fieldW[1], boxH, 'F');
-doc.text((state.header.buyerName||''), x+fieldW[0]+fieldGap+4, boxY+14);
+doc.text(state.header.buyerName||'', x+fieldW[0]+fieldGap+4, boxY+15);
 
-// Email
+// Email box
 doc.setFont(undefined, "bold");
-doc.text('Email', x+fieldW[0]+fieldW[1]+fieldGap*2, labelY);
+doc.text('Email', x + fieldW[0] + fieldW[1] + fieldGap*2, labelY);
 doc.setFont(undefined, "normal");
 doc.rect(x+fieldW[0]+fieldW[1]+fieldGap*2, boxY, fieldW[2], boxH, 'F');
-doc.text((state.header.email||''), x+fieldW[0]+fieldW[1]+fieldGap*2+4, boxY+14);
+doc.text(state.header.email||'', x+fieldW[0]+fieldW[1]+fieldGap*2+4, boxY+15);
 
-// Phone
-doc.setFont(undefined, "bold");
+// Phone box
+doc.setFont(undefined,"bold");
 doc.text('Phone', x+fieldW[0]+fieldW[1]+fieldW[2]+fieldGap*3, labelY);
-doc.setFont(undefined, "normal");
+doc.setFont(undefined,"normal");
 doc.rect(x+fieldW[0]+fieldW[1]+fieldW[2]+fieldGap*3, boxY, fieldW[3], boxH, 'F');
-doc.text((state.header.phone||''), x+fieldW[0]+fieldW[1]+fieldW[2]+fieldGap*3+4, boxY+14);
+doc.text(state.header.phone||'', x+fieldW[0]+fieldW[1]+fieldW[2]+fieldGap*3+4, boxY+15);
 
-y = boxY + boxH + 18;
+y = boxY + boxH + 20;
 
 // Shipping Address
 doc.setFont(undefined,"bold");
@@ -667,85 +662,87 @@ doc.text(orderCommLines, x+4, y+19);
 
 y += commentBoxH + 18;
 
-// === PRODUCT SECTION as card-style with columns for Style and Custom Print ===
-
+// === PRODUCTS SECTION: Style & Custom Print side by side ===
 doc.setFont(undefined, "bold");
 doc.setFontSize(13);
 doc.text("Products Ordered:", x, y);
-y += 10;
-const colW = 160;
+y += 12;
+
+const styleColX = x,            styleImgW = 48, styleColW = 142;
+const printColX = styleColX+styleColW+22, printImgW = 38, printColW = 128;
+const detailsColX = printColX+printColW+17, detailsColW = 180;
+
 for(let idx=0; idx<state.items.length; ++idx) {
   let it = state.items[idx];
-
-  // Draw outer rounded box for clarity
-  doc.setLineWidth(0.6);
-  doc.setDrawColor(200,200,200);
+  // Draw outer box
+  doc.setLineWidth(0.6); doc.setDrawColor(200,200,200);
   doc.roundedRect(x-3, y-8, 510, 110, 6, 6, 'S');
 
-  // Style Column
-  let cX = x, cY = y;
-  doc.setFontSize(10.2);
-
-  // Style Image with fallback
+  // === Style Column ===
+  let cY = y;
+  doc.setFontSize(10.5);
+  // Style label
+  doc.setFont(undefined,"bold");
+  doc.text('Style', styleColX+3, cY+11);
+  doc.setFont(undefined,"normal");
   if (it.styleImgUrl) {
     try {
-      const imgData = await toDataUrl(it.styleImgUrl);
-      doc.addImage(imgData, "JPEG", cX+5, cY+7, 48, 48);
+      const styleImgData = await toDataUrl(it.styleImgUrl);
+      doc.addImage(styleImgData, "JPEG", styleColX+6, cY+18, styleImgW, styleImgW);
     } catch (e) {}
   }
-  doc.setFont(undefined,"bold");
-  doc.text('Style', cX+58, cY+14);
-  doc.setFont(undefined,"normal");
-  doc.text(it.productName || '', cX+58, cY+27);
-  doc.text("SKU: "+(it.styleSku||""), cX+58, cY+40);
+  let styleNameY = cY + 16 + styleImgW;
+  doc.text(it.productName||'', styleColX+3, styleNameY);
+  doc.text('SKU: '+(it.styleSku||''), styleColX+3, styleNameY+15);
 
-  // Custom Print Column
-  let printStartX = cX+colW+44;
+  // === Custom Print Column ===
   doc.setFont(undefined,"bold");
-  doc.text('Custom Print', printStartX, cY+14);
+  doc.text('Custom Print', printColX+2, cY+11);
   doc.setFont(undefined,"normal");
-  if (it.printSku) {
-    doc.text(it.printSku, printStartX, cY+27);
-  }
-  // Optionally print a print image if desired:
   if (it.printImgUrl) {
     try {
-      const imgData = await toDataUrl(it.printImgUrl);
-      doc.addImage(imgData, "JPEG", printStartX-50, cY+7, 38, 38);
+      const printImgData = await toDataUrl(it.printImgUrl);
+      doc.addImage(printImgData, "JPEG", printColX+6, cY+16, printImgW, printImgW);
     } catch (e) {}
   }
+  let printNameY = cY + 16 + printImgW;
+  if (it.printSku) doc.text('SKU: '+it.printSku, printColX+2, printNameY);
 
-  // Details
-  let infoX = x + 2*colW + 60;
-  let rowY = cY+13;
-  doc.setFont(undefined,"normal").setFontSize(10);
-  doc.text("Sizes & Quantities: " + (it.sizes||''), infoX, rowY);
-  rowY += 16;
-  doc.text("Unit Price: $" + (it.unitPrice||''), infoX, rowY);
-  doc.text("Subtotal: $" + (it.subtotal||''), infoX+95, rowY);
-  rowY += 16;
+  // === Details Column ===
+  let detailsY = cY + 14;
+  doc.setFont(undefined,"bold");
+  doc.text("Sizes & Quantities", detailsColX, detailsY);
+  doc.setFont(undefined,"normal");
+  doc.text((it.sizes||''), detailsColX, detailsY+14);
+  detailsY += 30;
+  doc.setFont(undefined,"bold");
+  doc.text("Unit Price / Subtotal", detailsColX, detailsY);
+  doc.setFont(undefined,"normal");
+  doc.text(`$${it.unitPrice||''} / $${it.subtotal||''}`, detailsColX, detailsY+14);
+  detailsY += 28;
   if (it.notes) {
-    doc.setFont(undefined,"italic");
-    doc.text("Notes: " + (it.notes||''), infoX, rowY);
+    doc.setFont(undefined,"bolditalic");
+    doc.text("Notes", detailsColX, detailsY);
     doc.setFont(undefined,"normal");
-    rowY += 12;
+    doc.text(it.notes||'', detailsColX, detailsY+13);
+    detailsY += 16;
   }
 
-  // Product Details hyperlink (blue/underline, left-aligned under Style)
+  // Product Details hyperlink (blue/underline, below style col)
   if (it.styleSku) {
     const p = productData.find(p=>p.skuId===it.styleSku);
     if (p && p.productLink) {
-      let linkY = cY+68;
+      let linkY = cY+96;
       doc.setTextColor(23,72,200); // blue
-      doc.textWithLink('Product Details Link', cX+5, linkY, { url: p.productLink });
+      doc.textWithLink('Product Details Link', styleColX+3, linkY, { url: p.productLink });
       const linkWidth = doc.getTextWidth('Product Details Link');
       doc.setLineWidth(0.8);
-      doc.line(cX+5, linkY+1, cX+5+linkWidth, linkY+1); // underline
+      doc.line(styleColX+3, linkY+1, styleColX+3+linkWidth, linkY+1); // underline
       doc.setTextColor(0,0,0);
     }
   }
 
-  y += 112;
+  y += 117;
   if (y > 720) { doc.addPage(); y = 40; }
 }
 
@@ -757,6 +754,7 @@ doc.text(`Total Quantity: ${state.totalQty}`, x, y);
 doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 180, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+
 
     submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
     alert("✅ SUCCESS!\n\n📧 Order details sent\n📄 PDF downloaded\nBackups secured!");
