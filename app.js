@@ -640,7 +640,8 @@ for(let idx=0; idx<state.items.length; ++idx) {
   row += 15;
 
   // Available Sizes
-  let availSizes = (it.styleSku ? (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(" · ") : "");
+  let availSizes = (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(" · ") || "");
+
   if (availSizes) {
     doc.setFont(undefined, "italic");
     doc.text("Available Sizes: " + availSizes, infoX, row, { maxWidth: infoW-50 });
