@@ -557,7 +557,7 @@ for (let i = 0; i < state.items.length; ++i) {
   fetch(SHEET_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(flatRowObject)
+    body: JSON.stringify(row)
   })
   .then(res => res.json())
   .then(res => {
