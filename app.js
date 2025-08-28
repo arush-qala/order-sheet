@@ -595,8 +595,7 @@ for (let i = 0; i < state.items.length; ++i) {
 
   // Always generate PDF regardless of email result
   try {
-
-    const { jsPDF } = window.jspdf;
+        const { jsPDF } = window.jspdf;
 const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
 let x = 36, y = 38;
 doc.setFontSize(16);
@@ -708,6 +707,7 @@ doc.text(`Total Quantity: ${state.totalQty}`, x, y);
 doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 200, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+ 
 
 
 
