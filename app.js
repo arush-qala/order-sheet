@@ -536,7 +536,7 @@ dom('orderForm').addEventListener('submit', async e => {
 
 for (let i = 0; i < state.items.length; ++i) {
   const item = state.items[i];
-  const row = {
+  const flatRowObject = {
     OrderID: orderHeader.orderNumber,
     SubmissionTimestamp: orderHeader.timestamp,
     BuyerName: orderHeader.buyerName,
@@ -557,7 +557,7 @@ for (let i = 0; i < state.items.length; ++i) {
   fetch(SHEET_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(row)
+    body: JSON.stringify(flatRowObject)
   })
   .then(res => res.json())
   .then(res => {
