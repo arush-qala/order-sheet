@@ -536,20 +536,31 @@ dom('orderForm').addEventListener('submit', async e => {
 
   // Send email and show diagnostics if failure
   try {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    await emailjs.send(
-      EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID,
-      {
-        ...state.header,
-        products: products,
-        totalAmount: state.totalAmount.toFixed(2)
-      }
-    );
-    submitBtn.textContent = '✅ Order emailed! Generating PDF...';
-  } catch (emailError) {
-    alert("❌ EMAIL FAILED!\n\n" + (emailError?.text || emailError?.message || JSON.stringify(emailError)));
-    submitBtn.textContent = '⚠️ Email failed, generating PDF...';
-  }
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  // Build payload **without using ...state.header** so products stays as an array
+  await emailjs.send(
+    EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID,
+    {
+      orderNumber: state.header.orderNumber,
+      buyerName: state.header.buyerName,
+      email: state.header.email,
+      phone: state.header.phone,
+      shippingAddress: state.header.shippingAddress,
+      orderComments: state.header.orderComments,
+      brand: state.header.brand,
+      totalQty: state.header.totalQty,
+      totalAmount: state.totalAmount.toFixed(2),
+      timestamp: state.header.timestamp,
+      userAgent: state.header.userAgent,
+      products // <-- stays as a real array!
+    }
+  );
+  submitBtn.textContent = '✅ Order emailed! Generating PDF...';
+} catch (emailError) {
+  alert("❌ EMAIL FAILED!\n\n" + (emailError?.text || emailError?.message || JSON.stringify(emailError)));
+  submitBtn.textContent = '⚠️ Email failed, generating PDF...';
+}
+
 
   // Always generate PDF regardless of email result
   try {
@@ -561,10 +572,14 @@ dom('orderForm').addEventListener('submit', async e => {
     y += 24;
     doc.setFontSize(11);
 
-    Object.entries(state.header).forEach(([k, v]) => { 
-      doc.text(`${k}: ${v}`, left, y); 
-      y += 18; 
-    });
+    Object.entries(state.header).forEach(([k, v]) => {
+  if (k !== 'userAgent') { // Skip userAgent in PDF
+    doc.text(`${k}: ${v}`, left, y);
+    y += 18;
+  }
+});
+
+    
     y += 6;
 
     // Process each item with optimized image handling
