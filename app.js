@@ -592,7 +592,7 @@ for (let i = 0; i < state.items.length; ++i) {
       totalAmount: state.totalAmount.toFixed(2),
       timestamp: state.header.timestamp,
       userAgent: state.header.userAgent,
-      products // <-- stays as a real array!
+    orderProducts: products, // Use a fresh, unique key!
     }
   );
   submitBtn.textContent = '✅ Order emailed! Generating PDF...';
