@@ -605,78 +605,145 @@ for (let i = 0; i < state.items.length; ++i) {
   // Always generate PDF regardless of email result
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
-    let y = 32, left = 36;
-    doc.setFontSize(17); 
-    doc.text('Order Sheet – Brand Assembly LA', left, y); 
-    y += 24;
-    doc.setFontSize(11);
+const doc = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
+let x = 36;
+let y = 38;
 
-    Object.entries(state.header).forEach(([k, v]) => {
-  if (k !== 'userAgent') { // Skip userAgent in PDF
-    doc.text(`${k}: ${v}`, left, y);
-    y += 18;
+doc.setFontSize(18);
+doc.setFont(undefined,"bold");
+doc.text('Qala Collective – Order Sheet', x, y);
+y += 30;
+
+// --- Order Header Section ---
+doc.setFontSize(11);
+doc.setFont(undefined, "normal");
+
+// Row 1: Order Number | Buyer/Store Name | Email | Phone
+doc.setFont(undefined, "bold");
+doc.text('Order Number:', x, y);
+doc.setFont(undefined, "normal");
+doc.text(state.header.orderNumber || '', x + 85, y);
+
+doc.setFont(undefined, "bold");
+doc.text('Buyer/Store Name:', x + 200, y);
+doc.setFont(undefined, "normal");
+doc.text(state.header.buyerName || '', x + 320, y);
+
+doc.setFont(undefined, "bold");
+doc.text('Email:', x + 500, y);
+doc.setFont(undefined, "normal");
+doc.text(state.header.email || '', x + 540, y);
+
+doc.setFont(undefined, "bold");
+doc.text('Phone:', x + 650, y);
+doc.setFont(undefined, "normal");
+doc.text(state.header.phone || '', x + 700, y);
+
+y += 22;
+
+// Row 2: Shipping Address (long box—simulate with separate line and larger Y gap)
+doc.setFont(undefined, "bold");
+doc.text('Shipping Address:', x, y);
+doc.setFont(undefined, "normal");
+const addressLines = doc.splitTextToSize(state.header.shippingAddress || '', 500);
+doc.text(addressLines, x + 110, y);
+
+y += 18 * (addressLines.length || 1) + 5;
+
+// Row 3: Order Comments
+doc.setFont(undefined,"bold");
+doc.text('Order Comments:', x, y);
+doc.setFont(undefined, "normal");
+const commentLines = doc.splitTextToSize(state.header.orderComments || '', 500);
+doc.text(commentLines, x + 100, y);
+
+y += 18 * (commentLines.length || 1) + 12;
+
+// --- PRODUCT TABLE HEADING ---
+doc.setFont(undefined, "bold");
+doc.setFontSize(13);
+doc.text("Products Ordered:", x, y);
+y += 14;
+
+for (let idx = 0; idx < state.items.length; ++idx) {
+  let it = state.items[idx];
+
+  // Draw border-box for clarity (optional)
+  doc.setDrawColor(200,200,200);
+  doc.setLineWidth(0.7);
+  doc.rect(x-3, y-10, 540, 102, 'S');
+
+  // Product style image (left)
+  let nextRow = y;
+  if (it.styleImgUrl) {
+    try {
+      const imgData = await toDataUrl(it.styleImgUrl);
+      doc.addImage(imgData, "JPEG", x, nextRow, 70, 70, undefined, 'FAST');
+    } catch (e) { }
   }
-});
 
-    
-    y += 6;
+  // Info block (right of image, offset by 80px)
+  let infoX = x + 80;
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(11);
+  doc.text(it.productName || '', infoX, nextRow + 15);
 
-    // Process each item with optimized image handling
-    for (let idx = 0; idx < state.items.length; ++idx) {
-      let it = state.items[idx];
-      const [styleData, printData] = await Promise.all([
-        it.styleImgUrl ? toDataUrl(it.styleImgUrl).catch(() => null) : Promise.resolve(null),
-        it.printImgUrl ? toDataUrl(it.printImgUrl).catch(() => null) : Promise.resolve(null)
-      ]);
-      const col1 = left, col2 = left+170, col3 = left+340;
-      let rowMaxH = 0;
-      doc.setFontSize(12); 
-      doc.setFont(undefined,"bold");
-      doc.text(`Item ${idx+1}`, left, y);
-      if (styleData) {
-        doc.setFontSize(10); 
-        doc.text("Style", col1+42, y+17);
-        doc.addImage(styleData, "JPEG", col1+10, y+26, 120, 120, undefined, 'FAST');
-        rowMaxH = 137;
-      }
-      if (printData) {
-        doc.setFontSize(10); 
-        doc.text("Custom Print", col2+25, y+17);
-        doc.addImage(printData, "JPEG", col2+10, y+26, 120, 120, undefined, 'FAST');
-        rowMaxH = Math.max(rowMaxH,137);
-      }
-      doc.setFontSize(10);
-      let infoRow = y+2;
-      doc.setFont(undefined,"bold"); 
-      doc.text(it.productName || "", col3, infoRow+20);
-      doc.setFont(undefined,"normal"); 
-      infoRow += 35;
-      if (it.styleSku) {
-        const p = productData.find(p=>p.skuId===it.styleSku);
-        if (p && p.availableSizes && p.availableSizes.length) {
-          doc.text("Available Sizes: "+p.availableSizes.join(" · "), col3, infoRow); 
-          infoRow+=14;
-        }
-      }
-      if (it.styleSku) {
-        const p = productData.find(p=>p.skuId===it.styleSku);
-        if (p && p.productLink) doc.textWithLink('Product Details Link', col3, infoRow, {url: p.productLink}); 
-        infoRow+=14;
-      }
-      doc.text(`Landing $${it.unitPrice||""} · RRP ${(function(){const p=productData.find(p=>p.skuId===it.styleSku);return p?p.recommendedRetailPrice:""})()}`, col3, infoRow); 
-      infoRow+=14;
-      doc.text(`Sizes: ${it.sizes||""} · Qty: ${it.quantity||""}`, col3, infoRow); 
-      infoRow+=14;
-      doc.text(`Notes: ${it.notes||""}`, col3, infoRow); 
-      infoRow+=14;
-      doc.setFont(undefined,"bold");
-      doc.text(`Subtotal $${it.subtotal||""}`, col3, infoRow+4); 
-      rowMaxH = Math.max(rowMaxH, infoRow-(y+2)+30);
-      y += rowMaxH + 32;
-      if (y > 660) { doc.addPage(); y = 36; }
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(10);
+  nextRow += 30;
+
+  // SKU + Custom Print SKU
+  doc.text(`SKU: ${it.styleSku || ''}`, infoX, nextRow);
+  nextRow += 15;
+  if (it.printSku) {
+    doc.text(`Custom Print SKU: ${it.printSku}`, infoX, nextRow);
+    nextRow += 15;
+  }
+  // Sizes and quantities
+  doc.text(`Sizes & Quantities: ${it.sizes || ''}`, infoX, nextRow);
+  nextRow += 15;
+
+  // Unit Price and Subtotal
+  doc.text(`Unit Price: $${it.unitPrice}`, infoX, nextRow);
+  doc.text(`Subtotal: $${it.subtotal}`, infoX + 160, nextRow);
+  nextRow += 15;
+
+  // Notes
+  if (it.notes) {
+    doc.setFont(undefined,"italic");
+    doc.text(`Notes: ${it.notes}`, infoX, nextRow);
+    doc.setFont(undefined,"normal");
+    nextRow += 14;
+  }
+  
+  // Product Details Hyperlink (blue, underlined)
+  if (it.styleSku) {
+    const p = productData.find(p=>p.skuId===it.styleSku);
+    if (p && p.productLink) {
+      doc.setTextColor(49,101,220); // Blue
+      doc.textWithLink('Product Details Link', infoX, nextRow, { url: p.productLink });
+      // Simulate underline
+      const linkWidth = doc.getTextWidth('Product Details Link');
+      doc.setLineWidth(0.8);
+      doc.line(infoX, nextRow + 1, infoX + linkWidth, nextRow + 1);
+      doc.setTextColor(0,0,0); // Back to black
+      nextRow += 14;
     }
-    doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+  }
+
+  y += Math.max(102, nextRow - y + 18); // Advance down for next product
+  if (y > 720) { doc.addPage(); y = 40; }
+}
+
+// --- BOTTOM SUMMARY (Totals) ---
+y += 30;
+doc.setFontSize(12);
+doc.setFont(undefined, "bold");
+doc.text(`Total Quantity: ${state.totalQty}`, x, y);
+doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 180, y);
+
+doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+
     submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
     alert("✅ SUCCESS!\n\n📧 Order details sent\n📄 PDF downloaded\nBackups secured!");
   } catch (error) {
