@@ -595,139 +595,162 @@ for (let i = 0; i < state.items.length; ++i) {
 
   // Always generate PDF regardless of email result
   try {
-    const { jsPDF } = window.jspdf;
+      const { jsPDF } = window.jspdf;
 const doc = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
-let x = 36;
-let y = 38;
-
+let x = 36, y = 38;
 doc.setFontSize(18);
 doc.setFont(undefined,"bold");
 doc.text('Qala Collective – Order Sheet', x, y);
-y += 30;
+y += 34;
 
-// --- Order Header Section ---
-doc.setFontSize(11);
-doc.setFont(undefined, "normal");
+// === TOP: Order fields as Labeled Boxes ===
 
-// Row 1: Order Number | Buyer/Store Name | Email | Phone
+// Sizing/layout setup
+const fieldGap = 26;
+const labelY = y;
+const boxY = labelY+12;
+const boxH = 19;
+const fieldW = [110, 119, 170, 110]; // Width for each box: Order#, Buyer, Email, Phone
+
+// Order Number
+doc.setFontSize(10.5);
 doc.setFont(undefined, "bold");
-doc.text('Order Number:', x, y);
+doc.text('Order Number', x, labelY);
 doc.setFont(undefined, "normal");
-doc.text(state.header.orderNumber || '', x + 85, y);
+doc.setDrawColor(180,180,180).setFillColor(245,245,255);
+doc.rect(x, boxY, fieldW[0], boxH, 'F');
+doc.text((state.header.orderNumber||''), x+4, boxY+14);
 
+// Buyer/Store Name
 doc.setFont(undefined, "bold");
-doc.text('Buyer/Store Name:', x + 200, y);
+doc.text('Buyer/Store Name', x+fieldW[0]+fieldGap, labelY);
 doc.setFont(undefined, "normal");
-doc.text(state.header.buyerName || '', x + 320, y);
+doc.rect(x+fieldW[0]+fieldGap, boxY, fieldW[1], boxH, 'F');
+doc.text((state.header.buyerName||''), x+fieldW[0]+fieldGap+4, boxY+14);
 
+// Email
 doc.setFont(undefined, "bold");
-doc.text('Email:', x + 500, y);
+doc.text('Email', x+fieldW[0]+fieldW[1]+fieldGap*2, labelY);
 doc.setFont(undefined, "normal");
-doc.text(state.header.email || '', x + 540, y);
+doc.rect(x+fieldW[0]+fieldW[1]+fieldGap*2, boxY, fieldW[2], boxH, 'F');
+doc.text((state.header.email||''), x+fieldW[0]+fieldW[1]+fieldGap*2+4, boxY+14);
 
+// Phone
 doc.setFont(undefined, "bold");
-doc.text('Phone:', x + 650, y);
+doc.text('Phone', x+fieldW[0]+fieldW[1]+fieldW[2]+fieldGap*3, labelY);
 doc.setFont(undefined, "normal");
-doc.text(state.header.phone || '', x + 700, y);
+doc.rect(x+fieldW[0]+fieldW[1]+fieldW[2]+fieldGap*3, boxY, fieldW[3], boxH, 'F');
+doc.text((state.header.phone||''), x+fieldW[0]+fieldW[1]+fieldW[2]+fieldGap*3+4, boxY+14);
 
-y += 22;
+y = boxY + boxH + 18;
 
-// Row 2: Shipping Address (long box—simulate with separate line and larger Y gap)
-doc.setFont(undefined, "bold");
-doc.text('Shipping Address:', x, y);
-doc.setFont(undefined, "normal");
-const addressLines = doc.splitTextToSize(state.header.shippingAddress || '', 500);
-doc.text(addressLines, x + 110, y);
-
-y += 18 * (addressLines.length || 1) + 5;
-
-// Row 3: Order Comments
+// Shipping Address
 doc.setFont(undefined,"bold");
-doc.text('Order Comments:', x, y);
-doc.setFont(undefined, "normal");
-const commentLines = doc.splitTextToSize(state.header.orderComments || '', 500);
-doc.text(commentLines, x + 100, y);
+doc.text('Shipping Address', x, y);
+doc.setFont(undefined,"normal");
+doc.setDrawColor(180,180,180).setFillColor(245,245,255);
+const addrBoxH = 28 + 14 * (doc.splitTextToSize(state.header.shippingAddress || '', 500).length-1);
+doc.rect(x, y+6, 490, addrBoxH, 'F');
+doc.text(doc.splitTextToSize((state.header.shippingAddress||''), 480), x+4, y+19);
 
-y += 18 * (commentLines.length || 1) + 12;
+y += addrBoxH + 20;
 
-// --- PRODUCT TABLE HEADING ---
+// Order Comments
+doc.setFont(undefined,"bold");
+doc.text('Order Comments', x, y);
+doc.setFont(undefined,"normal");
+const orderCommLines = doc.splitTextToSize(state.header.orderComments || '', 480);
+doc.setDrawColor(180,180,180).setFillColor(245,245,255);
+const commentBoxH = 28 + 14*(orderCommLines.length-1);
+doc.rect(x, y+6, 490, commentBoxH, 'F');
+doc.text(orderCommLines, x+4, y+19);
+
+y += commentBoxH + 18;
+
+// === PRODUCT SECTION as card-style with columns for Style and Custom Print ===
+
 doc.setFont(undefined, "bold");
 doc.setFontSize(13);
 doc.text("Products Ordered:", x, y);
-y += 14;
-
-for (let idx = 0; idx < state.items.length; ++idx) {
+y += 10;
+const colW = 160;
+for(let idx=0; idx<state.items.length; ++idx) {
   let it = state.items[idx];
 
-  // Draw border-box for clarity (optional)
+  // Draw outer rounded box for clarity
+  doc.setLineWidth(0.6);
   doc.setDrawColor(200,200,200);
-  doc.setLineWidth(0.7);
-  doc.rect(x-3, y-10, 540, 102, 'S');
+  doc.roundedRect(x-3, y-8, 510, 110, 6, 6, 'S');
 
-  // Product style image (left)
-  let nextRow = y;
+  // Style Column
+  let cX = x, cY = y;
+  doc.setFontSize(10.2);
+
+  // Style Image with fallback
   if (it.styleImgUrl) {
     try {
       const imgData = await toDataUrl(it.styleImgUrl);
-      doc.addImage(imgData, "JPEG", x, nextRow, 70, 70, undefined, 'FAST');
-    } catch (e) { }
+      doc.addImage(imgData, "JPEG", cX+5, cY+7, 48, 48);
+    } catch (e) {}
   }
+  doc.setFont(undefined,"bold");
+  doc.text('Style', cX+58, cY+14);
+  doc.setFont(undefined,"normal");
+  doc.text(it.productName || '', cX+58, cY+27);
+  doc.text("SKU: "+(it.styleSku||""), cX+58, cY+40);
 
-  // Info block (right of image, offset by 80px)
-  let infoX = x + 80;
-  doc.setFont(undefined, "bold");
-  doc.setFontSize(11);
-  doc.text(it.productName || '', infoX, nextRow + 15);
-
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(10);
-  nextRow += 30;
-
-  // SKU + Custom Print SKU
-  doc.text(`SKU: ${it.styleSku || ''}`, infoX, nextRow);
-  nextRow += 15;
+  // Custom Print Column
+  let printStartX = cX+colW+44;
+  doc.setFont(undefined,"bold");
+  doc.text('Custom Print', printStartX, cY+14);
+  doc.setFont(undefined,"normal");
   if (it.printSku) {
-    doc.text(`Custom Print SKU: ${it.printSku}`, infoX, nextRow);
-    nextRow += 15;
+    doc.text(it.printSku, printStartX, cY+27);
   }
-  // Sizes and quantities
-  doc.text(`Sizes & Quantities: ${it.sizes || ''}`, infoX, nextRow);
-  nextRow += 15;
+  // Optionally print a print image if desired:
+  if (it.printImgUrl) {
+    try {
+      const imgData = await toDataUrl(it.printImgUrl);
+      doc.addImage(imgData, "JPEG", printStartX-50, cY+7, 38, 38);
+    } catch (e) {}
+  }
 
-  // Unit Price and Subtotal
-  doc.text(`Unit Price: $${it.unitPrice}`, infoX, nextRow);
-  doc.text(`Subtotal: $${it.subtotal}`, infoX + 160, nextRow);
-  nextRow += 15;
-
-  // Notes
+  // Details
+  let infoX = x + 2*colW + 60;
+  let rowY = cY+13;
+  doc.setFont(undefined,"normal").setFontSize(10);
+  doc.text("Sizes & Quantities: " + (it.sizes||''), infoX, rowY);
+  rowY += 16;
+  doc.text("Unit Price: $" + (it.unitPrice||''), infoX, rowY);
+  doc.text("Subtotal: $" + (it.subtotal||''), infoX+95, rowY);
+  rowY += 16;
   if (it.notes) {
     doc.setFont(undefined,"italic");
-    doc.text(`Notes: ${it.notes}`, infoX, nextRow);
+    doc.text("Notes: " + (it.notes||''), infoX, rowY);
     doc.setFont(undefined,"normal");
-    nextRow += 14;
+    rowY += 12;
   }
-  
-  // Product Details Hyperlink (blue, underlined)
+
+  // Product Details hyperlink (blue/underline, left-aligned under Style)
   if (it.styleSku) {
     const p = productData.find(p=>p.skuId===it.styleSku);
     if (p && p.productLink) {
-      doc.setTextColor(49,101,220); // Blue
-      doc.textWithLink('Product Details Link', infoX, nextRow, { url: p.productLink });
-      // Simulate underline
+      let linkY = cY+68;
+      doc.setTextColor(23,72,200); // blue
+      doc.textWithLink('Product Details Link', cX+5, linkY, { url: p.productLink });
       const linkWidth = doc.getTextWidth('Product Details Link');
       doc.setLineWidth(0.8);
-      doc.line(infoX, nextRow + 1, infoX + linkWidth, nextRow + 1);
-      doc.setTextColor(0,0,0); // Back to black
-      nextRow += 14;
+      doc.line(cX+5, linkY+1, cX+5+linkWidth, linkY+1); // underline
+      doc.setTextColor(0,0,0);
     }
   }
 
-  y += Math.max(102, nextRow - y + 18); // Advance down for next product
+  y += 112;
   if (y > 720) { doc.addPage(); y = 40; }
 }
 
 // --- BOTTOM SUMMARY (Totals) ---
-y += 30;
+y += 26;
 doc.setFontSize(12);
 doc.setFont(undefined, "bold");
 doc.text(`Total Quantity: ${state.totalQty}`, x, y);
