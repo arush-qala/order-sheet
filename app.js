@@ -598,41 +598,124 @@ for (let i = 0; i < state.items.length; ++i) {
         const { jsPDF } = window.jspdf;
 const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
 let x = 36, y = 38;
+
+// === TITLE ===
 doc.setFontSize(16);
 doc.setFont(undefined, "bold");
 doc.text('Qala Collective – Order Sheet', x, y);
 y += 28;
 
-// HEADER BOXES (same as your current improved version—skip or keep if already in)
+// === HEADER TEXT BOXES ===
 doc.setFontSize(9.8);
-// ... [order header boxes as in last answer remain unchanged] ...
+const boxH = 19, labelY = y, boxY = labelY + 10;
+const fieldW = [90, 130, 160, 95];
+const fieldGap = 18;
 
-// Advance to products section
-y += 54;
+// Order Number box
+doc.setFont(undefined, "bold");
+doc.text('Order Number', x, labelY);
+doc.setDrawColor(190,190,190).setFillColor(248,248,252);
+doc.rect(x, boxY, fieldW[0], boxH, 'F');
+doc.setFont(undefined, "normal");
+doc.text((state.header.orderNumber || ''), x+4, boxY+13);
 
-// == PRODUCT CARD LAYOUT ==
+// Buyer/Store Name box
+doc.setFont(undefined,"bold");
+doc.text('Buyer/Store Name', x + fieldW[0] + fieldGap, labelY);
+doc.setDrawColor(190,190,190).setFillColor(248,248,252);
+doc.rect(x + fieldW[0] + fieldGap, boxY, fieldW[1], boxH, 'F');
+doc.setFont(undefined,"normal");
+doc.text((state.header.buyerName || ''), x + fieldW[0] + fieldGap + 4, boxY+13);
+
+// Email box
+doc.setFont(undefined,"bold");
+doc.text('Email', x + fieldW[0] + fieldW[1] + fieldGap*2, labelY);
+doc.setDrawColor(190,190,190).setFillColor(248,248,252);
+doc.rect(x + fieldW[0] + fieldW[1] + fieldGap*2, boxY, fieldW[2], boxH, 'F');
+doc.setFont(undefined,"normal");
+doc.text((state.header.email || ''), x + fieldW[0] + fieldW[1] + fieldGap*2 + 4, boxY+13);
+
+// Phone box
+doc.setFont(undefined,"bold");
+doc.text('Phone', x + fieldW[0] + fieldW[1] + fieldW[2] + fieldGap*3, labelY);
+doc.setDrawColor(190,190,190).setFillColor(248,248,252);
+doc.rect(x + fieldW[0] + fieldW[1] + fieldW[2] + fieldGap*3, boxY, fieldW[3], boxH, 'F');
+doc.setFont(undefined,"normal");
+doc.text((state.header.phone || ''), x + fieldW[0] + fieldW[1] + fieldW[2] + fieldGap*3 + 4, boxY+13);
+
+y = boxY + boxH + 17;
+
+// Shipping Address
+doc.setFont(undefined,"bold");
+doc.text('Shipping Address', x, y);
+doc.setFont(undefined,"normal");
+const addrBoxH = 18 * (doc.splitTextToSize(state.header.shippingAddress || '', 460).length);
+doc.setDrawColor(230,230,240).setFillColor(245,245,255);
+doc.rect(x, y+6, 464, Math.max(addrBoxH || 19, 19), 'F');
+doc.text(doc.splitTextToSize((state.header.shippingAddress||''), 452), x+4, y+18);
+y += Math.max(addrBoxH, 19) + 23;
+
+// Order Comments
+doc.setFont(undefined,"bold");
+doc.text('Order Comments', x, y);
+doc.setFont(undefined,"normal");
+const orderCommLines = doc.splitTextToSize(state.header.orderComments || '', 460);
+doc.setDrawColor(230,230,240).setFillColor(245,245,255);
+const commentBoxH = 18 * (orderCommLines.length || 1);
+doc.rect(x, y+6, 464, Math.max(commentBoxH,19), 'F');
+doc.text(orderCommLines, x+4, y+18);
+
+y += Math.max(commentBoxH, 19) + 18;
+
+// === PRODUCTS SECTION ===
+doc.setFont(undefined, "bold");
+doc.setFontSize(12);
+doc.text("Products Ordered:", x, y);
+y += 12;
+
 for(let idx=0; idx<state.items.length; ++idx) {
   let it = state.items[idx];
-  // Outer box with slight shadow
+  
+  // Outer box
   doc.setDrawColor(200,200,200);
   doc.setLineWidth(1);
   doc.roundedRect(x-2, y-12, 510, 130, 9, 9, 'S');
 
-  // --- 1. LARGE IMAGE, left column ---
-  let imgX = x + 11, imgY = y + 5, imgW = 92, imgH = 110;
+  // === STYLE IMAGE (Left) ===
+  let styleImgX = x + 11, styleImgY = y + 5, styleImgW = 80, styleImgH = 80;
   if (it.styleImgUrl) {
     try {
-      const imgData = await toDataUrl(it.styleImgUrl);
-      doc.addImage(imgData, "JPEG", imgX, imgY, imgW, imgH, undefined, 'FAST');
+      const styleImgData = await toDataUrl(it.styleImgUrl);
+      doc.addImage(styleImgData, "JPEG", styleImgX, styleImgY, styleImgW, styleImgH, undefined, 'FAST');
       doc.setDrawColor(210,210,210);
-      doc.rect(imgX-1, imgY-1, imgW+2, imgH+2, 'S');
+      doc.rect(styleImgX-1, styleImgY-1, styleImgW+2, styleImgH+2, 'S');
     } catch (e) {}
   }
+  // Style label
+  doc.setFontSize(9);
+  doc.setFont(undefined, "bold");
+  doc.text('Style', styleImgX, styleImgY + styleImgH + 12);
 
-  // --- 2. RIGHT COLUMN: Detailed Info ---
-  const infoX = x + imgW + 31, infoY = y + 20, infoW = 370;
+  // === CUSTOM PRINT IMAGE (Right of Style) ===
+  let printImgX = styleImgX + styleImgW + 15, printImgY = y + 5, printImgW = 70, printImgH = 70;
+  if (it.printImgUrl) {
+    try {
+      const printImgData = await toDataUrl(it.printImgUrl);
+      doc.addImage(printImgData, "JPEG", printImgX, printImgY, printImgW, printImgH, undefined, 'FAST');
+      doc.setDrawColor(210,210,210);
+      doc.rect(printImgX-1, printImgY-1, printImgW+2, printImgH+2, 'S');
+    } catch (e) {}
+  }
+  // Print label
+  doc.setFontSize(9);
+  doc.setFont(undefined, "bold");
+  doc.text('Custom Print', printImgX, printImgY + printImgH + 12);
+
+  // === PRODUCT INFO (Right Column) ===
+  const infoX = x + 180, infoY = y + 20, infoW = 320;
   let row = infoY;
 
+  // Product Name
   doc.setFontSize(12);
   doc.setFont(undefined, "bold");
   doc.text(it.productName || '', infoX, row, { maxWidth: infoW });
@@ -641,7 +724,6 @@ for(let idx=0; idx<state.items.length; ++idx) {
 
   // Available Sizes
   let availSizes = (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(" · ") || "");
-
   if (availSizes) {
     doc.setFont(undefined, "italic");
     doc.text("Available Sizes: " + availSizes, infoX, row, { maxWidth: infoW-50 });
@@ -657,7 +739,7 @@ for(let idx=0; idx<state.items.length; ++idx) {
       doc.textWithLink('Product Details Link', infoX, row, { url: p.productLink });
       const linkWidth = doc.getTextWidth('Product Details Link');
       doc.setDrawColor(48,88,200); doc.setLineWidth(0.9);
-      doc.line(infoX, row+1, infoX + linkWidth, row+1); // underline
+      doc.line(infoX, row+1, infoX + linkWidth, row+1);
       doc.setTextColor(0,0,0);
       row += 13;
     }
@@ -701,13 +783,14 @@ for(let idx=0; idx<state.items.length; ++idx) {
   if (y > 700) { doc.addPage(); y = 52; }
 }
 
-// --- TOTALS ---
+// === TOTALS ===
 y += 18;
 doc.setFontSize(12).setFont(undefined,"bold");
 doc.text(`Total Quantity: ${state.totalQty}`, x, y);
 doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 200, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+
  
 
 
