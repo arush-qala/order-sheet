@@ -2,7 +2,7 @@
 const EMAILJS_PUBLIC_KEY = "ThVWDzQ_A2rENNdVu";
 const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
-const SHEET_ENDPOINT = "AKfycbwlTlk4rtWvSCNtnauZmEECNm1wg8TO1t7ioBotLNuj_DS9NT6yACM6YpPMPOE3I7HD";
+const SHEET_ENDPOINT = "AKfycbwcld-zPxt_fpQh3jmT1a3YItSUpmnhCjgdmBJ27qYgFOkhL2rAQttvEMvtyFYlCqFg";
 
 // --- Product Data ---
 let productData = []; // Holds dynamically loaded products from Google Sheets
@@ -557,7 +557,7 @@ for (let i = 0; i < state.items.length; ++i) {
   fetch(SHEET_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(row)
+    body: JSON.stringify(flatRowObject)
   })
   .then(res => res.json())
   .then(res => {
