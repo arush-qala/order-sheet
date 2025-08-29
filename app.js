@@ -597,28 +597,28 @@ for (let i = 0; i < state.items.length; ++i) {
   try {
         const { jsPDF } = window.jspdf;
 const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-let x = 30, y = 32;
+let x = 30, y = 35;
 
 // === TITLE ===
 doc.setFontSize(14);
 doc.setFont(undefined, "bold");
 doc.text('Qala Collective – Order Sheet', x, y);
-y += 26;
+y += 29;
 
-// === ROW 1: ORDER NUMBER (centered in its own row) ===
+// === ROW 1: ORDER NUMBER ===
 doc.setFontSize(8.8);
 doc.setFont(undefined, "bold");
 doc.text('Order Number', x, y);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(x, y+4, 120, 16, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.orderNumber || ''), x+4, y+15);
-y += 24;
+doc.text((state.header.orderNumber || ''), x+5, y+15);
+y += 28; // increased to 28 for more space
 
 // === ROW 2: BUYER NAME, EMAIL, PHONE, SHIPPING ADDRESS ===
 const row2Y = y, boxH = 16;
-const fieldWidths = [100, 130, 80, 220]; // Buyer, Email, Phone, Shipping
-const fieldGaps = [12, 12, 12];
+const fieldWidths = [100, 130, 85, 225]; // Buyer, Email, Phone, Shipping
+const fieldGaps = [22, 22, 22]; // increased from 12 to 22 for more visual space
 let currentX = x;
 
 // Buyer Name
@@ -627,7 +627,7 @@ doc.text('Buyer/Store Name', currentX, row2Y);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(currentX, row2Y+4, fieldWidths[0], boxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.buyerName || ''), currentX+3, row2Y+14);
+doc.text((state.header.buyerName || ''), currentX+5, row2Y+14);
 currentX += fieldWidths[0] + fieldGaps[0];
 
 // Email
@@ -635,7 +635,7 @@ doc.setFont(undefined, "bold");
 doc.text('Email', currentX, row2Y);
 doc.rect(currentX, row2Y+4, fieldWidths[1], boxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.email || ''), currentX+3, row2Y+14);
+doc.text((state.header.email || ''), currentX+5, row2Y+14);
 currentX += fieldWidths[1] + fieldGaps[1];
 
 // Phone
@@ -643,18 +643,18 @@ doc.setFont(undefined, "bold");
 doc.text('Phone', currentX, row2Y);
 doc.rect(currentX, row2Y+4, fieldWidths[2], boxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.phone || ''), currentX+3, row2Y+14);
+doc.text((state.header.phone || ''), currentX+5, row2Y+14);
 currentX += fieldWidths[2] + fieldGaps[2];
 
 // Shipping Address (long text box)
 doc.setFont(undefined, "bold");
 doc.text('Shipping Address', currentX, row2Y);
-const shippingLines = doc.splitTextToSize(state.header.shippingAddress || '', fieldWidths[3]-6);
-const shippingBoxH = Math.max(16, 12 * shippingLines.length + 4);
+const shippingLines = doc.splitTextToSize(state.header.shippingAddress || '', fieldWidths[3]-8);
+const shippingBoxH = Math.max(18, 12 * shippingLines.length + 4);
 doc.rect(currentX, row2Y+4, fieldWidths[3], shippingBoxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text(shippingLines, currentX+3, row2Y+14);
-y = row2Y + Math.max(boxH, shippingBoxH) + 18;
+doc.text(shippingLines, currentX+5, row2Y+14);
+y = row2Y + Math.max(boxH, shippingBoxH) + 26; // more space before next label
 
 // === ROW 3: ORDER COMMENTS ===
 doc.setFont(undefined, "bold");
@@ -664,94 +664,83 @@ const commentsBoxH = Math.max(16, 12 * commentsLines.length + 4);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(x, y+4, 500, commentsBoxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text(commentsLines, x+3, y+14);
-y += commentsBoxH + 18;
+doc.text(commentsLines, x+5, y+15);
+y += commentsBoxH + 23;
 
 // === BRAND NAME ===
 doc.setFont(undefined, "bold");
-doc.setFontSize(10);
+doc.setFontSize(10.3);
 doc.text(`Brand: ${state.header.brand}`, x, y);
-y += 16;
+y += 21;
 
 // === PRODUCTS SECTION ===
 doc.setFont(undefined, "bold");
 doc.setFontSize(11);
 doc.text("Products Ordered:", x, y);
-y += 12;
+y += 16;
 
 // Product card layout constants
-const cardH = 110, cardW = 520;
-const styleColW = 90, printColW = 90, detailsColW = 320;
-const styleColX = x + 8, printColX = styleColX + styleColW + 10, detailsColX = printColX + printColW + 15;
+const cardH = 150, cardW = 520;
+const imgW = 100, imgH = 100; // Both Style and Print images same size
+const styleColX = x + 10, printColX = styleColX + imgW + 18, detailsColX = printColX + imgW + 21, detailsColW = 210;
 
 for(let idx=0; idx<state.items.length; ++idx) {
   let it = state.items[idx];
   
-  // === ITEM HEADER ===
+  // === ITEM NUMBER ===
   doc.setFont(undefined, "bold");
   doc.setFontSize(10);
   doc.text(`Item ${idx + 1}`, x, y);
-  y += 4;
-  
-  // Outer product card box
+  y += 5;
+
+  // Outer product card box -- larger now
   doc.setDrawColor(190,190,190);
   doc.setLineWidth(0.8);
   doc.roundedRect(x, y, cardW, cardH, 6, 6, 'S');
 
-  // === COLUMN 1: STYLE ===
-  let colY = y + 8;
+  // === COLUMN 1: STYLE IMAGE ===
+  let imgY = y + 15;
+  doc.setFontSize(9.4);
   doc.setFont(undefined, "bold");
-  doc.setFontSize(9);
-  doc.text('Style', styleColX, colY);
-  colY += 12;
-  
-  // Style image
+  doc.text('Style', styleColX+12, imgY-6);
   if (it.styleImgUrl) {
     try {
       const styleImgData = await toDataUrl(it.styleImgUrl);
-      doc.addImage(styleImgData, "JPEG", styleColX, colY, 75, 75, undefined, 'FAST');
+      doc.addImage(styleImgData, "JPEG", styleColX, imgY, imgW, imgH, undefined, 'FAST');
       doc.setDrawColor(200,200,200);
-      doc.rect(styleColX-1, colY-1, 77, 77, 'S');
+      doc.rect(styleColX-2, imgY-2, imgW+4, imgH+4, 'S');
     } catch (e) {}
   }
 
-  // === COLUMN 2: CUSTOM PRINT ===
-  colY = y + 8;
+  // === COLUMN 2: CUSTOM PRINT IMAGE ===
+  doc.setFontSize(9.4);
   doc.setFont(undefined, "bold");
-  doc.setFontSize(9);
-  doc.text('Custom Print', printColX, colY);
-  colY += 12;
-  
-  // Custom print image
+  doc.text('Custom Print', printColX+9, imgY-6);
   if (it.printImgUrl) {
     try {
       const printImgData = await toDataUrl(it.printImgUrl);
-      doc.addImage(printImgData, "JPEG", printColX, colY, 70, 70, undefined, 'FAST');
+      doc.addImage(printImgData, "JPEG", printColX, imgY, imgW, imgH, undefined, 'FAST');
       doc.setDrawColor(200,200,200);
-      doc.rect(printColX-1, colY-1, 72, 72, 'S');
+      doc.rect(printColX-2, imgY-2, imgW+4, imgH+4, 'S');
     } catch (e) {}
   }
 
-  // === COLUMN 3: DETAILS ===
-  let detailY = y + 8;
-  doc.setFont(undefined, "bold");
-  doc.setFontSize(9);
-  doc.text('Product Details', detailsColX, detailY);
-  detailY += 12;
-  
+  // === COLUMN 3: DETAILS, nicely spaced ===
+  let detailY = y + 20;
+
   // Product name
   doc.setFont(undefined, "bold");
-  doc.setFontSize(10);
-  doc.text(it.productName || '', detailsColX, detailY, { maxWidth: detailsColW-10 });
-  detailY += 13;
-  
+  doc.setFontSize(10.7);
+  doc.text(it.productName || '', detailsColX, detailY, { maxWidth: detailsColW });
+  detailY += 16;
+
   // Available sizes
-  doc.setFont(undefined, "normal");
   doc.setFontSize(8.5);
+  doc.setFont(undefined, "normal");
   let availSizes = (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(", ") || "");
   if (availSizes) {
-    doc.text("Available Sizes: " + availSizes, detailsColX, detailY, { maxWidth: detailsColW-10 });
-    detailY += 10;
+    doc.text("Available Sizes: " + availSizes, detailsColX, detailY, { maxWidth: detailsColW });
+    detailY += 12;
   }
   
   // Product details link
@@ -761,7 +750,7 @@ for(let idx=0; idx<state.items.length; ++idx) {
       doc.setTextColor(40,80,180);
       doc.textWithLink('Product Details Link', detailsColX, detailY, { url: p.productLink });
       doc.setTextColor(0,0,0);
-      detailY += 10;
+      detailY += 13;
     }
   }
   
@@ -769,42 +758,45 @@ for(let idx=0; idx<state.items.length; ++idx) {
   let usedUnit = (typeof it.unitPrice === "number" ? it.unitPrice : Number(it.unitPrice));
   let landing = it.styleSku ? (productData.find(p => p.skuId === it.styleSku)?.landingPrice) : usedUnit;
   let showUnit = usedUnit && usedUnit !== landing ? usedUnit : landing;
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(9);
   doc.text(`Landing Price: $${showUnit || ''}`, detailsColX, detailY);
-  detailY += 10;
-  
+  detailY += 16;
+
   // Selected sizes & quantities
   doc.setFont(undefined, "bold");
   doc.text("Selected Sizes & Qtys:", detailsColX, detailY);
   doc.setFont(undefined, "normal");
-  detailY += 9;
-  doc.text((it.sizes || ''), detailsColX, detailY, { maxWidth: detailsColW-10 });
   detailY += 10;
-  
+  doc.text((it.sizes || ''), detailsColX, detailY, { maxWidth: detailsColW-5 });
+  detailY += 13;
+
   // Customization notes
   if (it.notes) {
     doc.setFont(undefined, "italic");
-    doc.text("Notes: " + (it.notes || ''), detailsColX, detailY, { maxWidth: detailsColW-10 });
-    detailY += 10;
+    doc.text("Notes: " + (it.notes || ''), detailsColX, detailY, { maxWidth: detailsColW-8 });
+    detailY += 15;
     doc.setFont(undefined, "normal");
   }
-  
+
   // Subtotal
   doc.setFont(undefined, "bold");
-  doc.setFontSize(9.5);
-  doc.text(`Subtotal: $${it.subtotal || ''}`, detailsColX, detailY + 4);
+  doc.setFontSize(10.3);
+  doc.text(`Subtotal: $${it.subtotal || ''}`, detailsColX, detailY + 5);
 
-  y += cardH + 15;
+  y += cardH + 25; // more space between cards
   if (y > 700) { doc.addPage(); y = 40; }
 }
 
-// === TOTALS ===
-y += 12;
-doc.setFontSize(11);
+// === TOTALS (spaced) ===
+y += 19;
+doc.setFontSize(11.5);
 doc.setFont(undefined, "bold");
 doc.text(`Total Quantity: ${state.totalQty}`, x, y);
-doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 180, y);
+doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 200, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
+
 
 
  
