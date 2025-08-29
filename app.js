@@ -612,54 +612,72 @@ doc.text('Order Number', x, y);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(x, y+4, 120, 16, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.orderNumber || ''), x+5, y+15);
-y += 28; // increased to 28 for more space
+
+// Truncate text if too long for box (120px, ~18 chars at size 8.8)
+let orderNumberTxt = (state.header.orderNumber || '').substring(0, 17);
+doc.setTextColor(0,0,0);
+doc.text(orderNumberTxt, x+5, y+15);
+
+// BIGGER GAP BELOW ORDER NUMBER (now 38!):
+y += 38;
 
 // === ROW 2: BUYER NAME, EMAIL, PHONE, SHIPPING ADDRESS ===
 const row2Y = y, boxH = 16;
-const fieldWidths = [100, 130, 85, 225]; // Buyer, Email, Phone, Shipping
-const fieldGaps = [22, 22, 22]; // increased from 12 to 22 for more visual space
+// Make boxes wider:
+const fieldWidths = [100, 158, 95, 260];
+const fieldGaps = [26, 26, 26];
 let currentX = x;
 
 // Buyer Name
 doc.setFont(undefined, "bold");
+doc.setTextColor(0,0,0);
 doc.text('Buyer/Store Name', currentX, row2Y);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(currentX, row2Y+4, fieldWidths[0], boxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.buyerName || ''), currentX+5, row2Y+14);
+let buyerNameTxt = (state.header.buyerName || '').substring(0, 17);
+doc.text(buyerNameTxt, currentX+4, row2Y+14);
 currentX += fieldWidths[0] + fieldGaps[0];
 
 // Email
 doc.setFont(undefined, "bold");
 doc.text('Email', currentX, row2Y);
+doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(currentX, row2Y+4, fieldWidths[1], boxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.email || ''), currentX+5, row2Y+14);
+let emailTxt = (state.header.email || '').substring(0, 24);
+doc.text(emailTxt, currentX+4, row2Y+14);
 currentX += fieldWidths[1] + fieldGaps[1];
 
 // Phone
 doc.setFont(undefined, "bold");
 doc.text('Phone', currentX, row2Y);
+doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(currentX, row2Y+4, fieldWidths[2], boxH, 'F');
 doc.setFont(undefined, "normal");
-doc.text((state.header.phone || ''), currentX+5, row2Y+14);
+let phoneTxt = (state.header.phone || '').substring(0, 15);
+doc.text(phoneTxt, currentX+4, row2Y+14);
 currentX += fieldWidths[2] + fieldGaps[2];
 
-// Shipping Address (long text box)
+// Shipping Address
 doc.setFont(undefined, "bold");
 doc.text('Shipping Address', currentX, row2Y);
-const shippingLines = doc.splitTextToSize(state.header.shippingAddress || '', fieldWidths[3]-8);
+const maxShippingCh = Math.floor(fieldWidths[3]/6);
+let shippingTxt = (state.header.shippingAddress || '').substring(0, maxShippingCh);
+const shippingLines = doc.splitTextToSize(shippingTxt, fieldWidths[3]-8);
 const shippingBoxH = Math.max(18, 12 * shippingLines.length + 4);
+doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(currentX, row2Y+4, fieldWidths[3], shippingBoxH, 'F');
 doc.setFont(undefined, "normal");
+doc.setTextColor(0,0,0);
 doc.text(shippingLines, currentX+5, row2Y+14);
-y = row2Y + Math.max(boxH, shippingBoxH) + 26; // more space before next label
+y = row2Y + Math.max(boxH, shippingBoxH) + 26;
 
 // === ROW 3: ORDER COMMENTS ===
 doc.setFont(undefined, "bold");
 doc.text('Order Comments', x, y);
-const commentsLines = doc.splitTextToSize(state.header.orderComments || '', 500);
+let commentsTxt = (state.header.orderComments || '').substring(0, 80);
+const commentsLines = doc.splitTextToSize(commentsTxt, 500);
 const commentsBoxH = Math.max(16, 12 * commentsLines.length + 4);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
 doc.rect(x, y+4, 500, commentsBoxH, 'F');
