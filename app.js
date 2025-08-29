@@ -597,226 +597,216 @@ for (let i = 0; i < state.items.length; ++i) {
   try {
         const { jsPDF } = window.jspdf;
 const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-let x = 30, y = 35;
+let x = 36, y = 40;
+const pageW = 560; // approx. for margins
 
 // === TITLE ===
-doc.setFontSize(14);
+doc.setFontSize(15.5);
 doc.setFont(undefined, "bold");
 doc.text('Qala Collective – Order Sheet', x, y);
-y += 29;
+y += 28;
 
-// === ROW 1: ORDER NUMBER ===
-doc.setFontSize(8.8);
-doc.setFont(undefined, "bold");
-doc.text('Order Number', x, y);
-doc.setDrawColor(180,180,180).setFillColor(248,248,252);
-doc.rect(x, y+4, 120, 16, 'F');
+// === ROW 1: ORDER NUMBER, BUYER, EMAIL, PHONE ===
+doc.setFontSize(9.5);
+const fieldBoxH = 16, fieldGap = 18, fieldBoxR = 6;
+let fx = x, fy = y;
+// Order Number
+doc.setFont(undefined,"bold");
+doc.text('Order Number', fx, fy);
+doc.setDrawColor(200,200,230).setFillColor(252,252,255);
+doc.roundedRect(fx, fy+4, 98, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined, "normal");
-
-// Truncate text if too long for box (120px, ~18 chars at size 8.8)
-let orderNumberTxt = (state.header.orderNumber || '').substring(0, 17);
-doc.setTextColor(0,0,0);
-doc.text(orderNumberTxt, x+5, y+15);
-
-// BIGGER GAP BELOW ORDER NUMBER (now 38!):
-y += 38;
-
-// === ROW 2: BUYER NAME, EMAIL, PHONE, SHIPPING ADDRESS ===
-const row2Y = y, boxH = 16;
-// Make boxes wider:
-const fieldWidths = [100, 158, 95, 260];
-const fieldGaps = [26, 26, 26];
-let currentX = x;
-
+doc.text((state.header.orderNumber || '').substring(0,16), fx+5, fy+16);
+fx += 98 + fieldGap;
 // Buyer Name
-doc.setFont(undefined, "bold");
-doc.setTextColor(0,0,0);
-doc.text('Buyer/Store Name', currentX, row2Y);
-doc.setDrawColor(180,180,180).setFillColor(248,248,252);
-doc.rect(currentX, row2Y+4, fieldWidths[0], boxH, 'F');
+doc.setFont(undefined,"bold");
+doc.text('Buyer/Store Name', fx, fy);
+doc.roundedRect(fx, fy+4, 110, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined, "normal");
-let buyerNameTxt = (state.header.buyerName || '').substring(0, 17);
-doc.text(buyerNameTxt, currentX+4, row2Y+14);
-currentX += fieldWidths[0] + fieldGaps[0];
-
+doc.text((state.header.buyerName || '').substring(0,16), fx+5, fy+16);
+fx += 110 + fieldGap;
 // Email
-doc.setFont(undefined, "bold");
-doc.text('Email', currentX, row2Y);
-doc.setDrawColor(180,180,180).setFillColor(248,248,252);
-doc.rect(currentX, row2Y+4, fieldWidths[1], boxH, 'F');
+doc.setFont(undefined,"bold");
+doc.text('Email', fx, fy);
+doc.roundedRect(fx, fy+4, 140, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined, "normal");
-let emailTxt = (state.header.email || '').substring(0, 24);
-doc.text(emailTxt, currentX+4, row2Y+14);
-currentX += fieldWidths[1] + fieldGaps[1];
-
-/// Phone
-doc.setFont(undefined, "bold");
-doc.text('Phone', currentX, row2Y);
-doc.setDrawColor(180,180,180).setFillColor(248,248,252);
-doc.rect(currentX, row2Y+4, fieldWidths[2], boxH, 'F');
+doc.text((state.header.email || '').substring(0,20), fx+5, fy+16);
+fx += 140 + fieldGap;
+// Phone
+doc.setFont(undefined,"bold");
+doc.text('Phone', fx, fy);
+doc.roundedRect(fx, fy+4, 78, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined, "normal");
-let phoneTxt = (state.header.phone || '').substring(0, 15);
-doc.text(phoneTxt, currentX+4, row2Y+14);
+doc.text((state.header.phone || '').substring(0,13), fx+5, fy+16);
+y += 18 + fieldBoxH;
 
-// Shipping Address (starts on a NEW line below previous row!)
-currentX = x;
-y = row2Y + boxH + 16; // Adds space after the first row of fields
-
-doc.setFont(undefined, "bold");
-doc.text('Shipping Address', currentX, y);
-const shipBoxWidth = 370; // fits ~62 chars per line at 8.8pt, well within an A4 margin
-const shippingAddressLines = doc.splitTextToSize(state.header.shippingAddress || '', shipBoxWidth - 10);
-const shippingAddressBoxH = Math.max(20, 13 * shippingAddressLines.length + 8);
-doc.setDrawColor(180,180,180).setFillColor(248,248,252);
-doc.rect(currentX, y+6, shipBoxWidth, shippingAddressBoxH, 'F');
+// === ROW 2: ORDER COMMENTS (2/3) + SHIPPING ADDRESS (1/3) ===
+const commW = 235, shipW = 135, commLabel = 'Order Comments', shipLabel = 'Shipping Address';
+fy = y + 7;
+fx = x;
+// Order Comments
+doc.setFont(undefined,"bold");
+doc.text(commLabel, fx, fy);
+doc.setDrawColor(200,200,230).setFillColor(252,252,255);
+const commLines = doc.splitTextToSize((state.header.orderComments || ''), commW-12);
+const commBoxH = Math.max(24, 13*commLines.length+10);
+doc.roundedRect(fx, fy+4, commW, commBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined, "normal");
-doc.text(shippingAddressLines, currentX+5, y+19);
-y += shippingAddressBoxH + 26; // move below box + space to next label
-
-// === ROW 3: ORDER COMMENTS ===
+doc.text(commLines, fx+5, fy+18);
+fx += commW + 30;
+// Shipping Address
 doc.setFont(undefined, "bold");
-doc.text('Order Comments', x, y);
-let commentsTxt = (state.header.orderComments || '').substring(0, 80);
-const commentsLines = doc.splitTextToSize(commentsTxt, 500);
-const commentsBoxH = Math.max(16, 12 * commentsLines.length + 4);
-doc.setDrawColor(180,180,180).setFillColor(248,248,252);
-doc.rect(x, y+4, 500, commentsBoxH, 'F');
+doc.text(shipLabel, fx, fy);
+doc.setDrawColor(200,200,230).setFillColor(252,252,255);
+const shipLines = doc.splitTextToSize((state.header.shippingAddress || ''), shipW-12);
+const shipBoxH = Math.max(24, 13*shipLines.length+10);
+doc.roundedRect(fx, fy+4, shipW, shipBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined, "normal");
-doc.text(commentsLines, x+5, y+15);
-y += commentsBoxH + 23;
+doc.text(shipLines, fx+5, fy+18);
+let lastBoxH = Math.max(commBoxH, shipBoxH);
 
-// === BRAND NAME ===
-doc.setFont(undefined, "bold");
-doc.setFontSize(10.3);
-doc.text(`Brand: ${state.header.brand}`, x, y);
-y += 21;
+y = fy + lastBoxH + 17;
 
-// === PRODUCTS SECTION ===
+// === BRAND NAME, center and classy ===
+doc.setFont(undefined, "bolditalic");
+doc.setFontSize(12.2);
+doc.setTextColor(45,65,130);
+doc.text(`Brand: ${state.header.brand || ''}`, x + pageW/2, y, {align: "center"});
+doc.setFont(undefined, "normal");
+doc.setTextColor(0,0,0);
+y += 28;
+
+// === SELECTIONS HEADER ===
 doc.setFont(undefined, "bold");
-doc.setFontSize(11);
-doc.text("Products Ordered:", x, y);
+doc.setFontSize(10.5);
+doc.text("Selections", x, y);
 y += 16;
 
-// Product card layout constants
-const cardH = 150, cardW = 520;
-const imgW = 100, imgH = 100; // Both Style and Print images same size
-const styleColX = x + 10, printColX = styleColX + imgW + 18, detailsColX = printColX + imgW + 21, detailsColW = 210;
+// === PRODUCT CARDS ===
+const cardW = 515, cardH = 170, cardR = 8;
+const imgW = 110, imgH = 110;
+const styleImgX = x + 16, printImgX = styleImgX + imgW + 38, textX = printImgX + imgW + 36, textW = 175;
 
-for(let idx=0; idx<state.items.length; ++idx) {
+for (let idx = 0; idx < state.items.length; ++idx) {
   let it = state.items[idx];
-  
-  // === ITEM NUMBER ===
-  doc.setFont(undefined, "bold");
-  doc.setFontSize(10);
-  doc.text(`Item ${idx + 1}`, x, y);
-  y += 5;
 
-  // Outer product card box -- larger now
-  doc.setDrawColor(190,190,190);
-  doc.setLineWidth(0.8);
-  doc.roundedRect(x, y, cardW, cardH, 6, 6, 'S');
+  // Outer card
+  doc.setDrawColor(200,200,220);
+  doc.setLineWidth(1.1);
+  doc.roundedRect(x, y, cardW, cardH, cardR, cardR, 'S');
 
-  // === COLUMN 1: STYLE IMAGE ===
-  let imgY = y + 15;
-  doc.setFontSize(9.4);
-  doc.setFont(undefined, "bold");
-  doc.text('Style', styleColX+12, imgY-6);
+  // === ITEM NUMBER: top left, inside card ===
+  doc.setFont(undefined, "bolditalic");
+  doc.setFontSize(10.7);
+  doc.setTextColor(70,100,170);
+  doc.text(`Item ${idx+1}`, x+12, y+19);
+  doc.setTextColor(0,0,0);
+
+  // === STYLE IMAGE (centered horizontally) ===
   if (it.styleImgUrl) {
     try {
-      const styleImgData = await toDataUrl(it.styleImgUrl);
-      doc.addImage(styleImgData, "JPEG", styleColX, imgY, imgW, imgH, undefined, 'FAST');
-      doc.setDrawColor(200,200,200);
-      doc.rect(styleColX-2, imgY-2, imgW+4, imgH+4, 'S');
+      const imgData = await toDataUrl(it.styleImgUrl);
+      doc.addImage(imgData, "JPEG", styleImgX, y+33, imgW, imgH, undefined, "FAST");
+      doc.setDrawColor(170,170,200);
+      doc.roundedRect(styleImgX-3, y+30, imgW+6, imgH+6, 8,8,'S');
     } catch (e) {}
   }
-
-  // === COLUMN 2: CUSTOM PRINT IMAGE ===
-  doc.setFontSize(9.4);
+  // Style label below image, centered
   doc.setFont(undefined, "bold");
-  doc.text('Custom Print', printColX+9, imgY-6);
+  doc.setFontSize(9.2);
+  doc.text('Style', styleImgX + imgW/2, y+33+imgH+14, {align:'center'});
+
+  // === CUSTOM PRINT IMAGE (centered horizontally and spaced further right) ===
   if (it.printImgUrl) {
     try {
-      const printImgData = await toDataUrl(it.printImgUrl);
-      doc.addImage(printImgData, "JPEG", printColX, imgY, imgW, imgH, undefined, 'FAST');
-      doc.setDrawColor(200,200,200);
-      doc.rect(printColX-2, imgY-2, imgW+4, imgH+4, 'S');
+      const imgData = await toDataUrl(it.printImgUrl);
+      doc.addImage(imgData, "JPEG", printImgX, y+33, imgW, imgH, undefined, "FAST");
+      doc.setDrawColor(170,170,200);
+      doc.roundedRect(printImgX-3, y+30, imgW+6, imgH+6, 8,8,'S');
     } catch (e) {}
   }
-
-  // === COLUMN 3: DETAILS, nicely spaced ===
-  let detailY = y + 20;
-
-  // Product name
+  // Custom Print label below image, centered
   doc.setFont(undefined, "bold");
-  doc.setFontSize(10.7);
-  doc.text(it.productName || '', detailsColX, detailY, { maxWidth: detailsColW });
-  detailY += 16;
+  doc.setFontSize(9.2);
+  doc.text('Custom Print', printImgX + imgW/2, y+33+imgH+14, {align:'center'});
 
-  // Available sizes
-  doc.setFontSize(8.5);
-  doc.setFont(undefined, "normal");
+  // === DETAILS COLUMN (right) ===
+  let ty = y+30;
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(11.2);
+  doc.text(it.productName || '', textX, ty, {maxWidth: textW});
+  ty += 16;
+
+  // Available Sizes
+  doc.setFont(undefined,"bold");
+  doc.setFontSize(9.3);
+  doc.text("Available Sizes: ", textX, ty);
+  doc.setFont(undefined,"normal");
   let availSizes = (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(", ") || "");
-  if (availSizes) {
-    doc.text("Available Sizes: " + availSizes, detailsColX, detailY, { maxWidth: detailsColW });
-    detailY += 12;
-  }
+  doc.text(availSizes, textX+86, ty);
+  ty += 13;
   
-  // Product details link
+  // Product Details Link
+  doc.setFont(undefined,"bold");
+  doc.text("Product Link: ", textX, ty);
+  doc.setFont(undefined,"normal");
   if (it.styleSku) {
     const p = productData.find(p=>p.skuId===it.styleSku);
     if (p && p.productLink) {
-      doc.setTextColor(40,80,180);
-      doc.textWithLink('Product Details Link', detailsColX, detailY, { url: p.productLink });
+      doc.setTextColor(50,90,200);
+      doc.textWithLink('Details', textX+66, ty, { url: p.productLink });
       doc.setTextColor(0,0,0);
-      detailY += 13;
+    } else {
+      doc.text("-", textX+72, ty);
     }
+  } else {
+    doc.text("-", textX+72, ty);
   }
-  
+  ty += 13;
+
   // Landing price
+  doc.setFont(undefined,"bold");
+  doc.text("Landing Price: ", textX, ty);
+  doc.setFont(undefined,"normal");
   let usedUnit = (typeof it.unitPrice === "number" ? it.unitPrice : Number(it.unitPrice));
   let landing = it.styleSku ? (productData.find(p => p.skuId === it.styleSku)?.landingPrice) : usedUnit;
   let showUnit = usedUnit && usedUnit !== landing ? usedUnit : landing;
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(9);
-  doc.text(`Landing Price: $${showUnit || ''}`, detailsColX, detailY);
-  detailY += 16;
+  doc.text(`$${showUnit || ''}`, textX+74, ty);
+  ty += 13;
 
-  // Selected sizes & quantities
-  doc.setFont(undefined, "bold");
-  doc.text("Selected Sizes & Qtys:", detailsColX, detailY);
-  doc.setFont(undefined, "normal");
-  detailY += 10;
-  doc.text((it.sizes || ''), detailsColX, detailY, { maxWidth: detailsColW-5 });
-  detailY += 13;
+  // Selected sizes and quantities (same line)
+  doc.setFont(undefined,"bold");
+  doc.text("Selected Sizes & Qtys: ", textX, ty);
+  doc.setFont(undefined,"normal");
+  doc.text((it.sizes || ''), textX+110, ty);
+  ty += 13;
 
-  // Customization notes
+  // Customization notes (only if present, single line, no italics)
   if (it.notes) {
-    doc.setFont(undefined, "italic");
-    doc.text("Notes: " + (it.notes || ''), detailsColX, detailY, { maxWidth: detailsColW-8 });
-    detailY += 15;
+    doc.setFont(undefined,"bold");
+    doc.text("Notes: ", textX, ty);
     doc.setFont(undefined, "normal");
+    doc.text((it.notes||'').substring(0,55), textX+36, ty);
+    ty += 13;
   }
 
-  // Subtotal
-  doc.setFont(undefined, "bold");
-  doc.setFontSize(10.3);
-  doc.text(`Subtotal: $${it.subtotal || ''}`, detailsColX, detailY + 5);
+  // Subtotal at bottom
+  doc.setFont(undefined,"bold");
+  doc.setFontSize(10.7);
+  doc.text(`Subtotal: $${it.subtotal || ''}`, textX, y+cardH-15);
 
-  y += cardH + 25; // more space between cards
+  y += cardH + 25;
   if (y > 700) { doc.addPage(); y = 40; }
 }
 
-// === TOTALS (spaced) ===
-y += 19;
+// === TOTALS (centered, bold) ===
+y += 12;
 doc.setFontSize(11.5);
 doc.setFont(undefined, "bold");
 doc.text(`Total Quantity: ${state.totalQty}`, x, y);
 doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 200, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
-
-
-
  
 
 
