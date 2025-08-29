@@ -649,7 +649,7 @@ let emailTxt = (state.header.email || '').substring(0, 24);
 doc.text(emailTxt, currentX+4, row2Y+14);
 currentX += fieldWidths[1] + fieldGaps[1];
 
-// Phone
+/// Phone
 doc.setFont(undefined, "bold");
 doc.text('Phone', currentX, row2Y);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
@@ -657,21 +657,21 @@ doc.rect(currentX, row2Y+4, fieldWidths[2], boxH, 'F');
 doc.setFont(undefined, "normal");
 let phoneTxt = (state.header.phone || '').substring(0, 15);
 doc.text(phoneTxt, currentX+4, row2Y+14);
-currentX += fieldWidths[2] + fieldGaps[2];
 
-// Shipping Address
+// Shipping Address (starts on a NEW line below previous row!)
+currentX = x;
+y = row2Y + boxH + 16; // Adds space after the first row of fields
+
 doc.setFont(undefined, "bold");
-doc.text('Shipping Address', currentX, row2Y);
-const maxShippingCh = Math.floor(fieldWidths[3]/6);
-let shippingTxt = (state.header.shippingAddress || '').substring(0, maxShippingCh);
-const shippingLines = doc.splitTextToSize(shippingTxt, fieldWidths[3]-8);
-const shippingBoxH = Math.max(18, 12 * shippingLines.length + 4);
+doc.text('Shipping Address', currentX, y);
+const shipBoxWidth = 370; // fits ~62 chars per line at 8.8pt, well within an A4 margin
+const shippingAddressLines = doc.splitTextToSize(state.header.shippingAddress || '', shipBoxWidth - 10);
+const shippingAddressBoxH = Math.max(20, 13 * shippingAddressLines.length + 8);
 doc.setDrawColor(180,180,180).setFillColor(248,248,252);
-doc.rect(currentX, row2Y+4, fieldWidths[3], shippingBoxH, 'F');
+doc.rect(currentX, y+6, shipBoxWidth, shippingAddressBoxH, 'F');
 doc.setFont(undefined, "normal");
-doc.setTextColor(0,0,0);
-doc.text(shippingLines, currentX+5, row2Y+14);
-y = row2Y + Math.max(boxH, shippingBoxH) + 26;
+doc.text(shippingAddressLines, currentX+5, y+19);
+y += shippingAddressBoxH + 26; // move below box + space to next label
 
 // === ROW 3: ORDER COMMENTS ===
 doc.setFont(undefined, "bold");
