@@ -617,7 +617,7 @@ doc.setFont(undefined,"normal");
 let ordNumTrunc = (state.header.orderNumber||'').length > 17 ? ((state.header.orderNumber||'').slice(0,14)+'...') : (state.header.orderNumber||'');
 doc.setTextColor(0,0,0);
 doc.text(ordNumTrunc, x+7, y+16);
-y += 28;
+y += 38;
 
 // === ROW 2: BUYER/STORE NAME | EMAIL | PHONE (equal boxes) ===
 let fieldGaps = 18;
