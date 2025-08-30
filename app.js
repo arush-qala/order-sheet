@@ -130,27 +130,30 @@ function autoCompleteBox(input, brand, cb) {
 
 // --- IMAGE UTILS ---
 const imageCache = new Map();
-async function toDataUrl(url) {
-  if (imageCache.has(url)) return imageCache.get(url);
+// Higher resolution image conversion for PDF. size=desired pixels (default: 300)
+async function toDataUrl(url, size=300) {
+  if (imageCache.has(url+":"+size)) return imageCache.get(url+":"+size);
   return new Promise((resolve, reject) => {
     const img = new window.Image();
     img.crossOrigin = "Anonymous";
     img.onload = function () {
+      // Use a larger canvas for a crisper image in PDF
       const canvas = document.createElement('canvas');
-      canvas.width = 120; canvas.height = 120;
+      canvas.width = size; canvas.height = size;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
       const ratio = Math.min(canvas.width/this.width, canvas.height/this.height, 1.0);
       const w = this.width * ratio, h = this.height * ratio;
       ctx.drawImage(this, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-      imageCache.set(url, dataUrl);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.93); // less lossy
+      imageCache.set(url+":"+size, dataUrl);
       resolve(dataUrl);
     };
     img.onerror = reject;
     img.src = url + (url.includes("?") ? "&" : "?") + "rand=" + Math.random();
   });
 }
+
 
 // --- CREATE PRODUCT CARD ---
 function createProductCard() {
@@ -723,8 +726,9 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   // === STYLE IMAGE, higher quality/larger ===
   if (it.styleImgUrl) {
     try {
-      const imgData = await toDataUrl(it.styleImgUrl);
+      const imgData = await toDataUrl(it.styleImgUrl, 370); // 370px source; 2.5x your display size for crisp print
       doc.addImage(imgData, "JPEG", styleImgX, y+30, imgW, imgH);
+
       doc.setDrawColor(170,170,200);
       doc.roundedRect(styleImgX-2, y+28, imgW+4, imgH+4, 10,10,'S');
     } catch (e) {}
@@ -736,8 +740,9 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   // === CUSTOM PRINT IMAGE, higher quality/larger, spaced further ===
   if (it.printImgUrl) {
     try {
-      const imgData = await toDataUrl(it.printImgUrl);
+      const imgData = await toDataUrl(it.printImgUrl, 370);
       doc.addImage(imgData, "JPEG", printImgX, y+30, imgW, imgH);
+
       doc.setDrawColor(170,170,200);
       doc.roundedRect(printImgX-2, y+28, imgW+4, imgH+4, 10,10,'S');
     } catch (e) {}
