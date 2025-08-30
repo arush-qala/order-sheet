@@ -627,6 +627,8 @@ let bx = x;
 // Buyer/Store Name
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
 doc.text('Buyer/Store Name', bx, fy);
+doc.setDrawColor(200,200,230);
+doc.setFillColor(252,252,255);
 doc.roundedRect(bx, fy+4, buyerW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined,"normal");
 let buyerTrunc = (state.header.buyerName||'').length > 17?((state.header.buyerName||'').slice(0,14)+"..."):(state.header.buyerName||'');
@@ -635,6 +637,8 @@ bx += buyerW + fieldGaps;
 // Email
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
 doc.text('Email', bx, fy);
+doc.setDrawColor(200,200,230);
+doc.setFillColor(252,252,255);
 doc.roundedRect(bx, fy+4, emailW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined,"normal");
 let emailTrunc = (state.header.email||'').length > 23?((state.header.email||'').slice(0,20)+"..."):(state.header.email||'');
@@ -643,6 +647,8 @@ bx += emailW + fieldGaps;
 // Phone
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
 doc.text('Phone', bx, fy);
+doc.setDrawColor(200,200,230);
+doc.setFillColor(252,252,255);
 doc.roundedRect(bx, fy+4, phoneW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined,"normal");
 let phoneTrunc = (state.header.phone||'').length > 13?((state.header.phone||'').slice(0,10)+"..."):(state.header.phone||'');
@@ -678,6 +684,8 @@ y = labelY + Math.max(commentsBoxH, shipBoxH) + 17;
 doc.setFont(undefined, "bolditalic");
 doc.setFontSize(11.7);
 doc.setTextColor(45,65,130);
+doc.setDrawColor(200,200,230);
+doc.setFillColor(252,252,255);
 doc.roundedRect(x, y, 220, 20, 12,12,'F');
 doc.text(`Brand: `, x+14, y+14);
 doc.setFont(undefined, "bold");
