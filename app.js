@@ -701,62 +701,53 @@ doc.text("Selections", x, y);
 y += 16;
 
 // === PRODUCT CARDS ===
-const cardW = 480;  // slightly smaller width, so both margins are equal (assuming page width ~560)
-const cardH = 218;  // taller to allow space for label
-const cardR = 9;
-
-const marginX = Math.floor((560 - cardW) / 2); // page width = ~560pts
-const imgW = 136, imgH = 136;
-const styleImgX = marginX + 18,
-      printImgX = styleImgX + imgW + 38,
-      textX = printImgX + imgW + 38,
-      textW = cardW - (imgW * 2 + 38 * 2 + 48); // ensures at least 20+ padding on right
+const cardW = 510, cardH = 170, cardR = 8;
+const imgW = 130, imgH = 130; // sharper/larger images
+const styleImgX = x + 14, printImgX = styleImgX + imgW + 32, textX = printImgX + imgW + 42, textW = 162;
 
 for (let idx = 0; idx < state.items.length; ++idx) {
   let it = state.items[idx];
 
   // Outer card
   doc.setDrawColor(200,200,220);
-  doc.setLineWidth(1.1);
-  doc.roundedRect(marginX, y, cardW, cardH, cardR, cardR, 'S');
+  doc.setLineWidth(1);
+  doc.roundedRect(x, y, cardW, cardH, cardR, cardR, 'S');
 
-  // === ITEM NUMBER: top left inside box ===
+  // === ITEM NUMBER: INSIDE CARD, top left corner ===
   doc.setFont(undefined, "bolditalic");
   doc.setFontSize(10.7);
   doc.setTextColor(70,100,170);
-  doc.text(`Item ${idx+1}`, marginX+12, y+19);
+  doc.text(`Item ${idx+1}`, x+10, y+19);
   doc.setTextColor(0,0,0);
 
-  // === STYLE IMAGE (centered horizontally) ===
+  // === STYLE IMAGE, higher quality/larger ===
   if (it.styleImgUrl) {
     try {
       const imgData = await toDataUrl(it.styleImgUrl);
-      doc.addImage(imgData, "JPEG", styleImgX, y+33, imgW, imgH);
+      doc.addImage(imgData, "JPEG", styleImgX, y+30, imgW, imgH);
       doc.setDrawColor(170,170,200);
-      doc.roundedRect(styleImgX-3, y+30, imgW+6, imgH+6, 8,8,'S');
+      doc.roundedRect(styleImgX-2, y+28, imgW+4, imgH+4, 10,10,'S');
     } catch (e) {}
   }
-  // Style label below image
   doc.setFont(undefined, "bold");
-  doc.setFontSize(9.6);
-  doc.text('Style', styleImgX + imgW/2, y+33+imgH+15, {align:'center'});
+  doc.setFontSize(9.2);
+  doc.text('Style', styleImgX + imgW/2, y+30+imgH+13, {align:'center'});
 
-  // === CUSTOM PRINT IMAGE (centered and spaced) ===
+  // === CUSTOM PRINT IMAGE, higher quality/larger, spaced further ===
   if (it.printImgUrl) {
     try {
       const imgData = await toDataUrl(it.printImgUrl);
-      doc.addImage(imgData, "JPEG", printImgX, y+33, imgW, imgH);
+      doc.addImage(imgData, "JPEG", printImgX, y+30, imgW, imgH);
       doc.setDrawColor(170,170,200);
-      doc.roundedRect(printImgX-3, y+30, imgW+6, imgH+6, 8,8,'S');
+      doc.roundedRect(printImgX-2, y+28, imgW+4, imgH+4, 10,10,'S');
     } catch (e) {}
   }
-  // Custom Print label below image
   doc.setFont(undefined, "bold");
-  doc.setFontSize(9.6);
-  doc.text('Custom Print', printImgX + imgW/2, y+33+imgH+15, {align:'center'});
+  doc.setFontSize(9.2);
+  doc.text('Custom Print', printImgX + imgW/2, y+30+imgH+13, {align:'center'});
 
-  // === DETAILS COLUMN ===
-  let ty = y + 39;
+  // === DETAILS RIGHT COLUMN ===
+  let ty = y + 36;
 
   // Product Name
   doc.setFont(undefined, "bold");
@@ -773,21 +764,21 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   if(availSizes) doc.text(availLines, textX+88, ty, {maxWidth: textW-88});
   ty += Math.max(13, availLines.length * 11);
 
-  // Product link
+  // Product Link
   doc.setFont(undefined,"bold");
-  doc.text("Product Details: Link", textX, ty);
+  doc.text("Product Link:", textX, ty);
   doc.setFont(undefined,"normal");
   if (it.styleSku) {
     const p = productData.find(p=>p.skuId===it.styleSku);
     if (p && p.productLink) {
       doc.setTextColor(50,90,200);
-      doc.textWithLink('Details', textX+101, ty, { url: p.productLink });
+      doc.textWithLink('Details', textX+77, ty, { url: p.productLink });
       doc.setTextColor(0,0,0);
     } else {
-      doc.text("-", textX+106, ty);
+      doc.text("-", textX+80, ty);
     }
   } else {
-    doc.text("-", textX+106, ty);
+    doc.text("-", textX+80, ty);
   }
   ty += 14;
 
@@ -801,35 +792,33 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   doc.text(`$${showUnit || ''}`, textX+84, ty);
   ty += 14;
 
-  // Selected sizes and quantities, wrap if needed
+  // Selected sizes and quantities, wrapped
   doc.setFont(undefined,"bold");
-  doc.text("Size & Qty.:", textX, ty);
+  doc.text("Selected Sizes & Qtys:", textX, ty);
   doc.setFont(undefined,"normal");
   let sizesQty = (it.sizes || '');
-  let sizeLines = doc.splitTextToSize(sizesQty, textW-73);
-  doc.text(sizeLines, textX+73, ty, {maxWidth: textW-73});
+  let sizeLines = doc.splitTextToSize(sizesQty, textW-124);
+  doc.text(sizeLines, textX+120, ty, {maxWidth: textW-124});
   ty += Math.max(13, sizeLines.length * 11);
 
-  // Custom Note: label, then value below (wrapped)
+  // Customization notes, wrapped if needed
   if (it.notes) {
     doc.setFont(undefined,"bold");
-    doc.text("Custom notes", textX, ty);
-    ty += 12;
+    doc.text("Notes:", textX, ty);
     doc.setFont(undefined,"normal");
-    let notesLines = doc.splitTextToSize((it.notes||'').substring(0,100), textW);
-    doc.text(notesLines, textX+6, ty, {maxWidth: textW-10});
+    let notesLines = doc.splitTextToSize((it.notes||'').substring(0,65), textW-44);
+    doc.text(notesLines, textX+42, ty, {maxWidth: textW-44});
     ty += Math.max(13, notesLines.length * 11);
   }
 
-  // Subtotal at bottom of details column
+  // Subtotal at bottom
   doc.setFont(undefined,"bold");
   doc.setFontSize(10.5);
   doc.text(`Subtotal: $${it.subtotal || ''}`, textX, y+cardH-15);
 
-  y += cardH + 26;
-  if (y > 740) { doc.addPage(); y = 40; }
+  y += cardH + 25;
+  if (y > 700) { doc.addPage(); y = 40; }
 }
-
 
 // === TOTALS (centered, bold) ===
 y += 12;
