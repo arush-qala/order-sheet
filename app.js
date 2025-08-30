@@ -701,7 +701,7 @@ doc.text("Selections", x, y);
 y += 16;
 
 // === PRODUCT CARDS ===
-const cardW = 510, cardH = 170, cardR = 8;
+const cardW = 530, cardH = 210, cardR = 8;
 const imgW = 130, imgH = 130; // sharper/larger images
 const styleImgX = x + 14, printImgX = styleImgX + imgW + 32, textX = printImgX + imgW + 42, textW = 162;
 
@@ -716,7 +716,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   // === ITEM NUMBER: INSIDE CARD, top left corner ===
   doc.setFont(undefined, "bolditalic");
   doc.setFontSize(10.7);
-  doc.setTextColor(70,100,170);
+  doc.setTextColor(0,0,0);
   doc.text(`Item ${idx+1}`, x+10, y+19);
   doc.setTextColor(0,0,0);
 
@@ -766,13 +766,13 @@ for (let idx = 0; idx < state.items.length; ++idx) {
 
   // Product Link
   doc.setFont(undefined,"bold");
-  doc.text("Product Link:", textX, ty);
+  doc.text("Product Details:", textX, ty);
   doc.setFont(undefined,"normal");
   if (it.styleSku) {
     const p = productData.find(p=>p.skuId===it.styleSku);
     if (p && p.productLink) {
       doc.setTextColor(50,90,200);
-      doc.textWithLink('Details', textX+77, ty, { url: p.productLink });
+      doc.textWithLink('Link', textX+77, ty, { url: p.productLink });
       doc.setTextColor(0,0,0);
     } else {
       doc.text("-", textX+80, ty);
