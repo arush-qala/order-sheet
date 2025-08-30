@@ -680,19 +680,19 @@ doc.text(shipLines, bx+5, labelY+18);
 
 y = labelY + Math.max(commentsBoxH, shipBoxH) + 17;
 
-// === BRAND NAME ===
-doc.setFont(undefined, "bolditalic");
-doc.setFontSize(11.7);
-doc.setTextColor(45,65,130);
-doc.setDrawColor(200,200,230);
-doc.setFillColor(252,252,255);
-doc.roundedRect(x, y, 220, 20, 12,12,'F');
-doc.text(`Brand: `, x+14, y+14);
-doc.setFont(undefined, "bold");
-doc.text(state.header.brand || '', x+62, y+14);
-doc.setFont(undefined, "normal");
+// === BRAND NAME, same style as Order Number ===
+doc.setFontSize(9.3);
+const brandBoxH = 16, brandBoxR = 6;
+doc.setFont(undefined,"bold");
+doc.text('Brand', x, y);
+doc.setDrawColor(200,200,230).setFillColor(252,252,255);
+doc.roundedRect(x, y+4, 170, brandBoxH, brandBoxR, brandBoxR, 'F');
+doc.setFont(undefined,"normal");
+let brandTrunc = (state.header.brand||'').length > 21 ? ((state.header.brand||'').slice(0,18)+'...') : (state.header.brand||'');
 doc.setTextColor(0,0,0);
-y += 32;
+doc.text(brandTrunc, x+7, y+16);
+y += 38;  // same spacing as other fields
+
 
 // === SELECTIONS HEADER ===
 doc.setFont(undefined, "bold");
