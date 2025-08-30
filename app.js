@@ -620,7 +620,7 @@ doc.text(ordNumTrunc, x+7, y+16);
 y += 38;
 
 // === ROW 2: BUYER/STORE NAME | EMAIL | PHONE (equal boxes) ===
-let fieldGaps = 18;
+let fieldGaps = 30;
 let buyerW = 106, emailW = 146, phoneW = 95;
 let fy = y;
 let bx = x;
