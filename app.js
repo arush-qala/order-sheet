@@ -766,7 +766,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   doc.setFont(undefined,"normal");
   let availSizes = (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(", ") || "");
   let availLines = doc.splitTextToSize(availSizes, textW-92);
-  if(availSizes) doc.text(availLines, textX+88, ty, {maxWidth: textW-88});
+  if(availSizes) doc.text(availLines, textX+72, ty, {maxWidth: textW-72});
   ty += Math.max(13, availLines.length * 11);
 
   // Product Link
