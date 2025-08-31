@@ -777,7 +777,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
     const p = productData.find(p=>p.skuId===it.styleSku);
     if (p && p.productLink) {
       doc.setTextColor(50,90,200);
-      doc.textWithLink('Link', textX+72, ty, { url: p.productLink });
+      doc.textWithLink('Link', textX+77, ty, { url: p.productLink });
       doc.setTextColor(0,0,0);
     } else {
       doc.text("-", textX+80, ty);
@@ -794,7 +794,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   let usedUnit = (typeof it.unitPrice === "number" ? it.unitPrice : Number(it.unitPrice));
   let landing = it.styleSku ? (productData.find(p => p.skuId === it.styleSku)?.landingPrice) : usedUnit;
   let showUnit = usedUnit && usedUnit !== landing ? usedUnit : landing;
-  doc.text(`$${showUnit || ''}`, textX+76, ty);
+  doc.text(`$${showUnit || ''}`, textX+74, ty);
   ty += 14;
 
   // Selected sizes and quantities, wrapped
@@ -803,7 +803,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   doc.setFont(undefined,"normal");
   let sizesQty = (it.sizes || '');
   let sizeLines = doc.splitTextToSize(sizesQty, textW-124);
-  doc.text(sizeLines, textX+120, ty, {maxWidth: textW-124});
+  doc.text(sizeLines, textX+110, ty, {maxWidth: textW-110});
   ty += Math.max(13, sizeLines.length * 11);
 
   // Customization notes, wrapped if needed
@@ -812,7 +812,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
     doc.text("Notes:", textX, ty);
     doc.setFont(undefined,"normal");
     let notesLines = doc.splitTextToSize((it.notes||'').substring(0,65), textW-44);
-    doc.text(notesLines, textX+42, ty, {maxWidth: textW-44});
+    doc.text(notesLines, textX+40, ty, {maxWidth: textW-40});
     ty += Math.max(13, notesLines.length * 11);
   }
 
