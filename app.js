@@ -335,23 +335,21 @@ function createProductCard() {
       };
       rowDiv.appendChild(sizeSel);
       rowDiv.appendChild(qtyInput);
-      if (sizeQtyArray.length > 1) rowDiv.appendChild(remBtn);
-      if (idx === sizeQtyArray.length - 1) {
-        const addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.innerHTML = `
-        <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
-          <line x1="8" y1="4" x2="8" y2="12" stroke="#101010" stroke-width="2.2" stroke-linecap="round"/>
-          <line x1="4" y1="8" x2="12" y2="8" stroke="#101010" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>`;
-        addBtn.className = 'add-size-btn-inline';
-        addBtn.title = 'Add new size';
-        addBtn.onclick = function(e) {
-          e.preventDefault();
-          sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 1 });
-          renderSizeQtyRows();
-          updateTotalAndSubtotal();
-        };
+      rowDiv.appendChild(remBtn);
+
+const addBtn = document.createElement('button');
+addBtn.type = 'button';
+// ... plus SVG ...
+// ... addBtn event ...
+rowDiv.appendChild(addBtn);
+
+if (idx === sizeQtyArray.length - 1) {
+  addBtn.style.visibility = 'visible';
+} else {
+  addBtn.style.visibility = 'hidden';
+  addBtn.tabIndex = -1; // skip tabbing on hidden buttons
+}
+;
         rowDiv.appendChild(addBtn);
       }
       sizesList.appendChild(rowDiv);
