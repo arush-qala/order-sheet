@@ -766,7 +766,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   doc.setFont(undefined,"normal");
   let availSizes = (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(", ") || "");
   let availLines = doc.splitTextToSize(availSizes, textW-92);
-  if(availSizes) doc.text(availLines, textX+76, ty, {maxWidth: textW-76});
+  if(availSizes) doc.text(availLines, textX+84, ty, {maxWidth: textW-84});
   ty += Math.max(13, availLines.length * 11);
 
   // Product Link
@@ -777,7 +777,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
     const p = productData.find(p=>p.skuId===it.styleSku);
     if (p && p.productLink) {
       doc.setTextColor(50,90,200);
-      doc.textWithLink('Link', textX+77, ty, { url: p.productLink });
+      doc.textWithLink('Link', textX+72, ty, { url: p.productLink });
       doc.setTextColor(0,0,0);
     } else {
       doc.text("-", textX+80, ty);
@@ -794,7 +794,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   let usedUnit = (typeof it.unitPrice === "number" ? it.unitPrice : Number(it.unitPrice));
   let landing = it.styleSku ? (productData.find(p => p.skuId === it.styleSku)?.landingPrice) : usedUnit;
   let showUnit = usedUnit && usedUnit !== landing ? usedUnit : landing;
-  doc.text(`$${showUnit || ''}`, textX+84, ty);
+  doc.text(`$${showUnit || ''}`, textX+76, ty);
   ty += 14;
 
   // Selected sizes and quantities, wrapped
