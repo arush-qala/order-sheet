@@ -212,3 +212,13 @@ textarea {resize:vertical;}
   color: #215;
   text-align: right;
 }
+.sizes-qty-row .size-select,
+.sizes-qty-row .qty-stepper {
+  height: 24px;           /* Reduce height */
+  font-size: 13px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.sizes-qty-row {
+  margin-bottom: 10px;    /* Increase spacing between rows */
+}
