@@ -233,3 +233,8 @@ textarea {resize:vertical;}
   min-width: 30px;    /* allow to shrink */
   max-width: 60px;    /* optional: limit max width */
 }
+
+.sizes-qty-row .add-size-btn-inline[style*="hidden"] {
+  visibility: hidden !important;
+}
+
