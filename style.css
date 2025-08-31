@@ -222,3 +222,14 @@ textarea {resize:vertical;}
 .sizes-qty-row {
   margin-bottom: 10px;    /* Increase spacing between rows */
 }
+
+.sizes-qty-row .size-select {
+  flex: 1 1 60px;     /* reduce base width, e.g. 60px or even 50px */
+  min-width: 50px;    /* also reduce if you want even smaller on small screens */
+  max-width: 80px;    /* optional: limit how wide it can get */
+}
+.sizes-qty-row .qty-stepper {
+  flex: 1 1 40px;     /* reduce base width */
+  min-width: 30px;    /* allow to shrink */
+  max-width: 60px;    /* optional: limit max width */
+}
