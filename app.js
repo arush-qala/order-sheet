@@ -874,30 +874,21 @@ dom('brandSelect').addEventListener('change', async function () {
   dom('productCards').innerHTML = '';
   state.reset();
   if (this.value) {
-    // Fetch and autofill order number
-    dom('orderNumber').value = '...'; // show loading dots while fetching (optional)
-    
-    const dom = id => document.getElementById(id);
-// Disable add and brand select until data loads
-dom('addProductBtn').disabled = true;
-dom('brandSelect').disabled = true;
-dom('orderNumber').readOnly = true; // <--- add this here
-fetchProductData();
-
-
-    
+    dom('orderNumber').value = '...';
+    dom('orderNumber').readOnly = true;
     try {
       const orderNum = await fetchOrderNumber(this.value);
       dom('orderNumber').value = orderNum;
+      createProductCard();   // <- MAKE SURE this is inside the try block, after orderNum received!
     } catch (e) {
       dom('orderNumber').value = '';
       alert('Failed to generate unique order number. Please try again.');
       dom('orderNumber').readOnly = false;
-      return;
+      // DO NOT call createProductCard() here, since you need a valid order number
     }
-    createProductCard();
   }
 });
+
 
 
 // --- Add product button ---
