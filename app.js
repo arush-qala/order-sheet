@@ -4,6 +4,18 @@ const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
 const SHEET_ENDPOINT = "AKfycbwcld-zPxt_fpQh3jmT1a3YItSUpmnhCjgdmBJ27qYgFOkhL2rAQttvEMvtyFYlCqFg";
 
+// UPDATE THIS URL to your deployed Apps Script Web URL
+const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyYJOxCuxXLVD-Wbo_EIJ4G_PsASt0OdtK9akQhP-fbZt9gXqqaY03SVqCWEhj6QMlw/exec';
+
+async function fetchOrderNumber(brand) {
+  const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
+  const res = await fetch(url);
+  const js = await res.json();
+  return js.orderId;
+}
+
+
+
 // --- Product Data ---
 let productData = []; // Holds dynamically loaded products from Google Sheets
 
@@ -858,11 +870,26 @@ doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
 
 // --- Brand selection triggers product card regeneration ---
-dom('brandSelect').addEventListener('change', function () {
+dom('brandSelect').addEventListener('change', async function () {
   dom('productCards').innerHTML = '';
   state.reset();
-  if (this.value) createProductCard();
+  if (this.value) {
+    // Fetch and autofill order number
+    dom('orderNumber').value = '...'; // show loading dots while fetching (optional)
+    dom('orderNumber').readOnly = true;
+    try {
+      const orderNum = await fetchOrderNumber(this.value);
+      dom('orderNumber').value = orderNum;
+    } catch (e) {
+      dom('orderNumber').value = '';
+      alert('Failed to generate unique order number. Please try again.');
+      dom('orderNumber').readOnly = false;
+      return;
+    }
+    createProductCard();
+  }
 });
+
 
 // --- Add product button ---
 dom('addProductBtn').addEventListener('click', createProductCard);
