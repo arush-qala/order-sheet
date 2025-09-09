@@ -811,7 +811,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
 
   // Selected sizes and quantities, wrapped
   doc.setFont(undefined,"bold");
-  doc.text("Selecttions:", textX, ty);
+  doc.text("Selections:", textX, ty);
   doc.setFont(undefined,"normal");
   let sizesQty = (it.sizes || '');
   let sizeLines = doc.splitTextToSize(sizesQty, textW-124);
