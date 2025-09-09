@@ -876,7 +876,16 @@ dom('brandSelect').addEventListener('change', async function () {
   if (this.value) {
     // Fetch and autofill order number
     dom('orderNumber').value = '...'; // show loading dots while fetching (optional)
-    dom('orderNumber').readOnly = true;
+    
+    const dom = id => document.getElementById(id);
+// Disable add and brand select until data loads
+dom('addProductBtn').disabled = true;
+dom('brandSelect').disabled = true;
+dom('orderNumber').readOnly = true; // <--- add this here
+fetchProductData();
+
+
+    
     try {
       const orderNum = await fetchOrderNumber(this.value);
       dom('orderNumber').value = orderNum;
