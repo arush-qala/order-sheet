@@ -238,3 +238,8 @@ textarea {resize:vertical;}
   visibility: hidden !important;
 }
 
+#orderNumber[readonly] {
+  background: #f4f4f4;
+  color: #333;
+}
+
