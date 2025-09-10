@@ -661,33 +661,16 @@ doc.setFont(undefined,"normal");
 let buyerTrunc = (state.header.buyerName||'').length > 17?((state.header.buyerName||'').slice(0,14)+"..."):(state.header.buyerName||'');
 doc.text(buyerTrunc, bx+5, fy+16);
 bx += buyerW + fieldGaps;
-
 // Email
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
 doc.text('Email', bx, fy);
 doc.setDrawColor(200,200,230);
 doc.setFillColor(252,252,255);
-
-// Make the box match your new wider width
 doc.roundedRect(bx, fy+4, emailW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
-
 doc.setFont(undefined,"normal");
-// Make sure this line is using the new width for wrapping:
-let emailStr = state.header.email || '';
-let emailLines = doc.splitTextToSize(emailStr, emailW - 10);
-
-// Draw each line inside the box, vertically stacked if needed
-for (let i = 0; i < emailLines.length; i++) {
-  doc.text(emailLines[i], bx + 5, fy + 16 + (i * 11));
-}
-
-// (Optional: If multiple lines, you might want to make the box taller as well:)
-let trueBoxHeight = Math.max(fieldBoxH, (emailLines.length * 11) + 6);
-doc.roundedRect(bx, fy+4, emailW, trueBoxHeight, fieldBoxR, fieldBoxR, 'F');
-
-// Increment bx for the next field
+let emailTrunc = (state.header.email||'').length > 23?((state.header.email||'').slice(0,20)+"..."):(state.header.email||'');
+doc.text(emailTrunc, bx+5, fy+16);
 bx += emailW + fieldGaps;
-
 // Phone
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
 doc.text('Phone', bx, fy);
