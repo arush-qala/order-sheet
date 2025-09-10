@@ -647,8 +647,8 @@ doc.text(ordNumTrunc, x+7, y+16);
 y += 38;
 
 // === ROW 2: BUYER/STORE NAME | EMAIL | PHONE (equal boxes) ===
-let fieldGaps = 38;
-let buyerW = 232, emailW = 100, phoneW = 60;
+let fieldGaps = 32;
+let buyerW = 232, emailW = 108, phoneW = 60;
 let fy = y;
 let bx = x;
 // Buyer/Store Name
