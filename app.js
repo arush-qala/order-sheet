@@ -683,7 +683,7 @@ doc.text(phoneTrunc, bx+5, fy+16);
 y += 28;
 
 // === ROW 3: ORDER COMMENTS [2/3 wide] + SHIPPING [1/3 wide], side by side with soft rectangles ===
-const commentsW = 232, shippingW = 137;
+const commentsW = 232, shippingW = 180;
 const labelY = y+6;
 bx = x;
 doc.setFont(undefined,"bold");
