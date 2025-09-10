@@ -648,7 +648,7 @@ y += 38;
 
 // === ROW 2: BUYER/STORE NAME | EMAIL | PHONE (equal boxes) ===
 let fieldGaps = 38;
-let buyerW = 180, emailW = 200, phoneW = 110;
+let buyerW = 232, emailW = 100, phoneW = 60;
 let fy = y;
 let bx = x;
 // Buyer/Store Name
@@ -658,8 +658,7 @@ doc.setDrawColor(200,200,230);
 doc.setFillColor(252,252,255);
 doc.roundedRect(bx, fy+4, buyerW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined,"normal");
-let buyerTrunc = (state.header.buyerName||'').length > 17?((state.header.buyerName||'').slice(0,14)+"..."):(state.header.buyerName||'');
-doc.text(buyerTrunc, bx+5, fy+16);
+doc.text(state.header.buyerName || '', bx + 5, fy + 16);
 bx += buyerW + fieldGaps;
 // Email
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
@@ -668,8 +667,7 @@ doc.setDrawColor(200,200,230);
 doc.setFillColor(252,252,255);
 doc.roundedRect(bx, fy+4, emailW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined,"normal");
-let emailTrunc = (state.header.email||'').length > 23?((state.header.email||'').slice(0,20)+"..."):(state.header.email||'');
-doc.text(emailTrunc, bx+5, fy+16);
+doc.text(state.header.email || '', bx + 5, fy + 16);
 bx += emailW + fieldGaps;
 // Phone
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
@@ -678,8 +676,7 @@ doc.setDrawColor(200,200,230);
 doc.setFillColor(252,252,255);
 doc.roundedRect(bx, fy+4, phoneW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined,"normal");
-let phoneTrunc = (state.header.phone||'').length > 13?((state.header.phone||'').slice(0,10)+"..."):(state.header.phone||'');
-doc.text(phoneTrunc, bx+5, fy+16);
+doc.text(state.header.phone || '', bx + 5, fy + 16);
 y += 28;
 
 // === ROW 3: ORDER COMMENTS [2/3 wide] + SHIPPING [1/3 wide], side by side with soft rectangles ===
