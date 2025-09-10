@@ -880,13 +880,6 @@ doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 200, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
-
-
- 
-
-
-
-
     submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
     alert("✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!");
   } catch (error) {
@@ -909,7 +902,7 @@ dom('brandSelect').addEventListener('change', function () {
   state.reset();
   if (this.value) {
     createProductCard();
-    dom('orderNumber').value = '';        // Optionally clear previous order number for clarity
+   // dom('orderNumber').value = '';        // Optionally clear previous order number for clarity
   }
 });
 
