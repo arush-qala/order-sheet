@@ -826,25 +826,28 @@ for (let idx = 0; idx < state.items.length; ++idx) {
 const selectionLabel = "Selection:";
 doc.text(selectionLabel, textX, ty);
 doc.setFont(undefined,"normal");
-const selectionLabelWidth = doc.getTextWidth(selectionLabel + " ");
 
-// Split to fit remaining width in details column, starting after label on same row
+// Calculate label width and add extra space after the colon
+const numSpaces = 4; // Change this for more/less space
+const extraSpacing = doc.getTextWidth(' '.repeat(numSpaces));
+const selectionLabelWidth = doc.getTextWidth(selectionLabel) + extraSpacing;
+
 let sizesQty = (it.sizes || '');
-
 let selectionLines = doc.splitTextToSize(
   sizesQty,
-  textW - selectionLabelWidth // allow full width to the end of the right column
+  textW - selectionLabelWidth // wrap at remainder of right column width
 );
 
 if (selectionLines.length > 0) {
-  // Print first line after the label, others on subsequent lines
+  // Print first line after the label + padding spaces
   doc.text(selectionLines[0], textX + selectionLabelWidth, ty, {baseline: "alphabetic"});
   for (let l = 1; l < selectionLines.length; l++) {
-    ty += 13; // move down for each additional line
+    ty += 13;
     doc.text(selectionLines[l], textX, ty, {baseline: "alphabetic"});
   }
 }
-ty += 13; // Always move ty down after, to keep notes below this block
+ty += 13;
+
 
 
   // Customization notes, wrapped if needed
