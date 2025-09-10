@@ -486,6 +486,13 @@ dom('orderForm').addEventListener('submit', async e => {
     submitBtn.disabled = false; submitBtn.textContent = originalText; return;
   }
 
+
+  // Fetch and assign a unique order number just before submit!
+const brand = dom('brandSelect').value;
+const orderNumber = await fetchOrderNumber(brand);
+dom('orderNumber').value = orderNumber;
+
+  
   // Collect order data
   state.header = {
     orderNumber: dom('orderNumber').value,
@@ -897,23 +904,15 @@ doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
 
 // --- Brand selection triggers product card regeneration ---
-dom('brandSelect').addEventListener('change', async function () {
+dom('brandSelect').addEventListener('change', function () {
   dom('productCards').innerHTML = '';
   state.reset();
   if (this.value) {
-    // Show product card immediately, fetch order number in parallel
     createProductCard();
-    dom('orderNumber').value = 'Generating...';
-    
-    try {
-      const orderNum = await fetchOrderNumber(this.value);
-      dom('orderNumber').value = orderNum;
-    } catch (e) {
-      dom('orderNumber').value = 'Error - Try Again';
-      console.error('Order number generation failed:', e);
-    }
+    dom('orderNumber').value = '';        // Optionally clear previous order number for clarity
   }
 });
+
 
 
 
