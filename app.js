@@ -2,7 +2,7 @@
 const EMAILJS_PUBLIC_KEY = "ThVWDzQ_A2rENNdVu";
 const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
-const SHEET_ENDPOINT = "AKfycbwF4ILmWDFAeQVj3-wM4QY8vR5tCC9sxlx8F2xdttpnslTI4vQnK3aWDJvp57QbxDoI";
+const SHEET_ENDPOINT = "AKfycbzU-SAtpPAIy8RMkeSI7ryby5i0c54ISW60knYWm273BR61LoP70OMRajzQDAOkmZRG";
 
 // UPDATE THIS URL to your deployed Apps Script Web URL
 const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxWJvZRh_OZbZU-sto706zYmN5c7YxXVjSEbIyEbZu-_zB7_OcPXFQrFD3_yR-awY0c/exec';
