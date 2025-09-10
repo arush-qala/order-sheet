@@ -265,3 +265,9 @@ textarea {resize:vertical;}
   text-align: center;
   font-size: 15px;
 }
+
+
+.order-number-input[readonly] {
+  background: #f6f6f6;
+  color: #444;
+}
