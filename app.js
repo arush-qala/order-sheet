@@ -2,7 +2,7 @@
 const EMAILJS_PUBLIC_KEY = "ThVWDzQ_A2rENNdVu";
 const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
-const SHEET_ENDPOINT = "AKfycbzU-SAtpPAIy8RMkeSI7ryby5i0c54ISW60knYWm273BR61LoP70OMRajzQDAOkmZRG";
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbwF4ILmWDFAeQVj3-wM4QY8vR5tCC9sxlx8F2xdttpnslTI4vQnK3aWDJvp57QbxDoI/exec";
 
 // UPDATE THIS URL to your deployed Apps Script Web URL
 const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxWJvZRh_OZbZU-sto706zYmN5c7YxXVjSEbIyEbZu-_zB7_OcPXFQrFD3_yR-awY0c/exec';
@@ -65,7 +65,7 @@ const dom = id => document.getElementById(id);
 // Disable add and brand select until data loads
 dom('addProductBtn').disabled = true;
 dom('brandSelect').disabled = true;
-
+dom('orderNumber').readOnly = true; // Always read-only
 fetchProductData();
 
 // --- App State ---
@@ -901,20 +901,20 @@ dom('brandSelect').addEventListener('change', async function () {
   dom('productCards').innerHTML = '';
   state.reset();
   if (this.value) {
-    dom('orderNumber').value = '...';
-    dom('orderNumber').readOnly = true;
+    // Show product card immediately, fetch order number in parallel
+    createProductCard();
+    dom('orderNumber').value = 'Generating...';
+    
     try {
       const orderNum = await fetchOrderNumber(this.value);
       dom('orderNumber').value = orderNum;
-      createProductCard();   // <- MAKE SURE this is inside the try block, after orderNum received!
     } catch (e) {
-      dom('orderNumber').value = '';
-      alert('Failed to generate unique order number. Please try again.');
-      dom('orderNumber').readOnly = false;
-      // DO NOT call createProductCard() here, since you need a valid order number
+      dom('orderNumber').value = 'Error - Try Again';
+      console.error('Order number generation failed:', e);
     }
   }
 });
+
 
 
 
