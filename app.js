@@ -648,7 +648,7 @@ y += 38;
 
 // === ROW 2: BUYER/STORE NAME | EMAIL | PHONE (equal boxes) ===
 let fieldGaps = 38;
-let buyerW = 106, emailW = 158, phoneW = 110;
+let buyerW = 180, emailW = 200, phoneW = 110;
 let fy = y;
 let bx = x;
 // Buyer/Store Name
