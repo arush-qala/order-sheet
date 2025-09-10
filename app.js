@@ -490,12 +490,12 @@ dom('orderForm').addEventListener('submit', async e => {
   // Fetch and assign a unique order number just before submit!
 const brand = dom('brandSelect').value;
 const orderNumber = await fetchOrderNumber(brand);
-dom('orderNumber').value = orderNumber;
+// dom('orderNumber').value = orderNumber;
 
   
   // Collect order data
   state.header = {
-    orderNumber: dom('orderNumber').value,
+    orderNumber: orderNumber,
     buyerName: dom('buyerName').value,
     email: dom('email').value,
     phone: dom('phone').value,
@@ -888,7 +888,7 @@ doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
 
     submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
-    alert("✅ SUCCESS!\n\n📧 Order details sent\n📄 PDF downloaded\nBackups secured!");
+    alert("✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!");
   } catch (error) {
     alert("⚠️ PDF GENERATION FAILED! Please screenshot or copy order details manually.");
   } finally {
