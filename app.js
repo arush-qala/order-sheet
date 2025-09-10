@@ -298,7 +298,6 @@ function createProductCard() {
       // Size dropdown
       const sizeSel = document.createElement('select');
       sizeSel.className = 'size-select';
-      sizeSel.style.width = '70px';
       availableSizesArr.forEach(size => {
         const opt = document.createElement('option');
         opt.value = size;
@@ -318,7 +317,6 @@ function createProductCard() {
       qtyInput.step = '1';
       qtyInput.placeholder = 'Qty';
       qtyInput.value = item.quantity > 0 ? item.quantity : 1;
-      qtyInput.style.width = '60px';
       qtyInput.addEventListener('input', function() {
         item.quantity = Math.max(1, Number(this.value) || 1);
         this.value = item.quantity;
