@@ -767,11 +767,11 @@ for (let idx = 0; idx < state.items.length; ++idx) {
       doc.setDrawColor(170,170,200);
       doc.roundedRect(printImgX-2, y+28, imgW+4, imgH+4, 10,10,'S');
     } catch (e) {}
-  }
+  
   doc.setFont(undefined, "bold");
   doc.setFontSize(9.2);
   doc.text('Custom Print', printImgX + imgW/2, y+30+imgH+13, {align:'center'});
-
+  }
   // === DETAILS RIGHT COLUMN ===
   let ty = y + 36;
 
