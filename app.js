@@ -32,10 +32,9 @@ async function fetchProductData() {
     document.getElementById('addProductBtn').disabled = false;
     document.getElementById('brandSelect').disabled = false;
     // Ensure if a brand is already selected, a first product card is shown
-    if (document.getElementById('brandSelect').value) {
-      createProductCard();
-    }
-  } catch (err) {
+    
+  } 
+  catch (err) {
     alert("Could not load product database from Google Sheets.");
     productData = [];
     document.getElementById('addProductBtn').disabled = true;
