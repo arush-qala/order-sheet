@@ -5,7 +5,7 @@ const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
 const SHEET_ENDPOINT = "AKfycbwcld-zPxt_fpQh3jmT1a3YItSUpmnhCjgdmBJ27qYgFOkhL2rAQttvEMvtyFYlCqFg";
 
 // UPDATE THIS URL to your deployed Apps Script Web URL
-const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyYJOxCuxXLVD-Wbo_EIJ4G_PsASt0OdtK9akQhP-fbZt9gXqqaY03SVqCWEhj6QMlw/exec';
+const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxWJvZRh_OZbZU-sto706zYmN5c7YxXVjSEbIyEbZu-_zB7_OcPXFQrFD3_yR-awY0c/exec';
 
 async function fetchOrderNumber(brand) {
   const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
@@ -583,24 +583,30 @@ for (let i = 0; i < state.items.length; ++i) {
   // Send email and show diagnostics if failure
   try {
   emailjs.init(EMAILJS_PUBLIC_KEY);
-  // Build payload **without using ...state.header** so products stays as an array
-  await emailjs.send(
-    EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID,
-    {
-      orderNumber: state.header.orderNumber,
-      buyerName: state.header.buyerName,
-      email: state.header.email,
-      phone: state.header.phone,
-      shippingAddress: state.header.shippingAddress,
-      orderComments: state.header.orderComments,
-      brand: state.header.brand,
-      totalQty: state.header.totalQty,
-      totalAmount: state.totalAmount.toFixed(2),
-      timestamp: state.header.timestamp,
-      userAgent: state.header.userAgent,
-    orderProducts: products, // Use a fresh, unique key!
-    }
-  );
+
+  // Debug: Log what we're sending to EmailJS
+const emailData = {
+  orderNumber: state.header.orderNumber || '',
+  buyerName: state.header.buyerName || '',
+  email: state.header.email || '',
+  phone: state.header.phone || '',
+  shippingAddress: state.header.shippingAddress || '',
+  orderComments: state.header.orderComments || '',
+  brand: state.header.brand || '',
+  totalQty: String(state.header.totalQty || 0),
+  totalAmount: String(state.totalAmount.toFixed(2) || '0.00'),
+  timestamp: state.header.timestamp || '',
+  productList: products.map(item => 
+    `${item.productName} (${item.sizes}) - $${item.subtotal}`
+  ).join('\n') || 'No products'
+};
+console.log('Sending to EmailJS:', emailData);
+
+await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailData);
+
+    
+
+
   submitBtn.textContent = '✅ Order emailed! Generating PDF...';
 } catch (emailError) {
   alert("❌ EMAIL FAILED!\n\n" + (emailError?.text || emailError?.message || JSON.stringify(emailError)));
