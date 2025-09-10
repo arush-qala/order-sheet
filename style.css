@@ -243,3 +243,25 @@ textarea {resize:vertical;}
   color: #333;
 }
 
+.sizes-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;       /* or your preferred consistent spacing */
+  margin-bottom: 8px;
+}
+
+.sizes-qty-row .size-select,
+.sizes-qty-row .qty-stepper {
+  width: 80px !important;  /* size-select: set to fixed px value for all rows! */
+  min-width: 80px !important;
+  max-width: 80px !important;
+  font-size: 15px;
+}
+
+.sizes-qty-row .qty-stepper {
+  width: 60px !important; /* qty-stepper: (or e.g. 48px, whichever you want) */
+  min-width: 60px !important;
+  max-width: 60px !important;
+  text-align: center;
+  font-size: 15px;
+}
