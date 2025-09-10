@@ -823,12 +823,29 @@ for (let idx = 0; idx < state.items.length; ++idx) {
 
   // Selected sizes and quantities, wrapped
   doc.setFont(undefined,"bold");
-  doc.text("Selection:", textX, ty);
-  doc.setFont(undefined,"normal");
-  let sizesQty = (it.sizes || '');
-  // Calculate the width of "Selection:" label to place value just after it:
-const selectionLabelWidth = doc.getTextWidth("Selection: ");
-doc.text(sizesQty, textX + selectionLabelWidth + 4, ty, {maxWidth: textW - selectionLabelWidth - 4});
+const selectionLabel = "Selection:";
+doc.text(selectionLabel, textX, ty);
+doc.setFont(undefined,"normal");
+const selectionLabelWidth = doc.getTextWidth(selectionLabel + " ");
+
+// Split to fit remaining width in details column, starting after label on same row
+let sizesQty = (it.sizes || '');
+
+let selectionLines = doc.splitTextToSize(
+  sizesQty,
+  textW - selectionLabelWidth // allow full width to the end of the right column
+);
+
+if (selectionLines.length > 0) {
+  // Print first line after the label, others on subsequent lines
+  doc.text(selectionLines[0], textX + selectionLabelWidth, ty, {baseline: "alphabetic"});
+  for (let l = 1; l < selectionLines.length; l++) {
+    ty += 13; // move down for each additional line
+    doc.text(selectionLines[l], textX, ty, {baseline: "alphabetic"});
+  }
+}
+ty += 13; // Always move ty down after, to keep notes below this block
+
 
   // Customization notes, wrapped if needed
   if (it.notes) {
