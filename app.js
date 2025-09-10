@@ -826,9 +826,9 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   doc.text("Selection:", textX, ty);
   doc.setFont(undefined,"normal");
   let sizesQty = (it.sizes || '');
-  let sizeLines = doc.splitTextToSize(sizesQty, textW-124);
-  doc.text(sizeLines, textX+110, ty, {maxWidth: textW-110});
-  ty += Math.max(13, sizeLines.length * 11);
+  // Calculate the width of "Selection:" label to place value just after it:
+const selectionLabelWidth = doc.getTextWidth("Selection: ");
+doc.text(sizesQty, textX + selectionLabelWidth + 4, ty, {maxWidth: textW - selectionLabelWidth - 4});
 
   // Customization notes, wrapped if needed
   if (it.notes) {
