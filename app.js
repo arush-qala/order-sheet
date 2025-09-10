@@ -647,8 +647,8 @@ doc.text(ordNumTrunc, x+7, y+16);
 y += 38;
 
 // === ROW 2: BUYER/STORE NAME | EMAIL | PHONE (equal boxes) ===
-let fieldGaps = 18;
-let buyerW = 106, emailW = 146, phoneW = 95;
+let fieldGaps = 38;
+let buyerW = 106, emailW = 158, phoneW = 110;
 let fy = y;
 let bx = x;
 // Buyer/Store Name
@@ -660,7 +660,7 @@ doc.roundedRect(bx, fy+4, buyerW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
 doc.setFont(undefined,"normal");
 let buyerTrunc = (state.header.buyerName||'').length > 17?((state.header.buyerName||'').slice(0,14)+"..."):(state.header.buyerName||'');
 doc.text(buyerTrunc, bx+5, fy+16);
-bx += buyerW + 32;
+bx += buyerW + fieldGaps;
 // Email
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
 doc.text('Email', bx, fy);
