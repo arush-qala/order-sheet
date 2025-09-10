@@ -777,7 +777,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   doc.setFont(undefined, "bold");
   doc.setFontSize(11.2);
   doc.text((it.productName || '').substring(0,36), textX, ty, {maxWidth: textW});
-  ty += 15;
+  ty += 30;
 
   // Available Sizes
   doc.setFont(undefined,"bold").setFontSize(9.5);
