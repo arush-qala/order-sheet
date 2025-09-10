@@ -2,7 +2,7 @@
 const EMAILJS_PUBLIC_KEY = "ThVWDzQ_A2rENNdVu";
 const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
-const SHEET_ENDPOINT = "AKfycbwcld-zPxt_fpQh3jmT1a3YItSUpmnhCjgdmBJ27qYgFOkhL2rAQttvEMvtyFYlCqFg";
+const SHEET_ENDPOINT = "AKfycbwF4ILmWDFAeQVj3-wM4QY8vR5tCC9sxlx8F2xdttpnslTI4vQnK3aWDJvp57QbxDoI";
 
 // UPDATE THIS URL to your deployed Apps Script Web URL
 const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxWJvZRh_OZbZU-sto706zYmN5c7YxXVjSEbIyEbZu-_zB7_OcPXFQrFD3_yR-awY0c/exec';
@@ -584,6 +584,7 @@ for (let i = 0; i < state.items.length; ++i) {
   emailjs.init(EMAILJS_PUBLIC_KEY);
 
   // Debug: Log what we're sending to EmailJS
+
 const emailData = {
   orderNumber: state.header.orderNumber || '',
   buyerName: state.header.buyerName || '',
@@ -595,10 +596,16 @@ const emailData = {
   totalQty: String(state.header.totalQty || 0),
   totalAmount: String(state.totalAmount.toFixed(2) || '0.00'),
   timestamp: state.header.timestamp || '',
-  productList: products.map(item => 
-    `${item.productName} (${item.sizes}) - $${item.subtotal}`
-  ).join('\n') || 'No products'
+  productList: products.map(item => {
+    let line = `${item.productName} (${item.sizes}) - $${item.subtotal}`;
+    if (item.notes && item.notes.trim()) {
+      line += `\nCustom notes: ${item.notes.trim()}`;
+    }
+    return line;
+  }).join('\n\n') || 'No products'
 };
+
+    
 console.log('Sending to EmailJS:', emailData);
 
 await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailData);
