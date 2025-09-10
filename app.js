@@ -653,7 +653,7 @@ let fy = y;
 let bx = x;
 // Buyer/Store Name
 doc.setFont(undefined,"bold"); doc.setTextColor(0,0,0);
-doc.text('Buyer/Store Name', bx, fy);
+doc.text('Buyer & Store Name', bx, fy);
 doc.setDrawColor(200,200,230);
 doc.setFillColor(252,252,255);
 doc.roundedRect(bx, fy+4, buyerW, fieldBoxH, fieldBoxR, fieldBoxR, 'F');
