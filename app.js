@@ -8,10 +8,34 @@ const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxgkSAM8MU4xqQcW
 const ORDER_NUMBER_ENDPOINT = "https://script.google.com/macros/s/AKfycbxgkSAM8MU4xqQcW2a3eaXlfJQlLgJdP4KtEqaiaH_-w_o2lS09YRjJqV07aaa3kI2I/exec";
 
 async function fetchOrderNumber(brand) {
-  const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
-  const res = await fetch(url);
-  const js = await res.json();
-  return js.orderId;
+  try {
+    const response = await fetch(ORDER_NUMBER_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "getOrderNumber",
+        brand: brand
+      })
+    });
+    const result = await response.json();
+    if (result && result.orderId) {
+      return result.orderId;
+    } else {
+      console.error("Failed to get order number:", result);
+      // Fallback to GET method if POST fails
+      const fallbackUrl = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
+      const fallbackRes = await fetch(fallbackUrl);
+      const fallbackJs = await fallbackRes.json();
+      return fallbackJs.orderId;
+    }
+  } catch (error) {
+    console.error("Error fetching order number:", error);
+    // Fallback to GET method
+    const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
+    const res = await fetch(url);
+    const js = await res.json();
+    return js.orderId;
+  }
 }
 
 
@@ -542,42 +566,44 @@ dom('orderForm').addEventListener('submit', async e => {
   
 
 
-for (let i = 0; i < state.items.length; ++i) {
-  const item = state.items[i];
-  const flatRowObject = {
-    OrderID: orderNumber, // FIXED: Use the fetched orderNumber directly
-    SubmissionTimestamp: state.header.timestamp,
-    BuyerName: state.header.buyerName,
-    Email: state.header.email,
-    Phone: state.header.phone,
-    ShippingAddress: state.header.shippingAddress,
-    Brand: state.header.brand,
-    OrderComments: state.header.orderComments,
-    ProductSelectionID: i + 1,
-    ProductSKU: item.styleSku,
-    ProductName: item.productName,
-    CustomPrintSKU: item.printSku,
-    SizesAndQuantities: item.sizes,
-    UnitPrice: item.unitPrice,
-    Subtotal: item.subtotal,
-    Notes: item.notes
-  };
-  fetch(SHEET_ENDPOINT, {
+// Send all order line items to Google Sheets OrderLineItems tab
+const allLineItems = state.items.map((item, i) => ({
+  OrderID: orderNumber,
+  SubmissionTimestamp: state.header.timestamp,
+  BuyerName: state.header.buyerName,
+  Email: state.header.email,
+  Phone: state.header.phone,
+  ShippingAddress: state.header.shippingAddress,
+  Brand: state.header.brand,
+  OrderComments: state.header.orderComments,
+  ProductSelectionID: i + 1,
+  ProductSKU: item.styleSku,
+  ProductName: item.productName,
+  CustomPrintSKU: item.printSku,
+  SizesAndQuantities: item.sizes,
+  UnitPrice: item.unitPrice,
+  Subtotal: item.subtotal,
+  Notes: item.notes
+}));
+
+// Send line items to OrderLineItems sheet
+try {
+  const lineItemsResponse = await fetch(SHEET_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(flatRowObject)
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res && res.result === "SUCCESS") {
-      console.log("Row added for product:", item.productName);
-    } else {
-      console.warn("Failed to add row for:", item.productName);
-    }
-  })
-  .catch(err => {
-    console.error("POST to Google Sheet failed:", err);
+    body: JSON.stringify({
+      action: "addOrderLineItems",
+      orderLineItems: allLineItems
+    })
   });
+  const lineItemsResult = await lineItemsResponse.json();
+  if (lineItemsResult && lineItemsResult.result === "SUCCESS") {
+    console.log("Order line items recorded successfully");
+  } else {
+    console.warn("Failed to record order line items:", lineItemsResult);
+  }
+} catch (err) {
+  console.error("Failed to send order line items to Google Sheets:", err);
 }
 
 
