@@ -2,10 +2,10 @@
 const EMAILJS_PUBLIC_KEY = "ThVWDzQ_A2rENNdVu";
 const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbzU-SAtpPAIy8RMkeSI7ryby5i0c54ISW60knYWm273BR61LoP70OMRajzQDAOkmZRG/exec";
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxgkSAM8MU4xqQcW2a3eaXlfJQlLgJdP4KtEqaiaH_-w_o2lS09YRjJqV07aaa3kI2I/exec";
 
 // UPDATE THIS URL to your deployed Apps Script Web URL
-const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzU-SAtpPAIy8RMkeSI7ryby5i0c54ISW60knYWm273BR61LoP70OMRajzQDAOkmZRG/exec';
+const ORDER_NUMBER_ENDPOINT = "https://script.google.com/macros/s/AKfycbxgkSAM8MU4xqQcW2a3eaXlfJQlLgJdP4KtEqaiaH_-w_o2lS09YRjJqV07aaa3kI2I/exec";
 
 async function fetchOrderNumber(brand) {
   const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
