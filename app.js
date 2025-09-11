@@ -490,7 +490,7 @@ dom('orderForm').addEventListener('submit', async e => {
   // Fetch and assign a unique order number just before submit!
 const brand = dom('brandSelect').value;
 const orderNumber = await fetchOrderNumber(brand);
-// dom('orderNumber').value = orderNumber;
+dom('orderNumber').value = orderNumber;
 
   
   // Collect order data
