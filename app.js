@@ -5,7 +5,7 @@ const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
 const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbzU-SAtpPAIy8RMkeSI7ryby5i0c54ISW60knYWm273BR61LoP70OMRajzQDAOkmZRG/exec";
 
 // UPDATE THIS URL to your deployed Apps Script Web URL
-const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxWJvZRh_OZbZU-sto706zYmN5c7YxXVjSEbIyEbZu-_zB7_OcPXFQrFD3_yR-awY0c/exec';
+const ORDER_NUMBER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzU-SAtpPAIy8RMkeSI7ryby5i0c54ISW60knYWm273BR61LoP70OMRajzQDAOkmZRG/exec';
 
 async function fetchOrderNumber(brand) {
   const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
