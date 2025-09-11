@@ -18,8 +18,18 @@ async function fetchOrderNumber(brand) {
     const response = await fetch(url);
     console.log("🔍 DEBUG: Response status:", response.status);
     
-    const result = await response.json();
-    console.log("🔍 DEBUG: Response result:", result);
+    const responseText = await response.text();
+    console.log("🔍 DEBUG: Raw response text:", responseText);
+    
+    let result;
+    try {
+      result = JSON.parse(responseText);
+      console.log("🔍 DEBUG: Parsed JSON result:", result);
+    } catch (parseError) {
+      console.error("❌ DEBUG: JSON parsing failed:", parseError);
+      console.error("❌ DEBUG: Response was not JSON:", responseText);
+      throw new Error(`Invalid JSON response: ${responseText.substring(0, 200)}...`);
+    }
     
     if (result && result.orderId) {
       console.log("✅ DEBUG: Successfully got order number:", result.orderId);
@@ -549,9 +559,20 @@ dom('orderForm').addEventListener('submit', async e => {
   // MOVED TO TOP: Fetch and assign a unique order number BEFORE sending any data to sheets!
   const brand = dom('brandSelect').value;
   showDebugStatus('Generating order number...', 'info');
-  const orderNumber = await fetchOrderNumber(brand);
-  dom('orderNumber').value = orderNumber;
-  showDebugStatus(`Order number generated: ${orderNumber}`, 'success');
+  
+  let orderNumber;
+  try {
+    orderNumber = await fetchOrderNumber(brand);
+    dom('orderNumber').value = orderNumber;
+    showDebugStatus(`Order number generated: ${orderNumber}`, 'success');
+  } catch (error) {
+    console.error("❌ DEBUG: Failed to generate order number:", error);
+    showDebugStatus('❌ Failed to generate order number', 'error');
+    alert("Failed to generate order number. Please try again.");
+    submitBtn.disabled = false; 
+    submitBtn.textContent = originalText; 
+    return;
+  }
   
   // Collect order data
   state.header = {
