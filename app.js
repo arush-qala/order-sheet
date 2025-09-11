@@ -486,12 +486,10 @@ dom('orderForm').addEventListener('submit', async e => {
     submitBtn.disabled = false; submitBtn.textContent = originalText; return;
   }
 
-
-  // Fetch and assign a unique order number just before submit!
-const brand = dom('brandSelect').value;
-const orderNumber = await fetchOrderNumber(brand);
-dom('orderNumber').value = orderNumber;
-
+  // MOVED TO TOP: Fetch and assign a unique order number BEFORE sending any data to sheets!
+  const brand = dom('brandSelect').value;
+  const orderNumber = await fetchOrderNumber(brand);
+  dom('orderNumber').value = orderNumber;
   
   // Collect order data
   state.header = {
@@ -547,7 +545,7 @@ dom('orderNumber').value = orderNumber;
 for (let i = 0; i < state.items.length; ++i) {
   const item = state.items[i];
   const flatRowObject = {
-    OrderID: state.header.orderNumber,
+    OrderID: orderNumber, // FIXED: Use the fetched orderNumber directly
     SubmissionTimestamp: state.header.timestamp,
     BuyerName: state.header.buyerName,
     Email: state.header.email,
@@ -820,7 +818,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   let usedUnit = (typeof it.unitPrice === "number" ? it.unitPrice : Number(it.unitPrice));
   let landing = it.styleSku ? (productData.find(p => p.skuId === it.styleSku)?.landingPrice) : usedUnit;
   let showUnit = usedUnit && usedUnit !== landing ? usedUnit : landing;
-  doc.text(`$${showUnit || ''}`, textX+74, ty);
+  doc.text(`${showUnit || ''}`, textX+74, ty);
   ty += 14;
 
   // Selected sizes and quantities, wrapped
@@ -865,7 +863,7 @@ ty += 13;
   // Subtotal at bottom
   doc.setFont(undefined,"bold");
   doc.setFontSize(10.5);
-  doc.text(`Subtotal: $${it.subtotal || ''}`, textX, y+cardH-15);
+  doc.text(`Subtotal: ${it.subtotal || ''}`, textX, y+cardH-15);
 
   y += cardH + 25;
   if (y > 700) { doc.addPage(); y = 40; }
@@ -876,12 +874,12 @@ y += 12;
 doc.setFontSize(11.5);
 doc.setFont(undefined, "bold");
 doc.text(`Total Quantity: ${state.totalQty}`, x, y);
-doc.text(`Total Amount: $${state.totalAmount.toFixed(2)}`, x + 200, y);
+doc.text(`Total Amount: ${state.totalAmount.toFixed(2)}`, x + 200, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
     submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
-    alert("✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!");
+    alert(`✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!`);
   } catch (error) {
     alert("⚠️ PDF GENERATION FAILED! Please screenshot or copy order details manually.");
   } finally {
