@@ -11,21 +11,12 @@ async function fetchOrderNumber(brand) {
   console.log("🔍 DEBUG: fetchOrderNumber() called with brand:", brand);
   
   try {
-    console.log("🔍 DEBUG: Sending POST request to ORDER_NUMBER_ENDPOINT");
-    const requestPayload = {
-      action: "getOrderNumber",
-      brand: brand
-    };
-    console.log("🔍 DEBUG: Request payload:", requestPayload);
+    // Use GET request with URL parameters (CORS-friendly)
+    const url = `${ORDER_NUMBER_ENDPOINT}?action=getOrderNumber&brand=${encodeURIComponent(brand)}`;
+    console.log("🔍 DEBUG: Sending GET request to:", url);
     
-    const response = await fetch(ORDER_NUMBER_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestPayload)
-    });
-    
+    const response = await fetch(url);
     console.log("🔍 DEBUG: Response status:", response.status);
-    console.log("🔍 DEBUG: Response headers:", Object.fromEntries(response.headers));
     
     const result = await response.json();
     console.log("🔍 DEBUG: Response result:", result);
@@ -34,34 +25,23 @@ async function fetchOrderNumber(brand) {
       console.log("✅ DEBUG: Successfully got order number:", result.orderId);
       return result.orderId;
     } else {
-      console.error("❌ DEBUG: Failed to get order number from POST. Result:", result);
-      // Fallback to GET method if POST fails
-      console.log("🔄 DEBUG: Trying fallback GET method");
-      const fallbackUrl = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
-      console.log("🔍 DEBUG: Fallback URL:", fallbackUrl);
+      console.error("❌ DEBUG: Invalid response format:", result);
+      // Fallback to legacy format
+      console.log("🔄 DEBUG: Trying legacy GET format");
+      const legacyUrl = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
+      console.log("🔍 DEBUG: Legacy URL:", legacyUrl);
       
-      const fallbackRes = await fetch(fallbackUrl);
-      console.log("🔍 DEBUG: Fallback response status:", fallbackRes.status);
+      const legacyRes = await fetch(legacyUrl);
+      console.log("🔍 DEBUG: Legacy response status:", legacyRes.status);
       
-      const fallbackJs = await fallbackRes.json();
-      console.log("🔍 DEBUG: Fallback result:", fallbackJs);
+      const legacyResult = await legacyRes.json();
+      console.log("🔍 DEBUG: Legacy result:", legacyResult);
       
-      return fallbackJs.orderId;
+      return legacyResult.orderId;
     }
   } catch (error) {
     console.error("❌ DEBUG: Exception in fetchOrderNumber:", error);
-    // Fallback to GET method
-    console.log("🔄 DEBUG: Exception fallback - trying GET method");
-    const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
-    console.log("🔍 DEBUG: Exception fallback URL:", url);
-    
-    const res = await fetch(url);
-    console.log("🔍 DEBUG: Exception fallback response status:", res.status);
-    
-    const js = await res.json();
-    console.log("🔍 DEBUG: Exception fallback result:", js);
-    
-    return js.orderId;
+    throw error; // Re-throw so calling code can handle
   }
 }
 
@@ -644,41 +624,74 @@ const allLineItems = state.items.map((item, i) => ({
   Notes: item.notes
 }));
 
-// Send line items to OrderLineItems sheet
+// Send line items to OrderLineItems sheet using GET requests
 console.log("🔍 DEBUG: Starting OrderLineItems submission");
 console.log("🔍 DEBUG: Number of line items to send:", allLineItems.length);
 console.log("🔍 DEBUG: Line items data:", allLineItems);
 showDebugStatus(`Sending ${allLineItems.length} line items to Google Sheets...`, 'info');
 
-try {
-  const lineItemsPayload = {
-    action: "addOrderLineItems",
-    orderLineItems: allLineItems
-  };
-  console.log("🔍 DEBUG: OrderLineItems request payload:", lineItemsPayload);
-  console.log("🔍 DEBUG: Sending to SHEET_ENDPOINT:", SHEET_ENDPOINT);
-  
-  const lineItemsResponse = await fetch(SHEET_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(lineItemsPayload)
-  });
-  
-  console.log("🔍 DEBUG: OrderLineItems response status:", lineItemsResponse.status);
-  console.log("🔍 DEBUG: OrderLineItems response headers:", Object.fromEntries(lineItemsResponse.headers));
-  
-  const lineItemsResult = await lineItemsResponse.json();
-  console.log("🔍 DEBUG: OrderLineItems response result:", lineItemsResult);
-  
-  if (lineItemsResult && lineItemsResult.result === "SUCCESS") {
-    console.log("✅ DEBUG: Order line items recorded successfully");
-    showDebugStatus('✅ Order line items saved to Google Sheets', 'success');
-  } else {
-    console.warn("❌ DEBUG: Failed to record order line items. Result:", lineItemsResult);
-    showDebugStatus('❌ Failed to save order line items', 'error');
+let successCount = 0;
+let failedCount = 0;
+
+for (let i = 0; i < allLineItems.length; i++) {
+  const item = allLineItems[i];
+  try {
+    console.log(`🔍 DEBUG: Sending line item ${i + 1}/${allLineItems.length}:`, item);
+    
+    // Build URL with all parameters for GET request
+    const params = new URLSearchParams({
+      action: 'addOrderLineItem',
+      OrderID: item.OrderID,
+      SubmissionTimestamp: item.SubmissionTimestamp,
+      BuyerName: item.BuyerName,
+      Email: item.Email,
+      Phone: item.Phone,
+      ShippingAddress: item.ShippingAddress,
+      Brand: item.Brand,
+      OrderComments: item.OrderComments,
+      ProductSelectionID: item.ProductSelectionID,
+      ProductSKU: item.ProductSKU,
+      ProductName: item.ProductName,
+      CustomPrintSKU: item.CustomPrintSKU,
+      SizesAndQuantities: item.SizesAndQuantities,
+      UnitPrice: item.UnitPrice,
+      Subtotal: item.Subtotal,
+      Notes: item.Notes
+    });
+    
+    const url = `${SHEET_ENDPOINT}?${params.toString()}`;
+    console.log(`🔍 DEBUG: Line item ${i + 1} URL:`, url);
+    
+    const response = await fetch(url);
+    console.log(`🔍 DEBUG: Line item ${i + 1} response status:`, response.status);
+    
+    const result = await response.json();
+    console.log(`🔍 DEBUG: Line item ${i + 1} result:`, result);
+    
+    if (result && result.result === "SUCCESS") {
+      successCount++;
+      console.log(`✅ DEBUG: Line item ${i + 1} recorded successfully`);
+    } else {
+      failedCount++;
+      console.warn(`❌ DEBUG: Line item ${i + 1} failed:`, result);
+    }
+    
+    // Small delay to avoid overwhelming the server
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+  } catch (err) {
+    failedCount++;
+    console.error(`❌ DEBUG: Exception for line item ${i + 1}:`, err);
   }
-} catch (err) {
-  console.error("❌ DEBUG: Exception while sending order line items to Google Sheets:", err);
+}
+
+console.log(`🔍 DEBUG: OrderLineItems complete - Success: ${successCount}, Failed: ${failedCount}`);
+if (successCount === allLineItems.length) {
+  showDebugStatus('✅ All order line items saved to Google Sheets', 'success');
+} else if (successCount > 0) {
+  showDebugStatus(`⚠️ ${successCount}/${allLineItems.length} line items saved`, 'error');
+} else {
+  showDebugStatus('❌ Failed to save any order line items', 'error');
 }
 
 
