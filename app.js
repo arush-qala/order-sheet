@@ -470,7 +470,7 @@ dom('orderForm').addEventListener('submit', async e => {
   submitBtn.textContent = '📧 Sending order...';
 
   // Validate required fields!
-  const requiredFields = ['orderNumber', 'buyerName', 'email', 'phone', 'shippingAddress', 'brandSelect'];
+  const requiredFields = ['buyerName', 'email', 'phone', 'shippingAddress', 'brandSelect'];
   for (let f of requiredFields) {
     if (!dom(f).value.trim()) {
       alert("Please fill all required fields.");
