@@ -8,32 +8,59 @@ const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxgkSAM8MU4xqQcW
 const ORDER_NUMBER_ENDPOINT = "https://script.google.com/macros/s/AKfycbxgkSAM8MU4xqQcW2a3eaXlfJQlLgJdP4KtEqaiaH_-w_o2lS09YRjJqV07aaa3kI2I/exec";
 
 async function fetchOrderNumber(brand) {
+  console.log("🔍 DEBUG: fetchOrderNumber() called with brand:", brand);
+  
   try {
+    console.log("🔍 DEBUG: Sending POST request to ORDER_NUMBER_ENDPOINT");
+    const requestPayload = {
+      action: "getOrderNumber",
+      brand: brand
+    };
+    console.log("🔍 DEBUG: Request payload:", requestPayload);
+    
     const response = await fetch(ORDER_NUMBER_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "getOrderNumber",
-        brand: brand
-      })
+      body: JSON.stringify(requestPayload)
     });
+    
+    console.log("🔍 DEBUG: Response status:", response.status);
+    console.log("🔍 DEBUG: Response headers:", Object.fromEntries(response.headers));
+    
     const result = await response.json();
+    console.log("🔍 DEBUG: Response result:", result);
+    
     if (result && result.orderId) {
+      console.log("✅ DEBUG: Successfully got order number:", result.orderId);
       return result.orderId;
     } else {
-      console.error("Failed to get order number:", result);
+      console.error("❌ DEBUG: Failed to get order number from POST. Result:", result);
       // Fallback to GET method if POST fails
+      console.log("🔄 DEBUG: Trying fallback GET method");
       const fallbackUrl = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
+      console.log("🔍 DEBUG: Fallback URL:", fallbackUrl);
+      
       const fallbackRes = await fetch(fallbackUrl);
+      console.log("🔍 DEBUG: Fallback response status:", fallbackRes.status);
+      
       const fallbackJs = await fallbackRes.json();
+      console.log("🔍 DEBUG: Fallback result:", fallbackJs);
+      
       return fallbackJs.orderId;
     }
   } catch (error) {
-    console.error("Error fetching order number:", error);
+    console.error("❌ DEBUG: Exception in fetchOrderNumber:", error);
     // Fallback to GET method
+    console.log("🔄 DEBUG: Exception fallback - trying GET method");
     const url = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
+    console.log("🔍 DEBUG: Exception fallback URL:", url);
+    
     const res = await fetch(url);
+    console.log("🔍 DEBUG: Exception fallback response status:", res.status);
+    
     const js = await res.json();
+    console.log("🔍 DEBUG: Exception fallback result:", js);
+    
     return js.orderId;
   }
 }
@@ -86,6 +113,30 @@ function csvToProductData(csv) {
 }
 
 const dom = id => document.getElementById(id);
+
+// Debug helper function to show status on page
+function showDebugStatus(message, type = 'info') {
+  const existingDebug = document.getElementById('debug-status');
+  if (existingDebug) existingDebug.remove();
+  
+  const debugDiv = document.createElement('div');
+  debugDiv.id = 'debug-status';
+  debugDiv.style.cssText = `
+    position: fixed; top: 10px; right: 10px; z-index: 9999; 
+    padding: 10px; border-radius: 5px; max-width: 300px; 
+    font-size: 12px; font-family: monospace;
+    ${type === 'error' ? 'background: #ffe6e6; border: 1px solid #ff9999; color: #cc0000;' : 
+      type === 'success' ? 'background: #e6ffe6; border: 1px solid #99ff99; color: #006600;' : 
+      'background: #e6f3ff; border: 1px solid #99ccff; color: #0066cc;'}
+  `;
+  debugDiv.textContent = message;
+  document.body.appendChild(debugDiv);
+  
+  // Auto-remove after 10 seconds
+  setTimeout(() => {
+    if (debugDiv.parentNode) debugDiv.parentNode.removeChild(debugDiv);
+  }, 10000);
+}
 // Disable add and brand select until data loads
 dom('addProductBtn').disabled = true;
 dom('brandSelect').disabled = true;
@@ -487,11 +538,16 @@ function createProductCard() {
 
 // --- FORM SUBMIT HANDLER ---
 dom('orderForm').addEventListener('submit', async e => {
+  console.log("🚀 DEBUG: Form submission started");
   e.preventDefault();
   const submitBtn = e.target.querySelector('button[type="submit"]');
   const originalText = submitBtn.textContent;
   submitBtn.disabled = true;
   submitBtn.textContent = '📧 Sending order...';
+
+  console.log("🔍 DEBUG: Current state.items:", state.items);
+  console.log("🔍 DEBUG: Total quantity:", state.totalQty);
+  console.log("🔍 DEBUG: Total amount:", state.totalAmount);
 
   // Validate required fields!
   const requiredFields = ['buyerName', 'email', 'phone', 'shippingAddress', 'brandSelect'];
@@ -512,8 +568,10 @@ dom('orderForm').addEventListener('submit', async e => {
 
   // MOVED TO TOP: Fetch and assign a unique order number BEFORE sending any data to sheets!
   const brand = dom('brandSelect').value;
+  showDebugStatus('Generating order number...', 'info');
   const orderNumber = await fetchOrderNumber(brand);
   dom('orderNumber').value = orderNumber;
+  showDebugStatus(`Order number generated: ${orderNumber}`, 'success');
   
   // Collect order data
   state.header = {
@@ -587,23 +645,40 @@ const allLineItems = state.items.map((item, i) => ({
 }));
 
 // Send line items to OrderLineItems sheet
+console.log("🔍 DEBUG: Starting OrderLineItems submission");
+console.log("🔍 DEBUG: Number of line items to send:", allLineItems.length);
+console.log("🔍 DEBUG: Line items data:", allLineItems);
+showDebugStatus(`Sending ${allLineItems.length} line items to Google Sheets...`, 'info');
+
 try {
+  const lineItemsPayload = {
+    action: "addOrderLineItems",
+    orderLineItems: allLineItems
+  };
+  console.log("🔍 DEBUG: OrderLineItems request payload:", lineItemsPayload);
+  console.log("🔍 DEBUG: Sending to SHEET_ENDPOINT:", SHEET_ENDPOINT);
+  
   const lineItemsResponse = await fetch(SHEET_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "addOrderLineItems",
-      orderLineItems: allLineItems
-    })
+    body: JSON.stringify(lineItemsPayload)
   });
+  
+  console.log("🔍 DEBUG: OrderLineItems response status:", lineItemsResponse.status);
+  console.log("🔍 DEBUG: OrderLineItems response headers:", Object.fromEntries(lineItemsResponse.headers));
+  
   const lineItemsResult = await lineItemsResponse.json();
+  console.log("🔍 DEBUG: OrderLineItems response result:", lineItemsResult);
+  
   if (lineItemsResult && lineItemsResult.result === "SUCCESS") {
-    console.log("Order line items recorded successfully");
+    console.log("✅ DEBUG: Order line items recorded successfully");
+    showDebugStatus('✅ Order line items saved to Google Sheets', 'success');
   } else {
-    console.warn("Failed to record order line items:", lineItemsResult);
+    console.warn("❌ DEBUG: Failed to record order line items. Result:", lineItemsResult);
+    showDebugStatus('❌ Failed to save order line items', 'error');
   }
 } catch (err) {
-  console.error("Failed to send order line items to Google Sheets:", err);
+  console.error("❌ DEBUG: Exception while sending order line items to Google Sheets:", err);
 }
 
 
@@ -905,6 +980,14 @@ doc.text(`Total Amount: ${state.totalAmount.toFixed(2)}`, x + 200, y);
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
     submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
+    console.log("🎉 DEBUG: FINAL SUCCESS - All operations completed");
+    console.log("🔍 DEBUG: Final order number:", orderNumber);
+    console.log("🔍 DEBUG: Final state summary:", { 
+      header: state.header, 
+      itemCount: state.items.length,
+      totalQty: state.totalQty,
+      totalAmount: state.totalAmount
+    });
     alert(`✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!`);
   } catch (error) {
     alert("⚠️ PDF GENERATION FAILED! Please screenshot or copy order details manually.");
