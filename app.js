@@ -2,10 +2,10 @@
 const EMAILJS_PUBLIC_KEY = "ThVWDzQ_A2rENNdVu";
 const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbzkK8qaml-em9BcYQvcIYzecBu-j9mlKvtOWEuAfQRrREQfupvPvx6ZvgFqrI6tUkY/exec";
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxUbhLLpyYC6fk6jvIulMXAPuqfrUM_98h9AegFNIecqvgObHVuINHXlpSi5Z5yJsVo/exec";
 
 // UPDATE THIS URL to your deployed Apps Script Web URL
-const ORDER_NUMBER_ENDPOINT = "https://script.google.com/macros/s/AKfycbzkK8qaml-em9BcYQvcIYzecBu-j9mlKvtOWEuAfQRrREQfupvPvx6ZvgFqrI6tUkY/exec";
+const ORDER_NUMBER_ENDPOINT = "https://script.google.com/macros/s/AKfycbxUbhLLpyYC6fk6jvIulMXAPuqfrUM_98h9AegFNIecqvgObHVuINHXlpSi5Z5yJsVo/exec";
 
 async function fetchOrderNumber(brand) {
   console.log("🔍 DEBUG: fetchOrderNumber() called with brand:", brand);
@@ -13,6 +13,7 @@ async function fetchOrderNumber(brand) {
   try {
     // Use GET request with URL parameters (CORS-friendly)
     const url = `${ORDER_NUMBER_ENDPOINT}?action=getOrderNumber&brand=${encodeURIComponent(brand)}`;
+    console.log(encodeURIComponent(brand))
     console.log("🔍 DEBUG: Sending GET request to:", url);
     
     const response = await fetch(url);
