@@ -256,6 +256,17 @@ function createProductCard() {
   const styleCol = document.createElement('div');
   styleCol.className = 'productcol stylecol';
   row.appendChild(styleCol);
+  
+  // Style label
+  const styleLabel = document.createElement('label');
+  styleLabel.textContent = 'Style';
+  styleLabel.style.fontSize = '0.92rem';
+  styleLabel.style.fontWeight = '600';
+  styleLabel.style.color = '#232323';
+  styleLabel.style.marginBottom = '3px';
+  styleLabel.style.display = 'block';
+  styleCol.appendChild(styleLabel);
+  
   const styleField = document.createElement('input');
   styleField.type = 'text';
   styleField.placeholder = 'Search style by SKU or name';
@@ -276,6 +287,17 @@ function createProductCard() {
   const printCol = document.createElement('div');
   printCol.className = 'productcol printcol';
   row.appendChild(printCol);
+  
+  // Custom Print label
+  const printLabel = document.createElement('label');
+  printLabel.textContent = 'Custom Print/Shade (optional)';
+  printLabel.style.fontSize = '0.92rem';
+  printLabel.style.fontWeight = '600';
+  printLabel.style.color = '#232323';
+  printLabel.style.marginBottom = '3px';
+  printLabel.style.display = 'block';
+  printCol.appendChild(printLabel);
+  
   const printField = document.createElement('input');
   printField.type = 'text';
   printField.placeholder = 'Optional custom print';
