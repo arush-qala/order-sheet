@@ -11,6 +11,14 @@ async function fetchOrderNumber(brand) {
   console.log("🔍 DEBUG: fetchOrderNumber() called with brand:", brand);
   
   try {
+    // Generate current month/year for the order number
+    const now = new Date();
+    const month = now.toLocaleString('en-US', { month: 'short' });
+    const year = now.getFullYear().toString().slice(-2);
+    const monthYear = `${month}${year}`;
+    
+    console.log("🔍 DEBUG: Generated month/year:", monthYear);
+    
     // Use GET request with URL parameters (CORS-friendly)
     const url = `${ORDER_NUMBER_ENDPOINT}?action=getOrderNumber&brand=${encodeURIComponent(brand)}`;
     console.log("🔍 DEBUG: Sending GET request to:", url);
@@ -34,6 +42,9 @@ async function fetchOrderNumber(brand) {
     if (result && result.orderId) {
       console.log("✅ DEBUG: Successfully got order number:", result.orderId);
       return result.orderId;
+    } else if (result && result.result === "SUCCESS" && result.orderId) {
+      console.log("✅ DEBUG: Successfully got order number (legacy format):", result.orderId);
+      return result.orderId;
     } else {
       console.error("❌ DEBUG: Invalid response format:", result);
       // Fallback to legacy format
@@ -47,7 +58,13 @@ async function fetchOrderNumber(brand) {
       const legacyResult = await legacyRes.json();
       console.log("🔍 DEBUG: Legacy result:", legacyResult);
       
-      return legacyResult.orderId;
+      if (legacyResult && legacyResult.orderId) {
+        return legacyResult.orderId;
+      } else if (legacyResult && legacyResult.result === "SUCCESS" && legacyResult.orderId) {
+        return legacyResult.orderId;
+      } else {
+        throw new Error('No valid order ID in response');
+      }
     }
   } catch (error) {
     console.error("❌ DEBUG: Exception in fetchOrderNumber:", error);
@@ -563,12 +580,27 @@ dom('orderForm').addEventListener('submit', async e => {
   let orderNumber;
   try {
     orderNumber = await fetchOrderNumber(brand);
+    if (!orderNumber) {
+      throw new Error('No order number returned from server');
+    }
     dom('orderNumber').value = orderNumber;
     showDebugStatus(`Order number generated: ${orderNumber}`, 'success');
+    console.log("✅ DEBUG: Order number successfully generated:", orderNumber);
   } catch (error) {
     console.error("❌ DEBUG: Failed to generate order number:", error);
     showDebugStatus('❌ Failed to generate order number', 'error');
-    alert("Failed to generate order number. Please try again.");
+    
+    // Show more detailed error message
+    let errorMessage = "Failed to generate order number. ";
+    if (error.message.includes('fetch')) {
+      errorMessage += "Network error - please check your connection and try again.";
+    } else if (error.message.includes('JSON')) {
+      errorMessage += "Server response error - please check the Google Apps Script setup.";
+    } else {
+      errorMessage += error.message;
+    }
+    
+    alert(errorMessage);
     submitBtn.disabled = false; 
     submitBtn.textContent = originalText; 
     return;
@@ -1053,3 +1085,28 @@ dom('brandSelect').addEventListener('change', function () {
 
 // --- Add product button ---
 dom('addProductBtn').addEventListener('click', createProductCard);
+
+// --- Test function for order number generation ---
+async function testOrderNumberGeneration() {
+  console.log("🧪 Testing order number generation...");
+  
+  const testBrands = ['KK', 'NA', 'DL', 'TRI'];
+  
+  for (const brand of testBrands) {
+    try {
+      console.log(`Testing brand: ${brand}`);
+      const orderNumber = await fetchOrderNumber(brand);
+      console.log(`✅ Generated order number for ${brand}: ${orderNumber}`);
+    } catch (error) {
+      console.error(`❌ Failed to generate order number for ${brand}:`, error);
+    }
+    
+    // Small delay between requests
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+  
+  console.log("🧪 Order number generation test completed");
+}
+
+// Uncomment the line below to run the test when the page loads
+// testOrderNumberGeneration();
