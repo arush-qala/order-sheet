@@ -1035,7 +1035,7 @@ doc.text(`Total Amount: ${state.totalAmount.toFixed(2)}`, x + 200, y);
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
-    submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
+    // submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
     console.log("🎉 DEBUG: FINAL SUCCESS - All operations completed");
     console.log("🔍 DEBUG: Final order number:", orderNumber);
     console.log("🔍 DEBUG: Final state summary:", { 
@@ -1044,7 +1044,7 @@ doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
       totalQty: state.totalQty,
       totalAmount: state.totalAmount
     });
-    alert(`✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!`);
+    // alert(`✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!`);
   } catch (error) {
     alert("⚠️ PDF GENERATION FAILED! Please screenshot or copy order details manually.");
   } finally {
