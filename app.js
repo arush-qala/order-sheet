@@ -269,7 +269,7 @@ function createProductCard() {
   
   const styleField = document.createElement('input');
   styleField.type = 'text';
-  styleField.placeholder = 'Search style by SKU or name';
+  styleField.placeholder = 'Search by SKU or Product name';
   styleField.style.width = '100%';
   styleField.style.marginBottom = '8px';
   styleCol.appendChild(styleField);
@@ -297,7 +297,7 @@ function createProductCard() {
   
   const printField = document.createElement('input');
   printField.type = 'text';
-  printField.placeholder = 'Optional custom print';
+  printField.placeholder = 'Search by SKU or Product name';
   printField.style.width = '100%';
   printField.style.marginBottom = '8px';
   printCol.appendChild(printField);
