@@ -555,13 +555,17 @@ dom('orderForm').addEventListener('submit', async e => {
   console.log("🔍 DEBUG: Total quantity:", state.totalQty);
   console.log("🔍 DEBUG: Total amount:", state.totalAmount);
 
-  // Validate required fields!
-  const requiredFields = ['buyerName', 'email', 'phone', 'shippingAddress', 'brandSelect'];
-  for (let f of requiredFields) {
-    if (!dom(f).value.trim()) {
-      alert("Please fill all required fields.");
-      submitBtn.disabled = false; submitBtn.textContent = originalText; return;
-    }
+  // Validate required fields: buyer name, email, and brand selection
+  const requiredFields = ['buyerName', 'email', 'brandSelect'];
+  const missing = requiredFields.filter(f => !dom(f).value.trim());
+  if (missing.length) {
+    const labels = {
+      buyerName: 'Buyer/Store Name',
+      email: 'Email Address',
+      brandSelect: 'Brand'
+    };
+    alert('Please fill required field(s): ' + missing.map(f => labels[f] || f).join(', '));
+    submitBtn.disabled = false; submitBtn.textContent = originalText; return;
   }
   if (!state.items.length || !state.items.some(i=>i.productName)) {
     alert("Add at least one valid product before submitting the order.");
