@@ -279,10 +279,7 @@ function createProductCard() {
   styleImg.style.display = 'none';
   styleCol.appendChild(styleImg);
 
-  const styleImgLabel = document.createElement('div');
-  styleImgLabel.className = 'img-label';
-  styleImgLabel.textContent = 'Style';
-  styleCol.appendChild(styleImgLabel);
+  // Removed under-image label for style to avoid duplicate titling
 
   const printCol = document.createElement('div');
   printCol.className = 'productcol printcol';
@@ -310,10 +307,7 @@ function createProductCard() {
   printImg.style.display = 'none';
   printCol.appendChild(printImg);
 
-  const printImgLabel = document.createElement('div');
-  printImgLabel.className = 'img-label';
-  printImgLabel.textContent = 'Custom Print';
-  printCol.appendChild(printImgLabel);
+  // Removed under-image label for custom print to avoid duplicate titling
 
   const detailsCol = document.createElement('div');
   detailsCol.className = 'productcol infocol';
@@ -521,7 +515,7 @@ function createProductCard() {
 
   autoCompleteBox(styleField, brand, prod => {
     styleField.value = `${prod.skuId} – ${prod.productName}`;
-    styleImg.src = prod.imageUrl; styleImg.style.display = ''; styleImgLabel.classList.add('active');
+    styleImg.src = prod.imageUrl; styleImg.style.display = '';
     prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
     landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
     unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
@@ -535,7 +529,6 @@ function createProductCard() {
     printField.value = `${prod.skuId} – ${prod.productName}`;
     printImg.src = prod.imageUrl;
     printImg.style.display = '';
-    printImgLabel.classList.add('active');
     lineItem.printSku = prod.skuId;
     lineItem.printImgUrl = prod.imageUrl;
   });
