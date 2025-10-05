@@ -788,7 +788,7 @@ const pageW = 520; // page width minus typical margin
 // === TITLE ===
 doc.setFontSize(15.5);
 doc.setFont(undefined, "bold"); doc.setTextColor(0,0,0);
-doc.text('Qala Collective – Order Sheet', x, y);
+doc.text('Qala Collective - Order Sheet', x, y);
 y += 28;
 
 // === ROW 1: ORDER NUMBER (soft box, left-of-page row) ===
