@@ -908,7 +908,10 @@ for (let idx = 0; idx < state.items.length; ++idx) {
       doc.roundedRect(styleImgX-2, y+28, imgW+4, imgH+4, 10,10,'S');
     } catch (e) {}
   }
-  // Removed PDF caption under style image
+  // PDF caption under style image
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(9.2);
+  doc.text('Style', styleImgX + imgW/2, y+30+imgH+13, {align:'center'});
 
   // === CUSTOM PRINT IMAGE, higher quality/larger, spaced further ===
   if (it.printImgUrl) {
@@ -920,7 +923,10 @@ for (let idx = 0; idx < state.items.length; ++idx) {
       doc.roundedRect(printImgX-2, y+28, imgW+4, imgH+4, 10,10,'S');
     } catch (e) {}
   
-  // Removed PDF caption under custom print image
+  // PDF caption under custom print image
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(9.2);
+  doc.text('Custom Print', printImgX + imgW/2, y+30+imgH+13, {align:'center'});
   }
   // === DETAILS RIGHT COLUMN ===
   let ty = y + 36;
