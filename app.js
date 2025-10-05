@@ -837,12 +837,12 @@ doc.setFont(undefined,"normal");
 doc.text(state.header.phone || '', bx + 5, fy + 16);
 y += 28;
 
-// === ROW 3: ORDER COMMENTS [2/3 wide] + SHIPPING [1/3 wide], side by side with soft rectangles ===
+// === ROW 3: DELIVERY TIMELINES [2/3 wide] + SHIPPING [1/3 wide], side by side with soft rectangles ===
 const commentsW = 232, shippingW = 232;
 const labelY = y+6;
 bx = x;
 doc.setFont(undefined,"bold");
-doc.text('Order Comments', bx, labelY);
+doc.text('Delivery Timelines', bx, labelY);
 let commentsLines = doc.splitTextToSize(state.header.orderComments || '', commentsW-12);
 let commentsBoxH = Math.max(22, 13*commentsLines.length+8);
 doc.setDrawColor(200,200,230).setFillColor(252,252,255);
