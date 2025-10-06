@@ -884,9 +884,9 @@ doc.text("Selections", x, y);
 y += 16;
 
 // === PRODUCT CARDS ===
-const cardW = 530, cardH = 180, cardR = 8; // Reduced card height from 210 to 180
-const imgW = 120, imgH = 120; // Reduced image size from 130x130 to 120x120
-const styleImgX = x + 14, printImgX = styleImgX + imgW + 28, textX = printImgX + imgW + 38, textW = 162; // Reduced spacing
+const cardW = 530, cardH = 210, cardR = 8;
+const imgW = 130, imgH = 130; // sharper/larger images
+const styleImgX = x + 14, printImgX = styleImgX + imgW + 32, textX = printImgX + imgW + 42, textW = 162;
 
 for (let idx = 0; idx < state.items.length; ++idx) {
   let it = state.items[idx];
@@ -940,7 +940,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   doc.setFont(undefined, "bold");
   doc.setFontSize(11.2);
   doc.text((it.productName || '').substring(0,36), textX, ty, {maxWidth: textW});
-  ty += 25; // Reduced spacing from 30 to 25
+  ty += 30;
 
   // Available Sizes
   doc.setFont(undefined,"bold").setFontSize(9.5);
@@ -949,7 +949,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   let availSizes = (productData.find(p=>p.skuId===it.styleSku)?.availableSizes?.join(", ") || "");
   let availLines = doc.splitTextToSize(availSizes, textW-92);
   if(availSizes) doc.text(availLines, textX+82, ty, {maxWidth: textW-82});
-  ty += Math.max(10, availLines.length * 9); // Reduced spacing
+  ty += Math.max(13, availLines.length * 11);
 
   // Product Link
   doc.setFont(undefined,"bold");
@@ -967,7 +967,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   } else {
     doc.text("-", textX+80, ty);
   }
-  ty += 12; // Reduced spacing from 14 to 12
+  ty += 14;
 
   // Landing price
   doc.setFont(undefined,"bold");
@@ -977,7 +977,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   let landing = it.styleSku ? (productData.find(p => p.skuId === it.styleSku)?.landingPrice) : usedUnit;
   let showUnit = usedUnit && usedUnit !== landing ? usedUnit : landing;
   doc.text(`${showUnit || ''}`, textX+74, ty);
-  ty += 12; // Reduced spacing from 14 to 12
+  ty += 14;
 
   // Selected sizes and quantities, wrapped
   doc.setFont(undefined,"bold");
@@ -1000,11 +1000,11 @@ if (selectionLines.length > 0) {
   // Print first line after the label + padding spaces
   doc.text(selectionLines[0], textX + selectionLabelWidth, ty, {baseline: "alphabetic"});
   for (let l = 1; l < selectionLines.length; l++) {
-    ty += 11; // Reduced spacing from 13 to 11
+    ty += 13;
     doc.text(selectionLines[l], textX, ty, {baseline: "alphabetic"});
   }
 }
-ty += 11; // Reduced spacing from 13 to 11
+ty += 13;
 
 
 
@@ -1015,7 +1015,7 @@ ty += 11; // Reduced spacing from 13 to 11
     doc.setFont(undefined,"normal");
     let notesLines = doc.splitTextToSize((it.notes||'').substring(0,65), textW-44);
     doc.text(notesLines, textX+40, ty, {maxWidth: textW-40});
-    ty += Math.max(10, notesLines.length * 9); // Reduced spacing
+    ty += Math.max(13, notesLines.length * 11);
   }
 
   // Subtotal at bottom
@@ -1023,7 +1023,7 @@ ty += 11; // Reduced spacing from 13 to 11
   doc.setFontSize(10.5);
   doc.text(`Subtotal: ${it.subtotal || ''}`, textX, y+cardH-15);
 
-  y += cardH + 15; // Reduced spacing between cards from 25 to 15
+  y += cardH + 25;
   if (y > 750) { doc.addPage(); y = 40; } // Increased page break threshold from 700 to 750
 }
 
