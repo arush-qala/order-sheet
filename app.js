@@ -163,7 +163,7 @@ function autoCompleteBox(input, brand, cb) {
       (val ? (p.productName.toLowerCase().includes(val) || p.skuId.toLowerCase().includes(val)) : true)
     );
     arr.sort((a,b) => a.skuId.localeCompare(b.skuId, undefined, {numeric:true, sensitivity:'base'}));
-    return arr.slice(0, 8);
+    return arr; // Removed artificial limit - allow scrolling through all results
   }
   function showList(val) {
     closeList();
