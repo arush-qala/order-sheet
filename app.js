@@ -891,6 +891,12 @@ const styleImgX = x + 14, printImgX = styleImgX + imgW + 32, textX = printImgX +
 for (let idx = 0; idx < state.items.length; ++idx) {
   let it = state.items[idx];
 
+  // Check if there's enough space for the entire card before drawing it
+  if (y + cardH > 750) { 
+    doc.addPage(); 
+    y = 40; 
+  }
+
   // Outer card
   doc.setDrawColor(200,200,220);
   doc.setLineWidth(1);
@@ -1024,7 +1030,6 @@ ty += 13;
   doc.text(`Subtotal: ${it.subtotal || ''}`, textX, y+cardH-15);
 
   y += cardH + 25;
-  if (y > 750) { doc.addPage(); y = 40; } // Increased page break threshold from 700 to 750
 }
 
 // === TOTALS (centered, bold) ===
