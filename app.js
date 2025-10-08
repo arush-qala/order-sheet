@@ -572,8 +572,10 @@ dom('orderForm').addEventListener('submit', async e => {
     alert("Add at least one valid product before submitting the order.");
     submitBtn.disabled = false; submitBtn.textContent = originalText; return;
   }
-  if (!state.items.every(i => i.quantity && i.unitPrice && (i.quantity > 0) && (i.unitPrice > 0))) {
-    alert("All product lines must have a quantity and unit price greater than 0.");
+  // Allow submission even without quantities - for pricing enquiries
+  // Only validate that products have been selected (style/product name)
+  if (!state.items.every(i => i.productName && i.styleSku)) {
+    alert("Please ensure all products have a style selected.");
     submitBtn.disabled = false; submitBtn.textContent = originalText; return;
   }
 
@@ -756,7 +758,12 @@ const emailData = {
   totalAmount: String(state.totalAmount.toFixed(2) || '0.00'),
   timestamp: state.header.timestamp || '',
   productList: products.map(item => {
-    let line = `${item.productName} (${item.sizes}) - $${item.subtotal}`;
+    let line = `${item.productName}`;
+    if (item.sizes && item.sizes.trim()) {
+      line += ` (${item.sizes}) - $${item.subtotal}`;
+    } else {
+      line += ` - Pricing enquiry (quantities to be confirmed)`;
+    }
     if (item.notes && item.notes.trim()) {
       line += `\nCustom notes: ${item.notes.trim()}`;
     }
@@ -997,6 +1004,9 @@ const extraSpacing = doc.getTextWidth(' '.repeat(numSpaces));
 const selectionLabelWidth = doc.getTextWidth(selectionLabel) + extraSpacing;
 
 let sizesQty = (it.sizes || '');
+if (!sizesQty.trim()) {
+  sizesQty = "Pricing enquiry - quantities to be confirmed";
+}
 let selectionLines = doc.splitTextToSize(
   sizesQty,
   textW - selectionLabelWidth // wrap at remainder of right column width
@@ -1027,7 +1037,11 @@ ty += 13;
   // Subtotal at bottom
   doc.setFont(undefined,"bold");
   doc.setFontSize(10.5);
-  doc.text(`Subtotal: ${it.subtotal || ''}`, textX, y+cardH-15);
+  if (it.subtotal && it.subtotal > 0) {
+    doc.text(`Subtotal: ${it.subtotal || ''}`, textX, y+cardH-15);
+  } else {
+    doc.text(`Pricing enquiry`, textX, y+cardH-15);
+  }
 
   y += cardH + 25;
 }
@@ -1036,8 +1050,12 @@ ty += 13;
 y += 12;
 doc.setFontSize(11.5);
 doc.setFont(undefined, "bold");
-doc.text(`Total Quantity: ${state.totalQty}`, x, y);
-doc.text(`Total Amount: ${state.totalAmount.toFixed(2)}`, x + 200, y);
+if (state.totalQty > 0) {
+  doc.text(`Total Quantity: ${state.totalQty}`, x, y);
+  doc.text(`Total Amount: ${state.totalAmount.toFixed(2)}`, x + 200, y);
+} else {
+  doc.text(`Pricing Enquiry - Quantities to be confirmed`, x, y);
+}
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
