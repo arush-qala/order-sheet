@@ -412,15 +412,15 @@ function createProductCard() {
       qtySelect.style.width = '80px';
       qtySelect.style.fontSize = '15px';
       
-      // Add options 1-10
-      for (let i = 1; i <= 10; i++) {
+      // Add options 0-10
+      for (let i = 0; i <= 10; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
         qtySelect.appendChild(option);
       }
       
-      qtySelect.value = item.quantity > 0 ? item.quantity : 1;
+      qtySelect.value = item.quantity >= 0 ? item.quantity : 0;
       qtySelect.addEventListener('change', function() {
         item.quantity = Number(this.value);
         updateTotalAndSubtotal();
@@ -455,7 +455,7 @@ function createProductCard() {
         addBtn.title = 'Add new size';
         addBtn.onclick = function(e) {
           e.preventDefault();
-          sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 1 });
+          sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 0 });
           renderSizeQtyRows();
           updateTotalAndSubtotal();
         };
@@ -520,7 +520,7 @@ function createProductCard() {
     if (availableSizesArr.length) {
       sizeQtyArray.push({
         size: availableSizesArr[0], 
-        quantity: 1                 
+        quantity: 0                 
       });
     }
     renderSizeQtyRows();
