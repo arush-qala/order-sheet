@@ -71,9 +71,16 @@ async function fetchProductData() {
     }
     const csv = await res.text();
     productData = csvToProductData(csv);
+    console.log('Product data loaded successfully:', productData.length, 'products');
     document.getElementById('addProductBtn').disabled = false;
     document.getElementById('brandSelect').disabled = false;
-    // Ensure if a brand is already selected, a first product card is shown
+    
+    // If a brand is already selected, create a product card
+    const selectedBrand = dom('brandSelect').value;
+    if (selectedBrand) {
+      console.log('Brand already selected, creating product card');
+      createProductCard();
+    }
     
   } 
   catch (err) {
@@ -236,8 +243,16 @@ async function toDataUrl(url, size=300) {
 function createProductCard() {
   const brand = dom('brandSelect').value;
   if (!brand) return alert('Select a brand first.');
-  // Only allow if product data is present
-  if (!productData.length) return alert('No products loaded.');
+  
+  // Debug: Check if product data is loaded
+  console.log('Creating product card for brand:', brand);
+  console.log('Product data loaded:', productData.length, 'products');
+  
+  // Allow creating card even if product data isn't loaded yet
+  // The autocomplete will work once data loads
+  if (!productData.length) {
+    console.log('Product data not loaded yet, creating empty card');
+  }
 
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -1085,9 +1100,11 @@ doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
 // --- Brand selection triggers product card regeneration ---
 dom('brandSelect').addEventListener('change', function () {
+  console.log('Brand changed to:', this.value);
   dom('productCards').innerHTML = '';
   state.reset();
   if (this.value) {
+    console.log('Creating product card for selected brand');
     createProductCard();
    // dom('orderNumber').value = '';        // Optionally clear previous order number for clarity
   }
@@ -1096,8 +1113,5 @@ dom('brandSelect').addEventListener('change', function () {
 
 
 
-
 // --- Add product button ---
 dom('addProductBtn').addEventListener('click', createProductCard);
- 
- 
