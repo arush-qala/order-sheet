@@ -1099,3 +1099,5 @@ dom('brandSelect').addEventListener('change', function () {
 
 // --- Add product button ---
 dom('addProductBtn').addEventListener('click', createProductCard);
+ 
+ 
