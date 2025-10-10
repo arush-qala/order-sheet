@@ -1044,7 +1044,7 @@ ty += 13;
     doc.setFont(undefined,"bold");
     doc.text("Notes:", textX, ty);
     doc.setFont(undefined,"normal");
-    let notesLines = doc.splitTextToSize((it.notes||'').substring(0,65), textW-44);
+    let notesLines = doc.splitTextToSize((it.notes||'').substring(0,200), textW-44);
     doc.text(notesLines, textX+40, ty, {maxWidth: textW-40});
     ty += Math.max(13, notesLines.length * 11);
   }
