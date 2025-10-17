@@ -1,4 +1,4 @@
-// === CONFIGURE THESE AT THE VERY TOP ===
+﻿// === CONFIGURE THESE AT THE VERY TOP ===
 const EMAILJS_PUBLIC_KEY = "ThVWDzQ_A2rENNdVu";
 const EMAILJS_SERVICE_ID = "service_mjhvpwj";
 const EMAILJS_TEMPLATE_ID = "template_wpcfoca";
@@ -8,50 +8,50 @@ const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbwWCS2QwfQe-NtvD
 const ORDER_NUMBER_ENDPOINT = "https://script.google.com/macros/s/AKfycbwWCS2QwfQe-NtvDXsgFfdpL98HzAO8PUZcoBADqRoXnuP1A5p5N4hO9Kk_u-hAyK5j/exec";
 
 async function fetchOrderNumber(brand) {
-  console.log("🔍 DEBUG: fetchOrderNumber() called with brand:", brand);
+  console.log(" DEBUG: fetchOrderNumber() called with brand:", brand);
   
   try {
     // Use GET request with URL parameters (CORS-friendly)
     const url = `${ORDER_NUMBER_ENDPOINT}?action=getOrderNumber&brand=${encodeURIComponent(brand)}`;
     console.log(encodeURIComponent(brand))
-    console.log("🔍 DEBUG: Sending GET request to:", url);
+    console.log(" DEBUG: Sending GET request to:", url);
     
     const response = await fetch(url);
-    console.log("🔍 DEBUG: Response status:", response.status);
+    console.log(" DEBUG: Response status:", response.status);
     
     const responseText = await response.text();
-    console.log("🔍 DEBUG: Raw response text:", responseText);
+    console.log(" DEBUG: Raw response text:", responseText);
     
     let result;
     try {
       result = JSON.parse(responseText);
-      console.log("🔍 DEBUG: Parsed JSON result:", result);
+      console.log(" DEBUG: Parsed JSON result:", result);
     } catch (parseError) {
-      console.error("❌ DEBUG: JSON parsing failed:", parseError);
-      console.error("❌ DEBUG: Response was not JSON:", responseText);
+      console.error(" DEBUG: JSON parsing failed:", parseError);
+      console.error(" DEBUG: Response was not JSON:", responseText);
       throw new Error(`Invalid JSON response: ${responseText.substring(0, 200)}...`);
     }
     
     if (result && result.orderId) {
-      console.log("✅ DEBUG: Successfully got order number:", result.orderId);
+      console.log(" DEBUG: Successfully got order number:", result.orderId);
       return result.orderId;
     } else {
-      console.error("❌ DEBUG: Invalid response format:", result);
+      console.error(" DEBUG: Invalid response format:", result);
       // Fallback to legacy format
-      console.log("🔄 DEBUG: Trying legacy GET format");
+      console.log(" DEBUG: Trying legacy GET format");
       const legacyUrl = `${ORDER_NUMBER_ENDPOINT}?getOrderNumber=Yes&brand=${encodeURIComponent(brand)}`;
-      console.log("🔍 DEBUG: Legacy URL:", legacyUrl);
+      console.log(" DEBUG: Legacy URL:", legacyUrl);
       
       const legacyRes = await fetch(legacyUrl);
-      console.log("🔍 DEBUG: Legacy response status:", legacyRes.status);
+      console.log(" DEBUG: Legacy response status:", legacyRes.status);
       
       const legacyResult = await legacyRes.json();
-      console.log("🔍 DEBUG: Legacy result:", legacyResult);
+      console.log(" DEBUG: Legacy result:", legacyResult);
       
       return legacyResult.orderId;
     }
   } catch (error) {
-    console.error("❌ DEBUG: Exception in fetchOrderNumber:", error);
+    console.error(" DEBUG: Exception in fetchOrderNumber:", error);
     throw error; // Re-throw so calling code can handle
   }
 }
@@ -71,16 +71,9 @@ async function fetchProductData() {
     }
     const csv = await res.text();
     productData = csvToProductData(csv);
-    console.log('Product data loaded successfully:', productData.length, 'products');
     document.getElementById('addProductBtn').disabled = false;
     document.getElementById('brandSelect').disabled = false;
-    
-    // If a brand is already selected, create a product card
-    const selectedBrand = dom('brandSelect').value;
-    if (selectedBrand) {
-      console.log('Brand already selected, creating product card');
-      createProductCard();
-    }
+    // Ensure if a brand is already selected, a first product card is shown
     
   } 
   catch (err) {
@@ -189,7 +182,7 @@ function autoCompleteBox(input, brand, cb) {
     items.forEach((item, idx) => {
       const div = document.createElement('div');
       div.className = 'autocomplete-item';
-      div.innerHTML = `<strong>${item.skuId}</strong> – ${item.productName}`;
+      div.innerHTML = `<strong>${item.skuId}</strong>  ${item.productName}`;
       div.addEventListener('mousedown', e => { e.preventDefault(); select(idx); });
       list.appendChild(div);
     });
@@ -243,16 +236,8 @@ async function toDataUrl(url, size=300) {
 function createProductCard() {
   const brand = dom('brandSelect').value;
   if (!brand) return alert('Select a brand first.');
-  
-  // Debug: Check if product data is loaded
-  console.log('Creating product card for brand:', brand);
-  console.log('Product data loaded:', productData.length, 'products');
-  
-  // Allow creating card even if product data isn't loaded yet
-  // The autocomplete will work once data loads
-  if (!productData.length) {
-    console.log('Product data not loaded yet, creating empty card');
-  }
+  // Only allow if product data is present
+  if (!productData.length) return alert('No products loaded.');
 
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -412,15 +397,15 @@ function createProductCard() {
       qtySelect.style.width = '80px';
       qtySelect.style.fontSize = '15px';
       
-      // Add options 0-10
-      for (let i = 0; i <= 10; i++) {
+      // Add options 1-10
+      for (let i = 1; i <= 10; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
         qtySelect.appendChild(option);
       }
       
-      qtySelect.value = item.quantity >= 0 ? item.quantity : 0;
+      qtySelect.value = item.quantity > 0 ? item.quantity : 1;
       qtySelect.addEventListener('change', function() {
         item.quantity = Number(this.value);
         updateTotalAndSubtotal();
@@ -455,7 +440,7 @@ function createProductCard() {
         addBtn.title = 'Add new size';
         addBtn.onclick = function(e) {
           e.preventDefault();
-          sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 0 });
+          sizeQtyArray.push({ size: availableSizesArr[0] || "", quantity: 1 });
           renderSizeQtyRows();
           updateTotalAndSubtotal();
         };
@@ -520,7 +505,7 @@ function createProductCard() {
     if (availableSizesArr.length) {
       sizeQtyArray.push({
         size: availableSizesArr[0], 
-        quantity: 0                 
+        quantity: 1                 
       });
     }
     renderSizeQtyRows();
@@ -530,19 +515,19 @@ function createProductCard() {
   noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
 
   autoCompleteBox(styleField, brand, prod => {
-    styleField.value = `${prod.skuId} – ${prod.productName}`;
+    styleField.value = `${prod.skuId}  ${prod.productName}`;
     styleImg.src = prod.imageUrl; styleImg.style.display = '';
     prodName.textContent = prod.productName; link.style.display = 'inline-block'; link.href = prod.productLink;
     landingBox.textContent = `Landing $${prod.landingPrice}`; retailBox.textContent = `RRP $${prod.recommendedRetailPrice}`;
     unitPriceInput.value = prod.landingPrice; lineItem.styleSku = prod.skuId; lineItem.productName = prod.productName;
     lineItem.unitPrice = prod.landingPrice; lineItem.styleImgUrl = prod.imageUrl;
-    sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join(' · ') : '';
+    sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join('  ') : '';
     sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
     onStyleChange(prod);
   });
 
   autoCompleteBox(printField, brand, prod => {
-    printField.value = `${prod.skuId} – ${prod.productName}`;
+    printField.value = `${prod.skuId}  ${prod.productName}`;
     printImg.src = prod.imageUrl;
     printImg.style.display = '';
     lineItem.printSku = prod.skuId;
@@ -560,16 +545,16 @@ function createProductCard() {
 
 // --- FORM SUBMIT HANDLER ---
 dom('orderForm').addEventListener('submit', async e => {
-  console.log("🚀 DEBUG: Form submission started");
+  console.log(" DEBUG: Form submission started");
   e.preventDefault();
   const submitBtn = e.target.querySelector('button[type="submit"]');
   const originalText = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = '📧 Sending order...';
+  submitBtn.textContent = ' Sending order...';
 
-  console.log("🔍 DEBUG: Current state.items:", state.items);
-  console.log("🔍 DEBUG: Total quantity:", state.totalQty);
-  console.log("🔍 DEBUG: Total amount:", state.totalAmount);
+  console.log(" DEBUG: Current state.items:", state.items);
+  console.log(" DEBUG: Total quantity:", state.totalQty);
+  console.log(" DEBUG: Total amount:", state.totalAmount);
 
   // Validate required fields: buyer name, email, and brand selection
   const requiredFields = ['buyerName', 'email', 'brandSelect'];
@@ -604,8 +589,8 @@ dom('orderForm').addEventListener('submit', async e => {
     dom('orderNumber').value = orderNumber;
     showDebugStatus(`Order number generated: ${orderNumber}`, 'success');
   } catch (error) {
-    console.error("❌ DEBUG: Failed to generate order number:", error);
-    showDebugStatus('❌ Failed to generate order number', 'error');
+    console.error(" DEBUG: Failed to generate order number:", error);
+    showDebugStatus(' Failed to generate order number', 'error');
     alert("Failed to generate order number. Please try again.");
     submitBtn.disabled = false; 
     submitBtn.textContent = originalText; 
@@ -684,9 +669,9 @@ const allLineItems = state.items.map((item, i) => ({
 }));
 
 // Send line items to OrderLineItems sheet using GET requests
-console.log("🔍 DEBUG: Starting OrderLineItems submission");
-console.log("🔍 DEBUG: Number of line items to send:", allLineItems.length);
-console.log("🔍 DEBUG: Line items data:", allLineItems);
+console.log(" DEBUG: Starting OrderLineItems submission");
+console.log(" DEBUG: Number of line items to send:", allLineItems.length);
+console.log(" DEBUG: Line items data:", allLineItems);
 showDebugStatus(`Sending ${allLineItems.length} line items to Google Sheets...`, 'info');
 
 let successCount = 0;
@@ -695,7 +680,7 @@ let failedCount = 0;
 for (let i = 0; i < allLineItems.length; i++) {
   const item = allLineItems[i];
   try {
-    console.log(`🔍 DEBUG: Sending line item ${i + 1}/${allLineItems.length}:`, item);
+    console.log(` DEBUG: Sending line item ${i + 1}/${allLineItems.length}:`, item);
     
     // Build URL with all parameters for GET request
     const params = new URLSearchParams({
@@ -719,20 +704,20 @@ for (let i = 0; i < allLineItems.length; i++) {
     });
     
     const url = `${SHEET_ENDPOINT}?${params.toString()}`;
-    console.log(`🔍 DEBUG: Line item ${i + 1} URL:`, url);
+    console.log(` DEBUG: Line item ${i + 1} URL:`, url);
     
     const response = await fetch(url);
-    console.log(`🔍 DEBUG: Line item ${i + 1} response status:`, response.status);
+    console.log(` DEBUG: Line item ${i + 1} response status:`, response.status);
     
     const result = await response.json();
-    console.log(`🔍 DEBUG: Line item ${i + 1} result:`, result);
+    console.log(` DEBUG: Line item ${i + 1} result:`, result);
     
     if (result && result.result === "SUCCESS") {
       successCount++;
-      console.log(`✅ DEBUG: Line item ${i + 1} recorded successfully`);
+      console.log(` DEBUG: Line item ${i + 1} recorded successfully`);
     } else {
       failedCount++;
-      console.warn(`❌ DEBUG: Line item ${i + 1} failed:`, result);
+      console.warn(` DEBUG: Line item ${i + 1} failed:`, result);
     }
     
     // Small delay to avoid overwhelming the server
@@ -740,17 +725,17 @@ for (let i = 0; i < allLineItems.length; i++) {
     
   } catch (err) {
     failedCount++;
-    console.error(`❌ DEBUG: Exception for line item ${i + 1}:`, err);
+    console.error(` DEBUG: Exception for line item ${i + 1}:`, err);
   }
 }
 
-console.log(`🔍 DEBUG: OrderLineItems complete - Success: ${successCount}, Failed: ${failedCount}`);
+console.log(` DEBUG: OrderLineItems complete - Success: ${successCount}, Failed: ${failedCount}`);
 if (successCount === allLineItems.length) {
-  showDebugStatus('✅ All order line items saved to Google Sheets', 'success');
+  showDebugStatus(' All order line items saved to Google Sheets', 'success');
 } else if (successCount > 0) {
-  showDebugStatus(`⚠️ ${successCount}/${allLineItems.length} line items saved`, 'error');
+  showDebugStatus(` ${successCount}/${allLineItems.length} line items saved`, 'error');
 } else {
-  showDebugStatus('❌ Failed to save any order line items', 'error');
+  showDebugStatus(' Failed to save any order line items', 'error');
 }
 
 
@@ -794,10 +779,10 @@ await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailData);
     
 
 
-  submitBtn.textContent = '✅ Order emailed! Generating PDF...';
+  submitBtn.textContent = ' Order emailed! Generating PDF...';
 } catch (emailError) {
-  alert("❌ EMAIL FAILED!\n\n" + (emailError?.text || emailError?.message || JSON.stringify(emailError)));
-  submitBtn.textContent = '⚠️ Email failed, generating PDF...';
+  alert(" EMAIL FAILED!\n\n" + (emailError?.text || emailError?.message || JSON.stringify(emailError)));
+  submitBtn.textContent = ' Email failed, generating PDF...';
 }
 
 
@@ -967,7 +952,7 @@ for (let idx = 0; idx < state.items.length; ++idx) {
   // Product Name
   doc.setFont(undefined, "bold");
   doc.setFontSize(11.2);
-  doc.text((it.productName || '').substring(0,50), textX, ty, {maxWidth: textW});
+  doc.text((it.productName || '').substring(0,36), textX, ty, {maxWidth: textW});
   ty += 30;
 
   // Available Sizes
@@ -1044,7 +1029,7 @@ ty += 13;
     doc.setFont(undefined,"bold");
     doc.text("Notes:", textX, ty);
     doc.setFont(undefined,"normal");
-    let notesLines = doc.splitTextToSize((it.notes||'').substring(0,200), textW-44);
+    let notesLines = doc.splitTextToSize((it.notes||'').substring(0,65), textW-44);
     doc.text(notesLines, textX+40, ty, {maxWidth: textW-40});
     ty += Math.max(13, notesLines.length * 11);
   }
@@ -1074,18 +1059,18 @@ if (state.totalQty > 0) {
 
 doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
-    // submitBtn.textContent = '🎉 Complete! Order emailed & PDF saved';
-    console.log("🎉 DEBUG: FINAL SUCCESS - All operations completed");
-    console.log("🔍 DEBUG: Final order number:", orderNumber);
-    console.log("🔍 DEBUG: Final state summary:", { 
+    // submitBtn.textContent = ' Complete! Order emailed & PDF saved';
+    console.log(" DEBUG: FINAL SUCCESS - All operations completed");
+    console.log(" DEBUG: Final order number:", orderNumber);
+    console.log(" DEBUG: Final state summary:", { 
       header: state.header, 
       itemCount: state.items.length,
       totalQty: state.totalQty,
       totalAmount: state.totalAmount
     });
-    // alert(`✅ SUCCESS!\n\n📧 Order details sent\nYour order number: ${orderNumber}\n📄 PDF downloaded\nBackups secured!`);
+    // alert(` SUCCESS!\n\n Order details sent\nYour order number: ${orderNumber}\n PDF downloaded\nBackups secured!`);
   } catch (error) {
-    alert("⚠️ PDF GENERATION FAILED! Please screenshot or copy order details manually.");
+    alert(" PDF GENERATION FAILED! Please screenshot or copy order details manually.");
   } finally {
     setTimeout(() => {
       submitBtn.disabled = false;
@@ -1100,15 +1085,14 @@ doc.save(`OrderSheet_${state.header.orderNumber}.pdf`);
 
 // --- Brand selection triggers product card regeneration ---
 dom('brandSelect').addEventListener('change', function () {
-  console.log('Brand changed to:', this.value);
   dom('productCards').innerHTML = '';
   state.reset();
   if (this.value) {
-    console.log('Creating product card for selected brand');
     createProductCard();
    // dom('orderNumber').value = '';        // Optionally clear previous order number for clarity
   }
 });
+
 
 
 
