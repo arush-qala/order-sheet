@@ -263,7 +263,8 @@ function doGet(e) {
       'Doodlage': 'DL',
       'Khara Kapas': 'KK',
       'Naushad Ali': 'NA',
-      'The Raw India': 'TRI'
+      'The Raw India': 'TRI',
+      'TurnBlack': 'TB'
     };
     return brandMap[brand] || 'XX';
   }
