@@ -264,7 +264,10 @@ function doGet(e) {
       'Khara Kapas': 'KK',
       'Naushad Ali': 'NA',
       'The Raw India': 'TRI',
-      'TurnBlack': 'TB'
+      'Turn Black': 'TB', 
+      'Hindostan Archives': 'HA',
+      'GUAPA': 'GU',
+      'RAFUD': 'RF'
     };
     return brandMap[brand] || 'XX';
   }
