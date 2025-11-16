@@ -77,38 +77,94 @@ textarea {resize:vertical;}
   margin-top: 8px;
   display: block;
 }
-/* ---- For sizes and quantity in a single row ---- */
-.sizes-qty-row {
-  display: flex;
-  gap: 12px;
+/* ---- Size & Quantity Matrix ---- */
+.size-qty-matrix {
   width: 100%;
+  max-width: 340px;
   margin-bottom: 10px;
 }
-.sizes-block, .qty-block {
-  flex: 1 1 0;
+.size-qty-row {
   display: flex;
-  flex-direction: column;
-  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
 }
-.sizes-block input,
-.qty-block input {
-  max-width: 155px;
-  width: 100%;
-  margin-bottom: 0;
-  box-sizing: border-box;
+.size-qty-row:last-child {
+  border-bottom: none;
 }
-.sizes-block label, .qty-block label {
-  font-size: 0.92rem;
+.size-label {
+  font-size: 0.95rem;
   font-weight: 600;
   color: #232323;
-  margin-bottom: 3px;
-  margin-top: 8px;
-  display: block;
+  flex: 0 0 auto;
+  min-width: 40px;
 }
-/* For better mobile stacking */
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #232323;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+.qty-btn:hover:not(:disabled) {
+  background: #f5f5f3;
+  border-color: #d0d0d0;
+}
+.qty-btn:active:not(:disabled) {
+  background: #ececec;
+}
+.qty-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.qty-btn:focus {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+.qty-display {
+  min-width: 32px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #232323;
+  padding: 0 4px;
+}
+/* Mobile responsive styles */
 @media (max-width: 700px) {
-  .sizes-qty-row { flex-direction: column; gap: 0;}
-  .sizes-block input, .qty-block input { max-width: 100%; }
+  .size-qty-matrix {
+    max-width: 100%;
+  }
+  .size-qty-row {
+    padding: 12px 0;
+  }
+  .qty-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 1.2rem;
+  }
+  .qty-display {
+    min-width: 40px;
+    font-size: 1rem;
+  }
 }
 
 .prod-name{font-weight:700;font-size:1.07rem;margin-bottom:12px;}

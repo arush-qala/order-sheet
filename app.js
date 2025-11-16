@@ -193,33 +193,16 @@ function createProductCard() {
   const landingBox = document.createElement('div'); landingBox.className='price-box'; priceRow.appendChild(landingBox);
   const retailBox = document.createElement('div'); retailBox.className='price-box'; priceRow.appendChild(retailBox);
 
-  // SIZES + QTY ROW
-  const sizesQtyRow = document.createElement('div');
-  sizesQtyRow.className = 'sizes-qty-row';
+  // SIZE QUANTITY MATRIX
+  const sizeQtyLabel = document.createElement('label');
+  sizeQtyLabel.textContent = 'Size & Quantity';
+  detailsCol.appendChild(sizeQtyLabel);
+  const sizeQtyMatrix = document.createElement('div');
+  sizeQtyMatrix.className = 'size-qty-matrix';
+  detailsCol.appendChild(sizeQtyMatrix);
 
-  // Sizes block
-  const sizesBlock = document.createElement('div');
-  sizesBlock.className = 'sizes-block';
-  const sizesFieldLabel = document.createElement('label');
-  sizesFieldLabel.textContent = 'Selected Sizes';
-  sizesBlock.appendChild(sizesFieldLabel);
-  const sizeInput = document.createElement('input');
-  sizeInput.placeholder = 'e.g. 2 XS, 2 S, 1 M';
-  sizesBlock.appendChild(sizeInput);
-  // Quantity block
-  const qtyBlock = document.createElement('div');
-  qtyBlock.className = 'qty-block';
-  const qtyLabel = document.createElement('label');
-  qtyLabel.textContent = 'Quantity';
-  qtyBlock.appendChild(qtyLabel);
-  const qtyInput = document.createElement('input');
-  qtyInput.type = 'number';
-  qtyInput.placeholder = 'Quantity';
-  qtyInput.min = '1';
-  qtyBlock.appendChild(qtyInput);
-  sizesQtyRow.appendChild(sizesBlock);
-  sizesQtyRow.appendChild(qtyBlock);
-  detailsCol.appendChild(sizesQtyRow);
+  // Store quantities per size
+  let sizeQuantities = {};
 
   // UNIT PRICE
   const unitPriceLabel = document.createElement('label');
@@ -242,16 +225,128 @@ function createProductCard() {
 
   const lineItem = { styleSku:'', printSku:'', productName:'', sizes:'', quantity:0, unitPrice:0, subtotal:0, notes:'', styleImgUrl:'', printImgUrl:'' };
 
+  // Function to update sizes string and calculate total quantity
+  function updateSizesAndQuantity() {
+    const sizeParts = [];
+    let totalQty = 0;
+    Object.keys(sizeQuantities).forEach(size => {
+      const qty = sizeQuantities[size] || 0;
+      if (qty > 0) {
+        sizeParts.push(`${qty} ${size}`);
+        totalQty += qty;
+      }
+    });
+    lineItem.sizes = sizeParts.join(', ');
+    lineItem.quantity = totalQty;
+    updateSubtotal();
+  }
+
+  // Function to create size row with quantity controls
+  function createSizeRow(size) {
+    const row = document.createElement('div');
+    row.className = 'size-qty-row';
+    
+    const sizeLabel = document.createElement('div');
+    sizeLabel.className = 'size-label';
+    sizeLabel.textContent = size;
+    row.appendChild(sizeLabel);
+
+    const qtyControl = document.createElement('div');
+    qtyControl.className = 'qty-control';
+    
+    const minusBtn = document.createElement('button');
+    minusBtn.type = 'button';
+    minusBtn.className = 'qty-btn qty-minus';
+    minusBtn.innerHTML = '−';
+    minusBtn.setAttribute('aria-label', `Decrease quantity for size ${size}`);
+    minusBtn.setAttribute('tabindex', '0');
+    
+    const qtyDisplay = document.createElement('span');
+    qtyDisplay.className = 'qty-display';
+    qtyDisplay.textContent = '0';
+    qtyDisplay.setAttribute('aria-label', `Quantity for size ${size}`);
+    
+    const plusBtn = document.createElement('button');
+    plusBtn.type = 'button';
+    plusBtn.className = 'qty-btn qty-plus';
+    plusBtn.innerHTML = '+';
+    plusBtn.setAttribute('aria-label', `Increase quantity for size ${size}`);
+    plusBtn.setAttribute('tabindex', '0');
+
+    // Initialize quantity
+    sizeQuantities[size] = 0;
+
+    // Update quantity display
+    function updateQtyDisplay() {
+      const qty = sizeQuantities[size] || 0;
+      qtyDisplay.textContent = qty;
+      minusBtn.disabled = qty === 0;
+      updateSizesAndQuantity();
+    }
+
+    // Plus button handler
+    plusBtn.addEventListener('click', () => {
+      sizeQuantities[size] = (sizeQuantities[size] || 0) + 1;
+      updateQtyDisplay();
+    });
+
+    // Minus button handler
+    minusBtn.addEventListener('click', () => {
+      if (sizeQuantities[size] > 0) {
+        sizeQuantities[size] = sizeQuantities[size] - 1;
+        updateQtyDisplay();
+      }
+    });
+
+    // Keyboard support
+    plusBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        plusBtn.click();
+      }
+    });
+
+    minusBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        minusBtn.click();
+      }
+    });
+
+    qtyControl.appendChild(minusBtn);
+    qtyControl.appendChild(qtyDisplay);
+    qtyControl.appendChild(plusBtn);
+    row.appendChild(qtyControl);
+
+    updateQtyDisplay();
+    return row;
+  }
+
+  // Function to build size matrix from available sizes
+  function buildSizeMatrix(availableSizes) {
+    sizeQtyMatrix.innerHTML = '';
+    // Reset quantities object
+    Object.keys(sizeQuantities).forEach(key => delete sizeQuantities[key]);
+    if (availableSizes && availableSizes.length > 0) {
+      availableSizes.forEach(size => {
+        const row = createSizeRow(size);
+        sizeQtyMatrix.appendChild(row);
+      });
+    }
+    updateSizesAndQuantity();
+  }
+
   function updateSubtotal() {
-    const qty = Number(qtyInput.value || 0), unit = Number(unitPriceInput.value || 0), subtotal = qty * unit;
-    lineItem.quantity = qty; lineItem.unitPrice = unit; lineItem.subtotal = subtotal;
-    subtotalDisp.textContent = (qty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
+    const totalQty = lineItem.quantity || 0;
+    const unit = Number(unitPriceInput.value || 0);
+    const subtotal = totalQty * unit;
+    lineItem.unitPrice = unit;
+    lineItem.subtotal = subtotal;
+    subtotalDisp.textContent = (totalQty && unit) ? `Subtotal $${subtotal.toFixed(2)}` : '';
     state.recalculateTotals();
   }
 
-  qtyInput.addEventListener('input', updateSubtotal);
   unitPriceInput.addEventListener('input', updateSubtotal);
-  sizeInput.addEventListener('input', () => lineItem.sizes = sizeInput.value);
   noteArea.addEventListener('input', () => lineItem.notes = noteArea.value);
 
   autoCompleteBox(styleField, brand, prod => {
@@ -263,6 +358,7 @@ function createProductCard() {
     lineItem.unitPrice = prod.landingPrice; lineItem.styleImgUrl = prod.imageUrl;
     sizesSpan.textContent = prod.availableSizes.length ? 'Available Sizes: ' + prod.availableSizes.join(' · ') : '';
     sizesSpan.style.display = prod.availableSizes.length ? '' : 'none';
+    buildSizeMatrix(prod.availableSizes);
     updateSubtotal();
   });
   autoCompleteBox(printField, brand, prod => {
