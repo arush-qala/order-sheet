@@ -2,56 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Order Sheet – Brand Assembly LA</title>
+  <title>Qala Collective - Order Enquiry Sheet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
 </head>
 <body>
   <div class="container">
     <header class="header">
-      <h1>Order Sheet</h1>
+      <h1>Qala Collective - Order Enquiry Sheet</h1>
       <h2>Brand Assembly LA – Oct</h2>
     </header>
 
     <form id="orderForm" class="order-form" autocomplete="off">
-      <!-- Order & Buyer Information -->
-      <section class="section">
-
-        <div class="order-num-row">
-          <div class="form-group">
-            <label for="orderNumber">Order Number *</label>
-            <input type="text" id="orderNumber" name="orderNumber" required class="order-number-input">
-          </div>
-        </div>
-
-        <div class="buyer-info-grid">
-          <div class="form-group">
-            <label for="buyerName">Buyer/Store Name *</label>
-            <input type="text" id="buyerName" name="buyerName" required>
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address *</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone Number *</label>
-            <input type="tel" id="phone" name="phone" required>
-          </div>
-          <div class="form-group addr-group">
-            <label for="shippingAddress">Shipping Address *</label>
-            <textarea id="shippingAddress" name="shippingAddress" rows="3" required></textarea>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="orderComments">Order &amp; Delivery Comments</label>
-          <textarea id="orderComments" name="orderComments" rows="2"></textarea>
-        </div>
-      </section>
-
-      <section class="section">
+      <!-- Hidden order number field -->
+      <input type="hidden" id="orderNumber" name="orderNumber">
+      
+      <section>
         <h3>Brand Selection</h3>
         <div class="form-group">
           <label for="brandSelect">Brand *</label>
@@ -61,6 +29,10 @@
             <option value="Khara Kapas">Khara Kapas</option>
             <option value="Naushad Ali">Naushad Ali</option>
             <option value="The Raw India">The Raw India</option>
+            <option value="Turn Black">Turn Black</option>
+            <option value="GUAPA">GUAPA</option>
+            <option value="Hindostan Archive">Hindostan Archive</option>
+            <option value="RAFUD">RAFUD</option>
           </select>
         </div>
         <p class="info-note">All products in this order sheet will be from the selected brand.</p>
@@ -68,8 +40,9 @@
 
       <section class="section">
         <h3>Product Selection</h3>
+        <p class="info-note">Select styles and optionally add sizes/quantities. You can submit for pricing information even without quantities.</p>
         <div id="productCards" class="product-cards"></div>
-        <button type="button" id="addProductBtn" class="btn-secondary">Add Product</button>
+        <button type="button" id="addProductBtn" class="btn-secondary">Add new product</button>
       </section>
 
       <section class="section summary-section">
@@ -84,10 +57,49 @@
             <span id="totalAmount" class="summary-value">$0.00</span>
           </div>
         </div>
-        <button type="submit" class="btn-primary">Submit &amp; Download PDF</button>
+      </section>
+
+      <!-- Buyer Information -->
+      <section class="section">
+        <h3>Buyer Information</h3>
+        
+        <div class="buyer-info-grid">
+          <div class="form-group">
+            <label for="buyerName">Buyer/Store Name *</label>
+            <input type="text" id="buyerName" name="buyerName" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone">
+          </div>
+          <div class="form-group addr-group">
+            <label for="shippingAddress">Shipping Address</label>
+            <textarea id="shippingAddress" name="shippingAddress" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="orderComments">Delivery Timelines</label>
+          <textarea id="orderComments" name="orderComments" rows="2"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Submit Enquiry</button>
       </section>
     </form>
   </div>
-  <script src="app.js"></script>
+ 
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   <script src="app.js"></script>
+  
 </body>
 </html>
